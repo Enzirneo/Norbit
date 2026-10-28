@@ -1,0 +1,11 @@
+/* Tailwind 4 e CSS-first e nao passa por pre-processador: fica num arquivo
+   proprio, enquanto styles.scss guarda nossos tokens e parciais Sass.
+   Ver docs/04-design-system.md. */
+@import 'tailwindcss';
+
+/* Tokens gerados de libs/design-tokens. O @theme dentro deles expoe a paleta ao
+   Tailwind, que passa a gerar utilitarios como bg-space-800 e duration-base. */
+@import './tokens.generated.css';
+
+/* Onde o Tailwind procura as classes usadas. */
+@source './**/*.{html,ts}';

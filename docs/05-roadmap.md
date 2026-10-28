@@ -13,27 +13,49 @@ estimativas abaixo **já contam** o tempo de escrever os testes primeiro.
 
 ---
 
-## Fase 0 — Fundação · ~3 dias
+## Fase 0 — Fundação · ✅ concluída
 
 Ambiente de pé e banco criado, sem produto ainda.
 
-- [ ] `npx create-nx-workspace norbit` com preset Angular, e geração do app NestJS
-- [x] `docker-compose.yml` com Postgres 17, Redis 7, Adminer e Mailpit — *já feito*
-- [x] `schema.prisma` e a migration inicial escritos e validados — *já feito*
-- [ ] Aplicar a migration (`docker compose up -d && npx prisma migrate deploy`)
-- [ ] Tailwind configurado, consumindo os tokens de `libs/design-tokens`
-- [ ] `libs/contracts` e `libs/domain` criadas e importáveis pelos dois apps
-- [ ] ESLint com os limites de Clean Code e as fronteiras de módulo do Nx
-      (ver [fluxo de trabalho](06-fluxo-de-trabalho.md#clean-code))
-- [ ] Prettier, Husky, commitlint ativado no hook `commit-msg`
-- [ ] `prisma/seed.ts` criando dois usuários e dados de exemplo
-- [x] Pipeline de CI escrito — *já feito, inerte até existir o `package.json`*
-- [ ] Branch `dev` criada, e `main` e `dev` protegidas no GitHub
-- [ ] Primeiro ciclo de TDD, só para provar o encanamento: um teste trivial em
-      `libs/domain` que falha, depois passa
+- [x] Monorepo Nx 24 com `apps/web` (Angular 22), `apps/api` (NestJS) e as libs
+      `domain`, `contracts` e `design-tokens`, com aliases `@norbit/*`
+- [x] `docker-compose.yml` com Postgres 17, Redis 7, Adminer e Mailpit — os quatro
+      containers no ar
+- [x] Migration aplicada num Postgres real; as quatro restrições extras conferidas no
+      banco e testadas contra dados inválidos
+- [x] Tailwind 4 configurado, consumindo os tokens de `libs/design-tokens` via
+      `@theme` — verificado no CSS final: `bg-space-800{background-color:var(--color-space-800)}`
+- [x] Gerador de tokens (`npm run tokens:build`): os valores vivem só no TypeScript e
+      o CSS é derivado, em vez de duas cópias que divergiriam
+- [x] ESLint com os limites de Clean Code e as fronteiras de módulo, com a fronteira
+      testada: um import de `@prisma/client` em `libs/domain` é rejeitado
+- [x] Prettier, Husky e commitlint ativos — e os dois hooks já barraram coisa de
+      verdade no primeiro uso
+- [x] `prisma/seed.ts`: dois usuários, três agendas, quatro eventos (recorrente, dia
+      inteiro, privado e comum) e duas tarefas
+- [x] Pipeline de CI escrito e verde
+- [x] Branch `dev` criada, `main` e `dev` protegidas, com o bloqueio de push direto
+      verificado na prática
+- [x] Primeiro ciclo de TDD: 8 testes em `libs/design-tokens`, escritos antes da
+      implementação, com a falha observada antes de cada correção
 
 **Pronto quando:** `docker compose up -d && nx run-many -t serve` sobe tudo, o Adminer
-mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde.
+mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde. ✅
+
+**Estado final:** 6/6 lint, 5/5 testes, 2/2 builds.
+
+### O que a Fase 0 ensinou, e que muda as fases seguintes
+
+1. **O CI precisa dos checks reais agora.** Enquanto só `guard` era obrigatório, o
+   `lint`, `test` e `build` ficavam `skipping`. Com o `package.json` existindo, eles
+   passam a rodar — e devem entrar como status checks obrigatórios nas proteções de
+   branch.
+2. **A lib `@norbit/db` entra na Fase 1.** O Prisma Client gerado vive hoje em
+   `prisma/generated/`; o `PrismaService` do Nest vai consumi-lo de uma lib própria.
+3. **Nenhuma regra type-aware do ESLint está ativa.** `no-floating-promises` e
+   `explicit-function-return-type` exigem `parserOptions.projectService`, que não foi
+   configurado. Ficou de fora de propósito, para não travar a fundação — mas é a
+   primeira coisa a fazer antes de escrever código de serviço na Fase 1.
 
 ---
 
@@ -173,7 +195,7 @@ Ideias registradas para não se perderem, em ordem de valor percebido:
 
 | Fase | Estimativa |
 |---|---|
-| 0 — Fundação | 3 dias |
+| 0 — Fundação | ✅ concluída |
 | 1 — Contas | 4 dias |
 | 2 — Núcleo | 2 semanas |
 | 3 — Compartilhamento | 1,5 semana |

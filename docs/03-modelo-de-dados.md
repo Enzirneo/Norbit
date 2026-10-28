@@ -5,7 +5,9 @@ campo por campo, e a migration SQL pronta em
 [`prisma/migrations/`](../prisma/migrations/). Este documento explica o **porquê** das
 decisões e serve de referência para executar a criação do banco.
 
-O schema foi validado com `prisma validate` (Prisma 7.10.1): **válido**.
+O schema foi validado com `prisma validate` (Prisma 7.10.1) e **aplicado num Postgres
+17 real**: 17 tabelas mais a de controle do Prisma, com as quatro restrições extras
+conferidas no banco e testadas contra dados inválidos (ver o fim deste documento).
 
 ## Mapa de relações
 
@@ -123,21 +125,29 @@ docker compose up -d
 # 2. Configurar o ambiente
 cp .env.example .env
 
-# 3. Instalar as dependências do Prisma (dotenv é exigido por prisma.config.ts)
-npm i -D prisma tsx && npm i dotenv
+# 3. Instalar dependências (já no package.json desde a Fase 0)
+npm install
 
-# 4. Aplicar a migration
-npx prisma migrate deploy
+# 4. Gerar o client e aplicar a migration
+npm run db:generate
+npm run db:migrate
 
-# 5. Conferir visualmente
-npx prisma studio          # ou Adminer em http://localhost:8080
+# 5. Popular com dados de desenvolvimento
+npm run db:seed
+
+# 6. Conferir visualmente
+npm run db:studio          # ou Adminer em http://localhost:8080
 ```
 
-> **Ainda não aplicada contra um banco real.** O DDL foi gerado pelo Prisma (`migrate
-> diff`) e o schema passou no `prisma validate`, mas o Docker Desktop estava desligado
-> no momento em que isto foi escrito, então a execução do SQL não foi verificada de
-> ponta a ponta. Se o passo 4 falhar, é nas quatro linhas finais acrescentadas à mão que
-> vale olhar primeiro.
+> **Aplicada e verificada.** `prisma migrate deploy` rodou num Postgres 17 em Docker, as
+> 17 tabelas existem, e as três restrições escritas à mão rejeitaram dados inválidos
+> quando testadas de propósito:
+>
+> | Tentativa | Resultado |
+> |---|---|
+> | Segunda agenda padrão para o mesmo dono | `duplicate key value violates unique constraint "calendars_one_default_per_owner"` |
+> | Evento terminando antes de começar | `violates check constraint "events_valid_range"` |
+> | Lembrete sem evento nem tarefa | `violates check constraint "reminders_one_target"` |
 
 ### Duas pegadinhas do Prisma 7
 
@@ -165,7 +175,19 @@ precisa de aspas duplas — `WHERE "startsAt" > now()`, não `WHERE startsAt > n
 
 ## Dados de semeadura
 
-Vale um `prisma/seed.ts` para desenvolvimento, criando: dois usuários, uma agenda pessoal
-para cada, uma agenda compartilhada entre os dois com papéis diferentes, alguns eventos
-(incluindo um recorrente, um de dia inteiro e um privado) e algumas tarefas. É o que
-permite trabalhar na interface sem cadastrar tudo à mão a cada reset do banco.
+`prisma/seed.ts` (`npm run db:seed`) cria dois usuários, uma agenda pessoal para cada,
+uma agenda compartilhada entre os dois com papéis diferentes, quatro eventos — um
+recorrente, um de dia inteiro, um privado e um comum — e duas tarefas, uma delas
+atribuída à outra pessoa. É o que permite trabalhar na interface sem cadastrar tudo à
+mão a cada reset do banco.
+
+### Onde vive o Prisma Client
+
+O gerador do Prisma 7 **emite TypeScript** no diretório de saída em vez de um pacote
+compilado em `node_modules`, e por isso `@prisma/client` não reexporta mais nada —
+importar de lá falha. A saída fica em `prisma/generated/` (fora do controle de versão,
+regerada por `npm run db:generate`), e na Fase 1 ela se torna a lib `@norbit/db`,
+consumida pelo `PrismaService` do Nest.
+
+A v7 também exige um **driver adapter** para conexão direta: o client é instanciado com
+`new PrismaClient({ adapter: new PrismaPg({ connectionString }) })`, não só com a URL.

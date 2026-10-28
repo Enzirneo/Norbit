@@ -14,7 +14,12 @@
 // `prisma.config.ts`, na raiz do projeto.
 generator client {
   provider = "prisma-client"
-  output   = "../node_modules/.prisma/client"
+  // O gerador do Prisma 7 emite TypeScript no diretorio de saida, e nao um
+  // pacote compilado em node_modules — por isso `@prisma/client` nao reexporta
+  // mais nada. A saida fica aqui, fora do controle de versao (e regerada por
+  // `prisma generate`). Na Fase 1 ela se torna a lib @norbit/db, consumida pelo
+  // PrismaService do Nest.
+  output   = "./generated/client"
 }
 
 datasource db {

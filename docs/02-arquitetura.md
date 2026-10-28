@@ -4,9 +4,9 @@
 
 | Camada | Escolha | Por quê |
 |---|---|---|
-| Monorepo | **Nx** | Generators para Angular e NestJS, build por afetados, tipos compartilhados sem publicar pacote |
-| Front-end | **Angular** (major atual, 20+) com standalone components e signals | Estrutura opinativa, DI de primeira classe, escala bem com o projeto crescendo |
-| Estilo | **Tailwind CSS** + CSS custom properties | Tokens de tema trocáveis em runtime, sem recompilar |
+| Monorepo | **Nx 24** | Generators para Angular e NestJS, build por afetados, tipos compartilhados sem publicar pacote |
+| Front-end | **Angular 22** com standalone components e signals | Estrutura opinativa, DI de primeira classe, escala bem com o projeto crescendo |
+| Estilo | **Tailwind 4** + CSS custom properties | Tokens de tema trocáveis em runtime, sem recompilar. CSS-first: fica em `tailwind.css`, enquanto `styles.scss` guarda os parciais Sass |
 | Motion | **GSAP** + Angular Animations + View Transitions API | Timelines orbitais precisas e transições de rota suaves |
 | Back-end | **NestJS** (11+) | Módulos, DI e decorators espelham o modelo mental do Angular |
 | ORM | **Prisma 7** | Esquema declarativo como fonte da verdade, migrations versionadas, tipos gerados |
@@ -16,11 +16,27 @@
 | Validação | **Zod** em lib compartilhada | Um único schema valida no front e no back |
 | Testes | Vitest / Jest + Playwright | Unidade no domínio, E2E nos fluxos críticos |
 
-> **Versões:** confirme a major atual de Angular e NestJS no momento do `nx init` em
-> vez de fixar pelos números acima — o ciclo de release do Angular é semestral.
+> **Versões instaladas** (Fase 0, outubro de 2026): Nx 24.0.0, Angular 22.2,
+> NestJS 11, Prisma 7.10.1, Tailwind 4.3.3, TypeScript 6.0.3, Node 22.14.
 >
-> **Node:** a sua máquina está no Node 22.14. Fixe o Prisma na major 7; a 8 (em RC)
-> exige Node ≥ 22.18. Vale adicionar um `.nvmrc` para travar a versão do projeto.
+> **Prisma fixado na major 7:** a 8 está em release candidate e exige Node ≥ 22.18.
+
+### Três desvios do caminho padrão, decididos na Fase 0
+
+**1. Layout clássico de TypeScript, não project references.** O template novo do Nx usa
+TS project references, e o Angular não os suporta
+([angular/angular#37276](https://github.com/angular/angular/issues/37276)). O workspace
+usa `tsconfig.base.json` com `paths`. Existe uma variável de ambiente para ignorar o
+aviso, mas ela é explicitamente *"at your own risk"*.
+
+**2. Apps gerados, não vindos de template.** O preset `angular-monorepo` do Nx 24 cria
+um app de e-commerce de exemplo e ignora `--appName`. Partimos do template vazio e
+geramos `web` e `api` com os generators.
+
+**3. `legacy-peer-deps=true` no `.npmrc`.** O npm 10.9.2 falha ao montar a árvore de
+peer deps do Angular/Nx com `Cannot read properties of null (reading 'edgesOut')` — um
+bug do arborist, não um conflito real de versões. Sem a opção o install não conclui, nem
+local nem no CI. Atualizar o npm para a 11 ou 12 provavelmente dispensa isso.
 
 ## Estrutura do monorepo
 
