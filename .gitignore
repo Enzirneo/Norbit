@@ -28,3 +28,18 @@ Thumbs.db
 
 # Ferramental interno de desenvolvimento, não parte do produto e não versionado.
 anthropic-model-router/
+
+# Nx
+.nx/polygraph
+.nx/self-healing
+.nx/migrate-runs
+.claude/worktrees
+.claude/settings.local.json
+.cursor/rules/nx-rules.mdc
+.github/instructions/nx.instructions.md
+
+.angular
+
+__screenshots__/
+vitest.config.*.timestamp*
+.vitest

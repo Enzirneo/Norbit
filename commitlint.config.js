@@ -33,7 +33,9 @@ module.exports = {
     ],
     // Escopo não é obrigatório, mas quando existe precisa ser um dos acima.
     'scope-empty': [0],
-    'subject-case': [2, 'always', 'lower-case'],
+    // Desligado de proposito: nomes proprios de tecnologia (Nx, Angular, Docker,
+    // Prisma) aparecem naturalmente no assunto, e 'lower-case' os proibiria.
+    'subject-case': [0],
     'subject-full-stop': [2, 'never', '.'],
     'header-max-length': [2, 'always', 72],
     'body-max-line-length': [2, 'always', 100],
