@@ -185,9 +185,39 @@ mão a cada reset do banco.
 
 O gerador do Prisma 7 **emite TypeScript** no diretório de saída em vez de um pacote
 compilado em `node_modules`, e por isso `@prisma/client` não reexporta mais nada —
-importar de lá falha. A saída fica em `prisma/generated/` (fora do controle de versão,
-regerada por `npm run db:generate`), e na Fase 1 ela se torna a lib `@norbit/db`,
-consumida pelo `PrismaService` do Nest.
+importar de lá falha.
+
+A saída fica em `libs/db/src/generated/`, dentro da lib **`@norbit/db`**, que é quem
+reexporta o client para o resto do monorepo. Ninguém importa um caminho `generated/`
+relativo: importa-se de `@norbit/db`. O diretório está fora do controle de versão e é
+regerado por `npm run db:generate` — código gerado versionado viraria conflito de merge
+a cada alteração do schema, e ficaria desatualizado em silêncio.
+
+Duas consequências práticas:
+
+1. **O CI tem de gerar antes de qualquer coisa.** Os jobs de `lint`, `test`, `build` e
+   `e2e` rodam `npm run db:generate` logo após o `npm ci`; sem isso, `@norbit/db` não
+   existe e os três falham por módulo não encontrado. Os jobs que não conectam no banco
+   ainda precisam de uma `DATABASE_URL` de fachada, porque o `prisma.config.ts` resolve
+   a variável de forma estrita e aborta se ela faltar.
+2. **O código gerado fica fora do lint e do Prettier.** São milhares de linhas por
+   arquivo: não passariam nos limites de Clean Code, e não há o que revisar nelas.
 
 A v7 também exige um **driver adapter** para conexão direta: o client é instanciado com
 `new PrismaClient({ adapter: new PrismaPg({ connectionString }) })`, não só com a URL.
+É o que o `PrismaService` faz, e o teste dele é de integração contra o Postgres de
+verdade — um mock ali testaria o mock, não a ligação do adapter.
+
+### Apagar um usuário não apaga as agendas dele
+
+`Calendar.ownerId` é `Restrict`, não `Cascade`, e isso é deliberado: uma agenda
+compartilhada pertence ao grupo, não só a quem a criou. Apagar a conta do dono e levar
+com ela o histórico de todos os membros seria destruição silenciosa de dado alheio.
+A exclusão de um usuário com agendas **falha**, e quem for implementar a remoção de
+conta na Fase 1 vai ter de decidir explicitamente o que acontece com cada agenda —
+transferir a posse ou apagar junto, com confirmação.
+
+O efeito colateral apareceu no seed: ele presumia cascade e só funcionava em banco
+vazio; na segunda execução morria com `P2003` em `calendars_ownerId_fkey`. Agora ele
+apaga as agendas antes dos usuários e é idempotente — rodar duas vezes seguidas dá o
+mesmo resultado.

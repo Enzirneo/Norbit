@@ -5,7 +5,14 @@ export default [
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
   {
-    ignores: ['**/dist', '**/out-tsc', '**/vitest.config.*.timestamp*'],
+    // O client do Prisma é gerado: não se revisa, não se formata e não cabe
+    // nos limites de Clean Code (são milhares de linhas por arquivo).
+    ignores: [
+      '**/dist',
+      '**/out-tsc',
+      '**/vitest.config.*.timestamp*',
+      'libs/db/src/generated/**',
+    ],
   },
   {
     files: ['**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx'],
@@ -56,9 +63,21 @@ export default [
               onlyDependOnLibsWithTags: ['scope:design-tokens'],
               bannedExternalImports: ['@angular/*', '@nestjs/*', '@prisma/*'],
             },
+            // A @norbit/db é o único lugar do monorepo onde o Prisma entra.
+            // Ela não conhece o domínio: é infraestrutura, e a dependência
+            // corre no sentido oposto.
+            {
+              sourceTag: 'scope:db',
+              onlyDependOnLibsWithTags: ['scope:contracts'],
+              bannedExternalImports: ['@angular/*'],
+            },
             {
               sourceTag: 'scope:api',
-              onlyDependOnLibsWithTags: ['scope:domain', 'scope:contracts'],
+              onlyDependOnLibsWithTags: [
+                'scope:domain',
+                'scope:contracts',
+                'scope:db',
+              ],
               bannedExternalImports: ['@angular/*'],
             },
             {

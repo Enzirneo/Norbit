@@ -11,7 +11,7 @@
 import 'dotenv/config';
 import { randomUUID } from 'node:crypto';
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient } from './generated/client/client';
+import { PrismaClient } from '@norbit/db';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
@@ -20,6 +20,9 @@ const prisma = new PrismaClient({ adapter });
 const SENHA_DEV = '$argon2id$v=19$m=65536,t=3,p=4$DESENVOLVIMENTO$seed';
 
 const FUSO = 'America/Sao_Paulo';
+
+const EMAIL_ENZO = 'enzo@norbit.dev';
+const EMAIL_MARIA = 'maria@norbit.dev';
 
 /** Data local em São Paulo, para os eventos caírem em horários plausíveis. */
 function em(diasAFrente: number, hora: number, minuto = 0): Date {
@@ -30,11 +33,28 @@ function em(diasAFrente: number, hora: number, minuto = 0): Date {
 }
 
 async function main(): Promise<void> {
-  // Ordem inversa das dependências: tudo cai por cascade a partir de users,
-  // mas ser explícito deixa claro o que o seed considera "seu".
-  await prisma.user.deleteMany({
-    where: { email: { in: ['enzo@norbit.dev', 'maria@norbit.dev'] } },
+  // Limpeza em duas etapas, e a ordem importa.
+  //
+  // `Calendar.ownerId` é `Restrict`, não `Cascade`: apagar um usuário com
+  // agendas **falha**, de propósito, porque uma agenda compartilhada pertence
+  // ao grupo e não só a quem a criou — perdê-la junto com a conta do dono seria
+  // destruição silenciosa de dado alheio. Então as agendas saem primeiro,
+  // levando por cascade eventos, tarefas, vínculos, convites e atividade.
+  //
+  // Sem isto o seed só funciona em banco vazio: na segunda execução ele morre
+  // com P2003 em `calendars_ownerId_fkey`.
+  const existentes = await prisma.user.findMany({
+    where: { email: { in: [EMAIL_ENZO, EMAIL_MARIA] } },
+    select: { id: true },
   });
+  const idsExistentes = existentes.map((u) => u.id);
+
+  if (idsExistentes.length > 0) {
+    await prisma.calendar.deleteMany({
+      where: { ownerId: { in: idsExistentes } },
+    });
+    await prisma.user.deleteMany({ where: { id: { in: idsExistentes } } });
+  }
 
   const enzoId = randomUUID();
   const mariaId = randomUUID();
@@ -42,7 +62,7 @@ async function main(): Promise<void> {
   const enzo = await prisma.user.create({
     data: {
       id: enzoId,
-      email: 'enzo@norbit.dev',
+      email: EMAIL_ENZO,
       handle: 'enzo',
       displayName: 'Enzo',
       passwordHash: SENHA_DEV,
@@ -66,7 +86,7 @@ async function main(): Promise<void> {
   const maria = await prisma.user.create({
     data: {
       id: mariaId,
-      email: 'maria@norbit.dev',
+      email: EMAIL_MARIA,
       handle: 'maria',
       displayName: 'Maria',
       passwordHash: SENHA_DEV,

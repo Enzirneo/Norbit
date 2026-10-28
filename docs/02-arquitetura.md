@@ -76,6 +76,7 @@ norbit/
 └─ libs/
    ├─ contracts/                # DTOs + schemas Zod + tipos de resposta
    ├─ domain/                   # regras puras: recorrência, permissões, conflitos
+   ├─ db/                       # Prisma Client + PrismaService (só a api usa)
    └─ design-tokens/            # tokens de tema gerados para CSS e TS
 ```
 
