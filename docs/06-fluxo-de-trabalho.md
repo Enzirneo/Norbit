@@ -359,6 +359,10 @@ Uma tarefa está pronta quando **todas** as linhas valem:
 
 ## Comandos do dia a dia
 
+Os comandos `gh` abaixo precisam do [GitHub CLI](https://cli.github.com), que ainda
+**não está instalado** nesta máquina (`winget install GitHub.cli`). Sem ele, abra os PRs
+pela interface web — o fluxo é o mesmo.
+
 ```bash
 # começar algo
 git switch dev && git pull
