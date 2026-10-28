@@ -293,23 +293,38 @@ Princípios viram discussão; limites viram CI. Então a maior parte disto está
 ### Fronteiras entre camadas, também automáticas
 
 O recurso mais valioso do Nx aqui é `@nx/enforce-module-boundaries`. Com tags nos
-projetos, o lint **impede** o import errado:
+projetos, o lint **impede** o import errado. Cada projeto declara sua tag em
+`project.json`, e `eslint.config.mjs` define o que cada tag pode alcançar:
 
 ```jsonc
 {
   "depConstraints": [
-    // o domínio é puro: não conhece Angular, Nest, Prisma nem HTTP
-    { "sourceTag": "scope:domain",   "onlyDependOnLibsWithTags": ["scope:domain"] },
-    { "sourceTag": "scope:contracts","onlyDependOnLibsWithTags": ["scope:contracts"] },
-    { "sourceTag": "scope:api",      "onlyDependOnLibsWithTags": ["scope:domain", "scope:contracts"] },
-    { "sourceTag": "scope:web",      "onlyDependOnLibsWithTags": ["scope:domain", "scope:contracts", "scope:ui"] }
+    {
+      "sourceTag": "scope:domain",
+      "onlyDependOnLibsWithTags": ["scope:domain"],
+      "bannedExternalImports": ["@prisma/*", "@angular/*", "@nestjs/*", "express", "pg"]
+    },
+    { "sourceTag": "scope:api", "onlyDependOnLibsWithTags": ["scope:domain", "scope:contracts"] },
+    {
+      "sourceTag": "scope:web",
+      "onlyDependOnLibsWithTags": ["scope:domain", "scope:contracts", "scope:design-tokens", "scope:ui"],
+      "bannedExternalImports": ["@prisma/*", "@nestjs/*", "pg", "ioredis"]
+    }
   ]
 }
 ```
 
-Isso é o que garante, meses adiante, que `libs/domain` continue puro. Sem a regra, um
-dia alguém importa o `PrismaService` lá dentro "só para resolver rápido", e a lib deixa
-de ser testável sem banco.
+**As duas chaves fazem coisas diferentes, e isso importa:**
+`onlyDependOnLibsWithTags` governa apenas as libs **do workspace**.
+`bannedExternalImports` governa os pacotes **do npm**. Sem a segunda, nada impede
+`import { PrismaClient } from '@prisma/client'` dentro de `libs/domain` — o que foi
+verificado na prática: com apenas a primeira chave configurada, o lint passou
+tranquilamente num arquivo que instanciava o `PrismaClient` ali dentro.
+
+É essa combinação que garante, meses adiante, que `libs/domain` continue puro e
+testável sem banco, e que o navegador nunca receba credenciais de banco. Sem ela, um
+dia alguém importa o Prisma lá "só para resolver rápido", e a lib deixa de ser
+testável sem banco.
 
 ### Regras de escrita
 
