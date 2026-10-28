@@ -27,7 +27,7 @@ export default [
               // onlyDependOnLibsWithTags governa apenas libs do workspace; sem
               // bannedExternalImports, nada impediria `import { PrismaClient }
               // from '@prisma/client'` aqui dentro, e a lib deixaria de ser
-              // testavel sem banco.
+              // testável sem banco.
               bannedExternalImports: [
                 '@prisma/*',
                 'prisma',
@@ -69,7 +69,7 @@ export default [
                 'scope:design-tokens',
                 'scope:ui',
               ],
-              // O navegador nao fala com o banco: credenciais e SQL nunca saem
+              // O navegador não fala com o banco: credenciais e SQL nunca saem
               // do servidor.
               bannedExternalImports: [
                 '@prisma/*',
@@ -117,6 +117,46 @@ export default [
       'prefer-const': 'error',
       'no-var': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
+    },
+  },
+  {
+    // Regras que exigem o tipo, não só a sintaxe. O `projectService` faz o
+    // ESLint subir o mesmo serviço de linguagem do TypeScript, então ele sabe
+    // que `salvar()` devolve uma Promise e pode cobrar o `await`.
+    //
+    // Restrito a `src/` de propósito: arquivos soltos de configuração e de
+    // script não pertencem a nenhum tsconfig, e incluí-los faria o lint falhar
+    // por projeto não encontrado em vez de por defeito.
+    //
+    // O padrão começa com `**/` porque o alvo de lint do Nx roda `eslint .` com
+    // o cwd no projeto, e então o ESLint resolve os padrões a partir do
+    // eslint.config.mjs do projeto, não da raiz. Um glob `libs/*/src/**` casa
+    // quando rodado da raiz e não casa quando rodado pelo Nx, o que faz as
+    // regras sumirem em silêncio.
+    files: ['**/src/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: import.meta.dirname,
+      },
+    },
+    rules: {
+      // O defeito que esta regra pega é silencioso: uma Promise sem `await`
+      // faz o erro virar unhandled rejection e a operacao parecer bem-sucedida.
+      // Numa API de agenda isso significa responder 200 para um evento que
+      // nunca foi gravado.
+      '@typescript-eslint/no-floating-promises': 'error',
+      // Promise onde se espera booleano: um `if (verificaSenha(...))` sem
+      // await é sempre verdadeiro, porque toda Promise é truthy.
+      '@typescript-eslint/no-misused-promises': 'error',
+      '@typescript-eslint/await-thenable': 'error',
+      '@typescript-eslint/require-await': 'error',
+      // Assinatura explícita no que é exportado: o contorno da função passa a
+      // ser decisão, e não consequência do corpo dela.
+      '@typescript-eslint/explicit-function-return-type': [
+        'error',
+        { allowExpressions: true, allowTypedFunctionExpressions: true },
+      ],
     },
   },
   {

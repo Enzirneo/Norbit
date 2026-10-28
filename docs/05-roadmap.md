@@ -46,16 +46,18 @@ mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde. ✅
 
 ### O que a Fase 0 ensinou, e que muda as fases seguintes
 
-1. **O CI precisa dos checks reais agora.** Enquanto só `guard` era obrigatório, o
-   `lint`, `test` e `build` ficavam `skipping`. Com o `package.json` existindo, eles
-   passam a rodar — e devem entrar como status checks obrigatórios nas proteções de
-   branch.
+1. ~~**O CI precisa dos checks reais agora.**~~ ✅ Resolvido: `lint`, `test` e `build`
+   são status checks obrigatórios em `main` e `dev`. O `e2e` ficou **de fora** de
+   propósito — ele só roda quando a base do PR é `main` e até agora sempre apareceu
+   como `skipping`, então exigi-lo travaria o próximo PR de release sem nenhuma prova
+   de que passa. Entra depois que rodar verde uma vez.
 2. **A lib `@norbit/db` entra na Fase 1.** O Prisma Client gerado vive hoje em
    `prisma/generated/`; o `PrismaService` do Nest vai consumi-lo de uma lib própria.
-3. **Nenhuma regra type-aware do ESLint está ativa.** `no-floating-promises` e
-   `explicit-function-return-type` exigem `parserOptions.projectService`, que não foi
-   configurado. Ficou de fora de propósito, para não travar a fundação — mas é a
-   primeira coisa a fazer antes de escrever código de serviço na Fase 1.
+3. ~~**Nenhuma regra type-aware do ESLint está ativa.**~~ ✅ Resolvido na branch
+   `feat/eslint-type-aware`, antes de qualquer código de serviço. Cinco regras ativas
+   (`no-floating-promises`, `no-misused-promises`, `await-thenable`, `require-await`,
+   `explicit-function-return-type`), e elas já pegaram três defeitos reais no esqueleto
+   que o Nx gerou — inclusive um `bootstrap()` sem `catch` em `apps/api/src/main.ts`.
 
 ---
 

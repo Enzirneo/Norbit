@@ -1,13 +1,14 @@
 /**
- * This is not a production server yet!
- * This is only a minimal backend to get started.
+ * Ponto de entrada da API.
+ *
+ * Ainda é o esqueleto gerado pelo Nx: a aplicação de verdade começa na Fase 1.
  */
 
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
@@ -30,4 +31,10 @@ async function bootstrap() {
   );
 }
 
-bootstrap();
+// Sem este `catch`, uma falha ao subir (porta ocupada, banco fora do ar)
+// viraria unhandled rejection: o Node encerraria com um rastro de pilha que não
+// diz o que aconteceu, em vez de uma mensagem e um código de saída.
+bootstrap().catch((erro) => {
+  Logger.error('Falha ao iniciar a API', erro);
+  process.exit(1);
+});

@@ -290,6 +290,50 @@ Princípios viram discussão; limites viram CI. Então a maior parte disto está
 }
 ```
 
+### Regras que precisam do tipo, e a pegadinha do glob
+
+Cinco das regras acima só funcionam com informação de tipo, não só de sintaxe: o ESLint
+precisa saber que `salvar()` devolve uma `Promise` para cobrar o `await`. Isso exige
+`parserOptions.projectService: true`, num bloco restrito a `src/`, porque arquivo de
+configuração solto não pertence a nenhum `tsconfig` e faria o lint falhar por projeto
+não encontrado em vez de por defeito.
+
+```js
+{
+  files: ['**/src/**/*.ts'],
+  languageOptions: {
+    parserOptions: { projectService: true, tsconfigRootDir: import.meta.dirname },
+  },
+  rules: {
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/no-misused-promises': 'error',
+    '@typescript-eslint/await-thenable': 'error',
+    '@typescript-eslint/require-await': 'error',
+    '@typescript-eslint/explicit-function-return-type': [
+      'error',
+      { allowExpressions: true, allowTypedFunctionExpressions: true },
+    ],
+  },
+}
+```
+
+> **O padrão tem de começar com `**/`.** O alvo de lint do Nx roda `eslint .` com o
+> `cwd` no diretório do projeto, e aí o ESLint resolve os padrões de `files` a partir do
+> `eslint.config.mjs` **do projeto**, não da raiz. Um glob como `libs/*/src/**/*.ts`
+> casa quando você roda `npx eslint` da raiz e **não** casa quando o Nx roda — então as
+> regras desaparecem sem nenhum aviso: o lint passa verde porque não está checando nada.
+>
+> Foi exatamente o que aconteceu aqui, duas vezes: primeiro com a exceção de
+> `no-console` do `main.ts`, depois com este bloco. A lição prática é que **toda regra
+> nova precisa ser testada com uma violação plantada de propósito**, rodada pelo Nx e
+> não só pelo ESLint direto. Plantar uma Promise sem `await` em `libs/domain` e ver o
+> `nx lint domain` falhar leva trinta segundos e é a única prova que vale.
+
+Quando foram ligadas, estas regras pegaram **três defeitos reais** no esqueleto gerado
+pelo Nx — o mais sério deles um `bootstrap()` sem `catch` em `apps/api/src/main.ts`, que
+transformaria "porta ocupada" ou "banco fora do ar" numa `unhandled rejection` com
+rastro de pilha, em vez de uma mensagem e um código de saída.
+
 ### Fronteiras entre camadas, também automáticas
 
 O recurso mais valioso do Nx aqui é `@nx/enforce-module-boundaries`. Com tags nos
