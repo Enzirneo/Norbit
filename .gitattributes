@@ -1,0 +1,25 @@
+# Normaliza o fim de linha: LF no repositório, independente do sistema de quem
+# clona. Sem isso, um arquivo criado no Windows chega com CRLF no CI (Ubuntu) e
+# quebra scripts shell e hooks do git.
+* text=auto eol=lf
+
+# Arquivos que o Windows exige em CRLF.
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+*.ps1   text eol=crlf
+
+# Binários: nunca converter.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.webp  binary
+*.ico   binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary
+*.pdf   binary
+
+# Não poluir o diff do PR com arquivos gerados.
+package-lock.json  linguist-generated=true -diff
