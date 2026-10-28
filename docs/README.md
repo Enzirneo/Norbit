@@ -5,32 +5,50 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 
 ## Índice
 
-| Documento | Conteúdo |
-|---|---|
-| [01 — Visão e Escopo](01-visao-e-escopo.md) | O que o Norbit é, para quem, o que entra no MVP e o que fica fora |
-| [02 — Arquitetura](02-arquitetura.md) | Stack, monorepo, camadas, Docker, autenticação, tempo real |
-| [03 — Modelo de Dados](03-modelo-de-dados.md) | Entidades, relações, decisões de modelagem, índices |
-| [04 — Design System](04-design-system.md) | Tema orbital, tokens, customização por usuário, motion |
-| [05 — Roadmap](05-roadmap.md) | Fases de execução, ordem de implementação, critérios de pronto |
-| [06 — Fluxo de Trabalho](06-fluxo-de-trabalho.md) | Branches, commits, PRs, CI, TDD e Clean Code |
+| Documento                                         | Conteúdo                                                          |
+| ------------------------------------------------- | ----------------------------------------------------------------- |
+| [01 — Visão e Escopo](01-visao-e-escopo.md)       | O que o Norbit é, para quem, o que entra no MVP e o que fica fora |
+| [02 — Arquitetura](02-arquitetura.md)             | Stack, monorepo, camadas, Docker, autenticação, tempo real        |
+| [03 — Modelo de Dados](03-modelo-de-dados.md)     | Entidades, relações, decisões de modelagem, índices               |
+| [04 — Design System](04-design-system.md)         | Tema orbital, tokens, customização por usuário, motion            |
+| [05 — Roadmap](05-roadmap.md)                     | Fases de execução, ordem de implementação, critérios de pronto    |
+| [06 — Fluxo de Trabalho](06-fluxo-de-trabalho.md) | Branches, commits, PRs, CI, TDD e Clean Code                      |
 
 ## Estado atual
 
-Nada de produto foi implementado ainda. O repositório contém:
+**Fase 0 concluída.** O monorepo está de pé e o banco criado; ainda não há código de
+produto. Ver o [roadmap](05-roadmap.md).
 
-- `docs/` — este planejamento
-- `prisma/schema.prisma` — o esquema do banco, validado com `prisma validate`
-- `prisma/migrations/` — a migration inicial em SQL, pronta para aplicar
-- `prisma.config.ts` — configuração do Prisma 7 (onde a URL do banco agora vive)
-- `docker-compose.yml` — Postgres, Redis, Adminer e Mailpit, validado com
-  `docker compose config`
-- `.env.example` — todas as variáveis de ambiente previstas
-- `.github/workflows/ci.yml` — pipeline de lint, teste, build e E2E
-- `.github/pull_request_template.md` — checklist de PR
-- `commitlint.config.js` — validação das mensagens de commit
+```
+norbit/
+├─ apps/
+│  ├─ web/            Angular 22 + Tailwind 4
+│  ├─ api/            NestJS 11
+│  └─ web-e2e/        Playwright
+├─ libs/
+│  ├─ domain/         regras puras: recorrência, permissões, conflitos
+│  ├─ contracts/      DTOs e schemas compartilhados
+│  └─ design-tokens/  tokens em TS, com o CSS derivado deles
+├─ prisma/            schema, migration e seed
+├─ tools/             gerador de tokens
+└─ docs/              este planejamento
+```
+
+Comandos:
+
+```bash
+docker compose up -d           # Postgres, Redis, Adminer, Mailpit
+npm install
+npm run db:generate            # Prisma Client
+npm run db:migrate             # aplica a migration
+npm run db:seed                # dados de desenvolvimento
+npm run tokens:build           # regera o CSS dos design tokens
+npx nx run-many -t serve       # sobe web e api
+npx nx affected -t lint test   # o que a sua mudança atingiu
+```
+
 Fora do versionamento, por decisão: `anthropic-model-router/` é ferramenta interna de
-apoio ao desenvolvimento, não faz parte do produto, e está no `.gitignore`. Ele existe
-na sua máquina mas não vai para o repositório remoto.
+apoio ao desenvolvimento, não faz parte do produto, e está no `.gitignore`.
 
 ## Decisões já fechadas
 

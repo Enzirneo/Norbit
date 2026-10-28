@@ -1,0 +1,2 @@
+npx --no -- nx format:check
+npx --no -- nx affected -t lint --parallel=3
