@@ -65,13 +65,16 @@ mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde. ✅
 
 ## Fase 1 — Contas e identidade · ~4 dias
 
-- [ ] Cadastro, login, logout, refresh com rotação e detecção de reúso
-- [ ] Argon2id para senhas, `AuthGuard` e `CurrentUser` decorator no Nest
+- [x] Cadastro, login, logout, refresh com rotação e detecção de reúso
+- [x] Argon2id para senhas, `AuthGuard` e decorator `UsuarioAtual` no Nest
+- [x] `UserSettings` criado automaticamente junto com a conta
 - [ ] Interceptor Angular que renova o access token de forma transparente
 - [ ] Rotas protegidas por guard, redirecionamento após login
 - [ ] Perfil: nome de exibição, handle, avatar, fuso horário
-- [ ] `UserSettings` criado automaticamente junto com a conta
 - [ ] Recuperação de senha por e-mail (Mailpit no Docker para testar sem enviar nada)
+
+O desenho e o que foi verificado rodando estão em
+[07 — Autenticação](07-autenticacao.md).
 
 **Pronto quando:** criar conta, fechar o navegador, reabrir e continuar logado.
 

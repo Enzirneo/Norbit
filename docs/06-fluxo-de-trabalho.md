@@ -290,6 +290,37 @@ Princípios viram discussão; limites viram CI. Então a maior parte disto está
 }
 ```
 
+### O GitGuardian também é um check, e ele reclama de fixture
+
+O repositório é público e o GitGuardian roda em todo PR. Ele já reprovou um PR por
+**duas senhas de teste** em `cadastro.spec.ts` — uma cadeia curta com símbolo e dígito
+e uma palavra única, ambas fixtures, nenhuma um segredo. (Não as reproduzo aqui: citar
+o valor num documento o faz ser apontado de novo, só noutro arquivo.)
+
+A resposta não foi ignorar o alarme. Primeiro conferir que nada real vazou:
+
+```bash
+# o .env alguma vez entrou no histórico?
+git log --all --name-only --pretty=format: | sort -u | grep -E '^\.env$'
+
+# o segredo local aparece em algum arquivo rastreado?
+git grep -F "$(grep '^JWT_ACCESS_SECRET=' .env | sed 's/^[^=]*="//;s/"$//')" HEAD
+```
+
+Depois, montar as senhas de teste em tempo de execução, em vez de escrevê-las como
+cadeia literal atribuída ao campo de senha. Parece cerimônia, e tem uma razão prática:
+um check que falha sempre é um check que ninguém lê, e o dia em que um segredo de
+verdade escapar o alarme precisa chamar atenção.
+
+> Detalhe que vale guardar: o detector olha o **nome do campo** à esquerda da
+> atribuição. A primeira tentativa de corrigir isto colocou um comentário explicando o
+> problema e citando o nome do campo — e o comentário foi apontado como segredo. Ao
+> escrever sobre credenciais, descreva o campo em vez de nomeá-lo em código.
+
+Padrões que o detector pegou: palavra única e cadeia curta com símbolo e dígito.
+Frases de várias palavras passaram. Não vale confiar nessa distinção — vale não
+escrever o literal, em nenhum arquivo, nem em comentário, nem em documentação.
+
 ### Regras que precisam do tipo, e a pegadinha do glob
 
 Cinco das regras acima só funcionam com informação de tipo, não só de sintaxe: o ESLint
