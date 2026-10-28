@@ -37,6 +37,12 @@ jobs:
     needs: guard
     if: needs.guard.outputs.ready == 'true'
     runs-on: ubuntu-latest
+
+    # O `prisma generate` não conecta no banco, mas o prisma.config.ts resolve
+    # DATABASE_URL de forma estrita e aborta se ela faltar. Valor de fachada.
+    env:
+      DATABASE_URL: postgresql://nao-conecta/placeholder
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -47,6 +53,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
+      # O Prisma Client não é versionado: código gerado em git vira conflito
+      # de merge a cada alteração do schema. Sem este passo, `@norbit/db` não
+      # existe e lint, test e build falham por módulo não encontrado.
+      - run: npm run db:generate
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx format:check
@@ -96,6 +106,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
+      # O Prisma Client não é versionado: código gerado em git vira conflito
+      # de merge a cada alteração do schema. Sem este passo, `@norbit/db` não
+      # existe e lint, test e build falham por módulo não encontrado.
+      - run: npm run db:generate
       - run: npx prisma migrate deploy
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected -t test --parallel=3 --coverage
@@ -110,6 +124,11 @@ jobs:
     needs: [guard, lint, test]
     if: needs.guard.outputs.ready == 'true'
     runs-on: ubuntu-latest
+
+    # Idem ao lint: só para o `prisma generate` conseguir ler a config.
+    env:
+      DATABASE_URL: postgresql://nao-conecta/placeholder
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -119,6 +138,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
+      # O Prisma Client não é versionado: código gerado em git vira conflito
+      # de merge a cada alteração do schema. Sem este passo, `@norbit/db` não
+      # existe e lint, test e build falham por módulo não encontrado.
+      - run: npm run db:generate
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected -t build --parallel=3 --configuration=production
 
@@ -151,6 +174,10 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
+      # O Prisma Client não é versionado: código gerado em git vira conflito
+      # de merge a cada alteração do schema. Sem este passo, `@norbit/db` não
+      # existe e lint, test e build falham por módulo não encontrado.
+      - run: npm run db:generate
       - run: npx playwright install --with-deps chromium
       - run: npx prisma migrate deploy && npx prisma db seed
       - run: npx nx e2e web-e2e

@@ -2,6 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "../../dist/out-tsc",
+    // A raiz do workspace, e não `src`: a partir do momento em que a api
+    // importa uma lib (`@norbit/db`), os arquivos dela ficam fora de
+    // `apps/api` e o TypeScript recusa com TS6059. Quem emite o bundle é o
+    // webpack, então o layout de `outDir` aqui não tem efeito prático.
+    "rootDir": "../../",
     "module": "commonjs",
     "types": ["node"],
     "experimentalDecorators": true,

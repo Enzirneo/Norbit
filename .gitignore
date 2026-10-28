@@ -45,4 +45,4 @@ vitest.config.*.timestamp*
 .vitest
 
 # Prisma Client e gerado por `prisma generate`, nao versionado.
-prisma/generated/
+libs/db/src/generated/

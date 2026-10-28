@@ -16,8 +16,8 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 
 ## Estado atual
 
-**Fase 0 concluída.** O monorepo está de pé e o banco criado; ainda não há código de
-produto. Ver o [roadmap](05-roadmap.md).
+**Fase 1 em andamento.** O monorepo está de pé, o banco criado e o `PrismaService`
+ligado à api. Ver o [roadmap](05-roadmap.md).
 
 ```
 norbit/
@@ -28,6 +28,7 @@ norbit/
 ├─ libs/
 │  ├─ domain/         regras puras: recorrência, permissões, conflitos
 │  ├─ contracts/      DTOs e schemas compartilhados
+│  ├─ db/             Prisma Client e PrismaService — só a api alcança
 │  └─ design-tokens/  tokens em TS, com o CSS derivado deles
 ├─ prisma/            schema, migration e seed
 ├─ tools/             gerador de tokens

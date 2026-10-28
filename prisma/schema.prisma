@@ -14,12 +14,15 @@
 // `prisma.config.ts`, na raiz do projeto.
 generator client {
   provider = "prisma-client"
-  // O gerador do Prisma 7 emite TypeScript no diretorio de saida, e nao um
-  // pacote compilado em node_modules — por isso `@prisma/client` nao reexporta
-  // mais nada. A saida fica aqui, fora do controle de versao (e regerada por
-  // `prisma generate`). Na Fase 1 ela se torna a lib @norbit/db, consumida pelo
-  // PrismaService do Nest.
-  output   = "./generated/client"
+  // O gerador do Prisma 7 emite TypeScript no diretório de saída, e não um
+  // pacote compilado em node_modules — por isso `@prisma/client` não reexporta
+  // mais nada.
+  //
+  // A saída fica dentro da lib @norbit/db, que é quem reexporta o client para o
+  // resto do monorepo. Fora do controle de versão e regerada por
+  // `npm run db:generate`: código gerado versionado vira conflito de merge a
+  // cada alteração do schema, e fica desatualizado em silêncio.
+  output   = "../libs/db/src/generated/client"
 }
 
 datasource db {

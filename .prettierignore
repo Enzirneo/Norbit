@@ -5,3 +5,6 @@
 /.nx/workspace-data
 .nx/self-healing
 .angular
+
+# Código gerado pelo Prisma: não se formata nem se revisa.
+libs/db/src/generated

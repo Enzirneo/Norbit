@@ -51,8 +51,10 @@ mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde. ✅
    propósito — ele só roda quando a base do PR é `main` e até agora sempre apareceu
    como `skipping`, então exigi-lo travaria o próximo PR de release sem nenhuma prova
    de que passa. Entra depois que rodar verde uma vez.
-2. **A lib `@norbit/db` entra na Fase 1.** O Prisma Client gerado vive hoje em
-   `prisma/generated/`; o `PrismaService` do Nest vai consumi-lo de uma lib própria.
+2. ~~**A lib `@norbit/db` entra na Fase 1.**~~ ✅ Feito: o gerador agora escreve em
+   `libs/db/src/generated/`, a lib reexporta o client, e o `PrismaService` está ligado
+   ao `AppModule`. Só a tag `scope:api` alcança `scope:db` — verificado com imports
+   plantados em `web` e em `domain`, ambos rejeitados.
 3. ~~**Nenhuma regra type-aware do ESLint está ativa.**~~ ✅ Resolvido na branch
    `feat/eslint-type-aware`, antes de qualquer código de serviço. Cinco regras ativas
    (`no-floating-promises`, `no-misused-promises`, `await-thenable`, `require-await`,
