@@ -17,10 +17,17 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 
 ## Estado atual
 
-**Fase 1 em andamento.** Monorepo de pé, banco criado, e a autenticação do servidor
-pronta: cadastro, login, saída e renovação com rotação e detecção de reúso. Falta o
-lado do Angular. Ver o [roadmap](05-roadmap.md) e a
-[documentação da autenticação](07-autenticacao.md).
+**Fase 1 em andamento.** Monorepo de pé, banco criado, e a autenticação funcionando de
+ponta a ponta: cadastro, login, saída, renovação com rotação e detecção de reúso, mais
+o interceptor e os guards no Angular. As telas existem, mas são **cruas de propósito** —
+o visual é o próximo passo. Falta perfil e recuperação de senha.
+
+Ver o [roadmap](05-roadmap.md) e a [documentação da autenticação](07-autenticacao.md).
+
+```bash
+docker compose up -d
+npx nx run-many -t serve        # api em :3000, web em :4200
+```
 
 ```
 norbit/

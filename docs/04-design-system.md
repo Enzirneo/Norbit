@@ -11,8 +11,8 @@ cores literais.
 gradientes muito sutis, movimento circular e contínuo, pontos de luz. Não é HUD de
 ficção científica, não tem fonte futurista, não tem borda neon piscando.
 
-O teste para qualquer decisão visual: *isso ainda deixa a agenda legível em dois
-segundos?* Se a resposta for não, o enfeite sai.
+O teste para qualquer decisão visual: _isso ainda deixa a agenda legível em dois
+segundos?_ Se a resposta for não, o enfeite sai.
 
 Três lugares concentram a identidade, e o resto da interface fica calmo:
 
@@ -26,12 +26,12 @@ Três lugares concentram a identidade, e o resto da interface fica calmo:
 
 Temático com moderação. Usado na interface:
 
-| Conceito | Nome na interface |
-|---|---|
-| Agenda | **Órbita** |
-| Conjunto de pessoas com quem você compartilha | **Constelação** |
-| Visão geral do dia | **Trajetória** |
-| Estado vazio | "Nada em órbita hoje" |
+| Conceito                                      | Nome na interface     |
+| --------------------------------------------- | --------------------- |
+| Agenda                                        | **Órbita**            |
+| Conjunto de pessoas com quem você compartilha | **Constelação**       |
+| Visão geral do dia                            | **Trajetória**        |
+| Estado vazio                                  | "Nada em órbita hoje" |
 
 Evento continua "evento" e tarefa continua "tarefa". Renomear o que o usuário faz 20
 vezes por dia só cria atrito.
@@ -54,24 +54,24 @@ semânticos; nenhum componente é tocado.
 ```css
 /* Espaço profundo */
 --space-900: #070812;
---space-800: #0B0D17;
---space-700: #13162A;
---space-600: #1C2038;
---space-500: #2A2F4A;
+--space-800: #0b0d17;
+--space-700: #13162a;
+--space-600: #1c2038;
+--space-500: #2a2f4a;
 
 /* Poeira estelar (neutros frios) */
---dust-400: #4A5070;
---dust-300: #6E7595;
---dust-200: #9AA0BC;
---dust-100: #C9CDE0;
---dust-000: #F4F5FA;
+--dust-400: #4a5070;
+--dust-300: #6e7595;
+--dust-200: #9aa0bc;
+--dust-100: #c9cde0;
+--dust-000: #f4f5fa;
 
 /* Acentos orbitais */
---nebula:  #6D7CFF;   /* padrão */
---aurora:  #4ADEBB;
---solar:   #FFB357;
---pulsar:  #FF6B8A;
---cosmos:  #A97BFF;
+--nebula: #6d7cff; /* padrão */
+--aurora: #4adebb;
+--solar: #ffb357;
+--pulsar: #ff6b8a;
+--cosmos: #a97bff;
 ```
 
 ### Semânticos
@@ -95,12 +95,12 @@ semânticos; nenhum componente é tocado.
 
 Cada preset redefine os semânticos. Quatro no MVP, escolhidos em `UserSettings.themePreset`:
 
-| Preset | Caráter |
-|---|---|
-| `nebula` | Escuro azul-violeta — o padrão |
+| Preset    | Caráter                              |
+| --------- | ------------------------------------ |
+| `nebula`  | Escuro azul-violeta — o padrão       |
 | `eclipse` | Escuro quase preto, máximo contraste |
-| `dawn` | Claro, quente, fundo creme |
-| `vacuum` | Claro, neutro frio, mínimo |
+| `dawn`    | Claro, quente, fundo creme           |
+| `vacuum`  | Claro, neutro frio, mínimo           |
 
 Além do preset, o usuário escolhe livremente a **cor de acento** (`accentColor`). Ela
 entra como custom property no `<html>`, e as variações (`hover`, `muted`, `glow`) são
@@ -131,38 +131,40 @@ das linhas da grade. Nenhum componente conhece a densidade; todos leem
 
 ```ts
 export const ease = {
-  orbit:  'cubic-bezier(0.34, 1.26, 0.64, 1)',  // elástico leve: entradas
-  settle: 'cubic-bezier(0.22, 1, 0.36, 1)',     // desaceleração: saídas, painéis
-  linear: 'linear',                              // só para progresso e rotação contínua
+  orbit: 'cubic-bezier(0.34, 1.26, 0.64, 1)', // elástico leve: entradas
+  settle: 'cubic-bezier(0.22, 1, 0.36, 1)', // desaceleração: saídas, painéis
+  linear: 'linear', // só para progresso e rotação contínua
 };
 
 export const duration = {
-  instant: 100,  // feedback de toque
-  quick:   180,  // hover, foco, checkbox
-  base:    240,  // modais, painéis, trocas de aba
-  slow:    320,  // troca de visão mês↔semana
+  instant: 100, // feedback de toque
+  quick: 180, // hover, foco, checkbox
+  base: 240, // modais, painéis, trocas de aba
+  slow: 320, // troca de visão mês↔semana
 };
 ```
 
 ### Momentos que recebem motion de verdade
 
-| Momento | Animação |
-|---|---|
-| Troca mês ↔ semana ↔ dia | Grade se reorganiza com stagger por coluna, 320 ms |
-| Abrir detalhe do evento | Cartão cresce da posição clicada (origem compartilhada) |
-| Criar evento | Entra em arco a partir do cursor, com brilho que decai |
-| Arrastar evento | Segue o ponteiro com leve atraso e sombra que cresce |
-| Concluir tarefa | Risco que corre da esquerda, opacidade cai, item recolhe |
-| Linha de "agora" | Ponto pulsando a cada 3 s, infinito |
-| Carregamento | Esqueleto com brilho orbital percorrendo, não spinner |
-| Navegação entre páginas | View Transitions API, com fallback para Angular Animations |
+| Momento                  | Animação                                                   |
+| ------------------------ | ---------------------------------------------------------- |
+| Troca mês ↔ semana ↔ dia | Grade se reorganiza com stagger por coluna, 320 ms         |
+| Abrir detalhe do evento  | Cartão cresce da posição clicada (origem compartilhada)    |
+| Criar evento             | Entra em arco a partir do cursor, com brilho que decai     |
+| Arrastar evento          | Segue o ponteiro com leve atraso e sombra que cresce       |
+| Concluir tarefa          | Risco que corre da esquerda, opacidade cai, item recolhe   |
+| Linha de "agora"         | Ponto pulsando a cada 3 s, infinito                        |
+| Carregamento             | Esqueleto com brilho orbital percorrendo, não spinner      |
+| Navegação entre páginas  | View Transitions API, com fallback para Angular Animations |
 
 ### Acessibilidade do movimento
 
 Duas chaves, e as duas valem:
 
 ```css
-@media (prefers-reduced-motion: reduce) { /* reduz tudo a fades de 100 ms */ }
+@media (prefers-reduced-motion: reduce) {
+  /* reduz tudo a fades de 100 ms */
+}
 ```
 
 e `UserSettings.reducedMotion`, para quem quer desligar sem mexer no sistema. A
@@ -187,6 +189,30 @@ nenhum componente decide isso sozinho, senão a opção vaza em algum lugar.
   `N` novo evento, `Cmd/Ctrl+K` paleta de comandos
 - Alvos de toque de 44×44 px mínimo — a visão de mês no celular é o maior risco aqui
 - Foco visível e consistente, usando `--border-focus`
+
+### Contrastes já medidos, e um token que não serve para texto
+
+Calculados sobre `space-800`, o fundo padrão do tema escuro. Não estimados: computados
+pela fórmula de luminância relativa da WCAG.
+
+| Uso              | Par                          | Razão    | AA texto (4.5:1) |
+| ---------------- | ---------------------------- | -------- | ---------------- |
+| Texto principal  | `dust-100` sobre `space-800` | 12.26    | ✅               |
+| Texto secundário | `dust-200` sobre `space-800` | 7.50     | ✅               |
+| Texto secundário | `dust-300` sobre `space-800` | **4.28** | ❌ **falha**     |
+| Mensagem de erro | `solar` sobre `space-800`    | 10.92    | ✅               |
+| Link             | `nebula` sobre `space-800`   | 5.51     | ✅               |
+| Texto em botão   | `space-900` sobre `nebula`   | 5.68     | ✅               |
+| Texto em campo   | `dust-100` sobre `space-700` | 11.30    | ✅               |
+
+> **`dust-300` não é um token de texto.** Parece ser — é um neutro de meio-tom, e foi o
+> que eu usei por reflexo nas primeiras telas de autenticação. Dá 4.28:1, que reprova.
+> Serve para **bordas e divisores**, onde o mínimo é 3:1. Texto secundário é
+> `dust-200`.
+>
+> Isto foi descoberto calculando, não olhando: a 4.28:1 o texto parece perfeitamente
+> legível para quem tem visão boa num monitor bom. É exatamente o tipo de falha que a
+> auditoria da Fase 7 encontraria tarde, com a interface inteira já construída em cima.
 
 ## Componentes do MVP
 
