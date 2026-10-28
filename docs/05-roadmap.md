@@ -68,8 +68,8 @@ mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde. ✅
 - [x] Cadastro, login, logout, refresh com rotação e detecção de reúso
 - [x] Argon2id para senhas, `AuthGuard` e decorator `UsuarioAtual` no Nest
 - [x] `UserSettings` criado automaticamente junto com a conta
-- [ ] Interceptor Angular que renova o access token de forma transparente
-- [ ] Rotas protegidas por guard, redirecionamento após login
+- [x] Interceptor Angular que renova o access token de forma transparente
+- [x] Rotas protegidas por guard, redirecionamento após login
 - [ ] Perfil: nome de exibição, handle, avatar, fuso horário
 - [ ] Recuperação de senha por e-mail (Mailpit no Docker para testar sem enviar nada)
 

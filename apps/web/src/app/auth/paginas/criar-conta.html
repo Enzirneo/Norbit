@@ -1,0 +1,95 @@
+@let e = erros();
+
+<main
+  class="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-4"
+>
+  <header>
+    <h1 class="text-2xl font-semibold">Criar conta</h1>
+    <p class="mt-1 text-sm text-dust-200">
+      Esta tela ainda é a versão crua. O visual vem no próximo passo.
+    </p>
+  </header>
+
+  <form
+    [formGroup]="formulario"
+    (ngSubmit)="enviar()"
+    class="flex flex-col gap-4"
+  >
+    <label class="flex flex-col gap-1">
+      <span class="text-sm">Como você quer ser chamado</span>
+      <input
+        type="text"
+        formControlName="displayName"
+        autocomplete="name"
+        class="rounded border border-dust-300/30 bg-space-700 px-3 py-2"
+      />
+      @if (e['displayName']) {
+      <span class="text-sm text-solar">{{ e['displayName'] }}</span>
+      }
+    </label>
+
+    <label class="flex flex-col gap-1">
+      <span class="text-sm">Handle</span>
+      <input
+        type="text"
+        formControlName="handle"
+        autocomplete="username"
+        placeholder="enzo"
+        class="rounded border border-dust-300/30 bg-space-700 px-3 py-2"
+      />
+      <span class="text-xs text-dust-200">
+        Letras, números e sublinhado. É como as outras pessoas vão te encontrar.
+      </span>
+      @if (e['handle']) {
+      <span class="text-sm text-solar">{{ e['handle'] }}</span>
+      }
+    </label>
+
+    <label class="flex flex-col gap-1">
+      <span class="text-sm">E-mail</span>
+      <input
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        class="rounded border border-dust-300/30 bg-space-700 px-3 py-2"
+      />
+      @if (e['email']) {
+      <span class="text-sm text-solar">{{ e['email'] }}</span>
+      }
+    </label>
+
+    <label class="flex flex-col gap-1">
+      <span class="text-sm">Senha</span>
+      <input
+        type="password"
+        formControlName="password"
+        autocomplete="new-password"
+        class="rounded border border-dust-300/30 bg-space-700 px-3 py-2"
+      />
+      <span class="text-xs text-dust-200">
+        Pelo menos 12 caracteres. Uma frase curta serve, e é melhor que
+        símbolos.
+      </span>
+      @if (e['password']) {
+      <span class="text-sm text-solar">{{ e['password'] }}</span>
+      }
+    </label>
+
+    @if (e['formulario']) {
+    <p role="alert" class="text-sm text-solar">{{ e['formulario'] }}</p>
+    }
+
+    <button
+      type="submit"
+      [disabled]="enviando()"
+      class="rounded bg-nebula px-3 py-2 font-medium text-space-900 disabled:opacity-60"
+    >
+      {{ enviando() ? 'Criando…' : 'Criar conta' }}
+    </button>
+  </form>
+
+  <p class="text-sm text-dust-200">
+    Já tem conta?
+    <a routerLink="/entrar" class="text-nebula underline">Entrar</a>
+  </p>
+</main>

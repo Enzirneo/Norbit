@@ -160,14 +160,85 @@ Não presumido — executado contra a API de pé e o Postgres do `docker compose
 Mais 15 testes automatizados em `apps/api` (integração, banco real) e 6 na regra pura
 de `libs/domain`.
 
+## O lado do cliente
+
+### Onde o access token vive, e onde não vive
+
+Em memória, num campo privado do `AuthService`. **Nem `localStorage`, nem
+`sessionStorage`** — os dois são legíveis por JavaScript, e aí um XSS leva o token
+embora.
+
+O que sobrevive a recarregar a página é o cookie `httpOnly`, que o script não alcança.
+Por isso a aplicação não lê um token guardado na subida: ela troca o cookie por um
+token novo, com `provideAppInitializer` rodando **antes** do roteamento. Sem esse
+inicializador, o guard veria "não autenticado" a cada recarga e jogaria a pessoa para o
+login mesmo com o cookie válido — e um link direto para uma página interna nunca
+funcionaria numa aba nova.
+
+### A armadilha da renovação concorrente
+
+Esta é a parte que mais fácil passa despercebida.
+
+Cada refresh é de uso único e rotaciona. Se cinco requisições recebem `401` ao mesmo
+tempo e cada uma dispara a sua renovação, a segunda apresenta um token que a primeira
+já revogou — **a aplicação aciona a detecção de reúso do servidor contra si mesma** e
+derruba a sessão de quem não fez nada de errado.
+
+A defesa é compartilhar a renovação em curso: dez `401` simultâneos geram uma
+renovação, não dez. Há um teste que falha se isso regredir, e a ordem dos operadores
+importa:
+
+```ts
+.pipe(
+  map(/* guarda o token */),
+  catchError(/* renovação recusada = sessão morta: limpa */),
+  finalize(/* libera o campo quando a requisição termina */),
+  shareReplay({ bufferSize: 1, refCount: false }),
+)
+```
+
+O `finalize` vem **antes** do `shareReplay` de propósito. Depois dele, correria a cada
+desinscrição em vez de ao fim da requisição, e o token ficaria em cache além do prazo.
+
+### Proxy no dev server, em vez de CORS
+
+O `apps/web/proxy.conf.json` manda `/api` para a porta 3000, então o navegador vê tudo
+na mesma origem: sem CORS, sem `SameSite` atravessado, e igual ao que vai acontecer em
+produção, onde web e api serão subdomínios do mesmo domínio. Verificado — o cookie
+chega pelo proxy com os atributos certos:
+
+```
+set-cookie: norbit_refresh=…; Path=/api/auth; Expires=…; HttpOnly; SameSite=Strict
+```
+
+### O guard é de navegação, não de segurança
+
+Quem decide o que cada pessoa pode ver é a API. O guard existe para não mostrar uma
+tela que vai falhar, e para guardar o destino em `?voltarPara=` — sem isso, abrir um
+link de evento recebido por mensagem faria a pessoa entrar e cair na página inicial,
+tendo de procurar o evento de novo.
+
+Um detalhe que é segurança: `voltarPara` só é aceito se começar com `/`. Um
+`voltarPara=https://outro-site` viraria redirect aberto, e o login do Norbit passaria a
+servir de trampolim.
+
+### As telas são cruas de propósito
+
+`entrar`, `criar-conta` e uma página inicial provisória. Elas existem para provar que a
+sessão funciona de ponta a ponta; o visual é um passo separado, para que um ajuste de
+cor não ameace o refresh token no mesmo PR.
+
+Elas já validam com os **mesmos** schemas Zod que a API aplica, importados de
+`@norbit/contracts`. É o retorno de terem sido escritos ali: uma regra, não duas cópias
+que divergem na primeira alteração.
+
 ## O que ainda falta da Fase 1
 
-- Interceptor no Angular que renova o access token de forma transparente
-- Telas de cadastro e login, com guard de rota e redirecionamento
 - Perfil: nome de exibição, handle, avatar, fuso horário
 - Recuperação de senha por e-mail (Mailpit já está no `docker-compose`)
 - Listar e encerrar sessões ativas (o `userAgent` e o `ipAddress` já são gravados para
   isso)
+- O visual de verdade, com o design system do [04](04-design-system.md)
 
 ## Decisão deixada em aberto, de propósito
 
