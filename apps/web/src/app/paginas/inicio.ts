@@ -11,12 +11,17 @@ import {
   signal,
 } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../auth/auth.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
+import { Botao } from '../ui/botao';
+import { FundoOrbital } from '../ui/fundo-orbital';
+import { Marca } from '../ui/marca';
 
 @Component({
   selector: 'nb-inicio',
+  imports: [Botao, FundoOrbital, Marca],
   templateUrl: './inicio.html',
+  styleUrl: './inicio.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Inicio {

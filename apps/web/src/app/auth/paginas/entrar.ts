@@ -7,6 +7,9 @@ import {
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { loginSchema } from '@norbit/contracts';
+import { Botao } from '../../ui/botao';
+import { Campo } from '../../ui/campo';
+import { Moldura } from './moldura';
 import { AuthService } from '../auth.service';
 import {
   errosDaApi,
@@ -16,7 +19,7 @@ import {
 
 @Component({
   selector: 'nb-entrar',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
   templateUrl: './entrar.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

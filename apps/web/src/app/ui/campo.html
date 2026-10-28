@@ -1,0 +1,16 @@
+<label class="campo">
+  <span class="rotulo">{{ rotulo() }}</span>
+
+  <ng-content />
+
+  @if (dica() && !erro()) {
+  <span class="dica">{{ dica() }}</span>
+  } @if (erro()) {
+  <!--
+      role="alert" para o leitor de tela anunciar o erro quando ele aparece.
+      A dica é escondida enquanto há erro: duas linhas de texto auxiliar
+      embaixo do mesmo campo competem entre si.
+    -->
+  <span class="erro" role="alert">{{ erro() }}</span>
+  }
+</label>

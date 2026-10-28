@@ -1,0 +1,21 @@
+<!--
+  aria-hidden e sem foco: é decoração. Um leitor de tela anunciando noventa
+  círculos seria ruído puro.
+-->
+<div class="fundo" aria-hidden="true">
+  <div class="brilho"></div>
+
+  <svg class="ceu" viewBox="0 0 100 100" preserveAspectRatio="none">
+    @for (estrela of estrelas; track $index) {
+    <circle
+      [attr.cx]="estrela.x"
+      [attr.cy]="estrela.y"
+      [attr.r]="estrela.r / 10"
+      [attr.opacity]="estrela.opacidade"
+    />
+    }
+  </svg>
+
+  <div class="anel anel-externo"></div>
+  <div class="anel anel-interno"></div>
+</div>

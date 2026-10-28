@@ -1,0 +1,81 @@
+:host {
+  display: contents;
+}
+
+.fundo {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  // Gradiente profundo, mais claro em cima — como céu, não como caixa.
+  background:
+    radial-gradient(
+      120% 80% at 50% -10%,
+      var(--surface-overlay) 0%,
+      transparent 60%
+    ),
+    linear-gradient(180deg, var(--surface-base) 0%, var(--surface-sunken) 100%);
+}
+
+/**
+ * O brilho radial. Deriva do acento, então acompanha a cor que a pessoa
+ * escolher na Fase 4 sem nenhuma alteração aqui.
+ */
+.brilho {
+  position: absolute;
+  top: -30vh;
+  left: 50%;
+  width: 120vmax;
+  height: 120vmax;
+  translate: -50% 0;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--accent) 14%, transparent) 0%,
+    transparent 55%
+  );
+}
+
+.ceu {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  circle {
+    fill: var(--text-primary);
+  }
+}
+
+/**
+ * Os anéis são **estáticos**, e isso é decisão, não esquecimento.
+ *
+ * O `docs/04` fala de movimento circular contínuo, e a tentação era girá-los.
+ * Mas o lugar que o próprio documento reserva para motion são as transições e
+ * o indicador de "agora" — o fundo ele descreve como "estático" e "quase
+ * imperceptível". Um anel girando atrás de uma agenda que a pessoa encara o
+ * dia inteiro disputa atenção com o conteúdo, que é exatamente o que o teste
+ * do documento ("isso ainda deixa a agenda legível em dois segundos?") recusa.
+ *
+ * O achatamento fixo já dá a leitura de órbita vista de ângulo, sem custar
+ * atenção nem bateria.
+ */
+.anel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid color-mix(in oklab, var(--accent) 9%, transparent);
+  border-radius: 50%;
+  translate: -50% -50%;
+  scale: 1 0.62;
+}
+
+.anel-externo {
+  width: 150vmax;
+  height: 150vmax;
+}
+
+.anel-interno {
+  width: 95vmax;
+  height: 95vmax;
+  border-color: color-mix(in oklab, var(--accent) 6%, transparent);
+}

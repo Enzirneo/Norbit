@@ -1,61 +1,45 @@
 @let e = erros();
 
-<main
-  class="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-4"
->
-  <header>
-    <h1 class="text-2xl font-semibold">Entrar no Norbit</h1>
-    <p class="mt-1 text-sm text-dust-200">
-      Esta tela ainda é a versão crua. O visual vem no próximo passo.
-    </p>
-  </header>
-
+<nb-moldura titulo="Entrar" subtitulo="Suas órbitas estão esperando.">
   <form
+    corpo
     [formGroup]="formulario"
     (ngSubmit)="enviar()"
-    class="flex flex-col gap-4"
+    class="flex flex-col gap-5"
   >
-    <label class="flex flex-col gap-1">
-      <span class="text-sm">E-mail</span>
+    <nb-campo rotulo="E-mail" [erro]="e['email']">
       <input
         type="email"
         formControlName="email"
         autocomplete="email"
-        class="rounded border border-dust-300/30 bg-space-700 px-3 py-2"
+        class="nb-entrada"
+        [attr.aria-invalid]="e['email'] ? 'true' : null"
       />
-      @if (e['email']) {
-      <span class="text-sm text-solar">{{ e['email'] }}</span>
-      }
-    </label>
+    </nb-campo>
 
-    <label class="flex flex-col gap-1">
-      <span class="text-sm">Senha</span>
+    <nb-campo rotulo="Senha" [erro]="e['password']">
       <input
         type="password"
         formControlName="password"
         autocomplete="current-password"
-        class="rounded border border-dust-300/30 bg-space-700 px-3 py-2"
+        class="nb-entrada"
+        [attr.aria-invalid]="e['password'] ? 'true' : null"
       />
-      @if (e['password']) {
-      <span class="text-sm text-solar">{{ e['password'] }}</span>
-      }
-    </label>
+    </nb-campo>
 
     @if (e['formulario']) {
-    <p role="alert" class="text-sm text-solar">{{ e['formulario'] }}</p>
+    <p role="alert" class="text-sm text-danger">{{ e['formulario'] }}</p>
     }
 
-    <button
-      type="submit"
-      [disabled]="enviando()"
-      class="rounded bg-nebula px-3 py-2 font-medium text-space-900 disabled:opacity-60"
-    >
-      {{ enviando() ? 'Entrando…' : 'Entrar' }}
+    <button nb-botao type="submit" [ocupado]="enviando()">
+      {{ enviando() ? 'Entrando' : 'Entrar' }}
     </button>
   </form>
 
-  <p class="text-sm text-dust-200">
+  <span rodape>
     Não tem conta?
-    <a routerLink="/criar-conta" class="text-nebula underline">Criar uma</a>
-  </p>
-</main>
+    <a routerLink="/criar-conta" class="text-accent hover:underline">
+      Criar uma
+    </a>
+  </span>
+</nb-moldura>
