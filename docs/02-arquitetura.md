@@ -114,6 +114,14 @@ Autenticação própria, sem provedor externo no MVP:
 OAuth (Google/Apple) fica para depois; o modelo de dados já tem a tabela
 `OAuthAccount` prevista para não exigir migration estrutural na época.
 
+Implementado na Fase 1, no servidor. O desenho detalhado — por que o refresh usa
+SHA-256 e a senha usa Argon2id, por que reúso tem precedência sobre expiração, e o que
+foi verificado contra a API rodando — está em [07 — Autenticação](07-autenticacao.md).
+
+Uma correção ao que esta seção dizia: o cookie é `SameSite=Strict`, não `Lax`. `Lax`
+não é necessário enquanto web e api ficam no mesmo site, e `Strict` é mais restritivo
+de graça.
+
 ## Permissões
 
 Quatro papéis, resolvidos sempre no servidor:
