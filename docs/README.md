@@ -13,11 +13,14 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [04 — Design System](04-design-system.md)         | Tema orbital, tokens, customização por usuário, motion            |
 | [05 — Roadmap](05-roadmap.md)                     | Fases de execução, ordem de implementação, critérios de pronto    |
 | [06 — Fluxo de Trabalho](06-fluxo-de-trabalho.md) | Branches, commits, PRs, CI, TDD e Clean Code                      |
+| [07 — Autenticação](07-autenticacao.md)           | Tokens, rotação, detecção de reúso, senhas e o que foi verificado |
 
 ## Estado atual
 
-**Fase 1 em andamento.** O monorepo está de pé, o banco criado e o `PrismaService`
-ligado à api. Ver o [roadmap](05-roadmap.md).
+**Fase 1 em andamento.** Monorepo de pé, banco criado, e a autenticação do servidor
+pronta: cadastro, login, saída e renovação com rotação e detecção de reúso. Falta o
+lado do Angular. Ver o [roadmap](05-roadmap.md) e a
+[documentação da autenticação](07-autenticacao.md).
 
 ```
 norbit/
