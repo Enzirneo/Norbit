@@ -1,0 +1,104 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--space-unit) * 5);
+  min-height: 100dvh;
+  /* 16px de respiro lateral no celular, que é onde isto mais aperta. */
+  padding: calc(var(--space-unit) * 6) calc(var(--space-unit) * 4);
+}
+
+.cartao {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 6);
+  width: 100%;
+  max-width: 24rem;
+  padding: calc(var(--space-unit) * 8);
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--space-unit) * 4);
+  /* Translúcido, para o campo de estrelas atravessar de leve. O `blur` dá a
+     profundidade que o docs/04 pede sem precisar de sombra pesada. */
+  background-color: color-mix(in oklab, var(--surface-raised) 82%, transparent);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 24px 60px -24px var(--surface-sunken);
+
+  /**
+   * Entrada em arco, não em linha reta.
+   *
+   * É o primeiro princípio de motion do docs/04: "translação pura é o padrão
+   * de todo mundo; o arco é a assinatura". A curva `orbit` é levemente
+   * elástica, então o cartão passa alguns pixels do destino e volta.
+   */
+  animation: entrar-em-arco var(--duration-slow) var(--ease-orbit) both;
+}
+
+@keyframes entrar-em-arco {
+  from {
+    opacity: 0;
+    /* Começa deslocado para o lado e abaixo, com uma leve rotação: o caminho
+       até o lugar final descreve uma curva. */
+    translate: -1.5rem 1.25rem;
+    rotate: -1.5deg;
+    scale: 0.97;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+    rotate: 0deg;
+    scale: 1;
+  }
+}
+
+.cabecalho {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 2);
+}
+
+.titulo {
+  margin: 0;
+  margin-block-start: calc(var(--space-unit) * 2);
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.subtitulo {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+}
+
+.rodape {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/**
+ * Declarado no nível superior, e não dentro do `@media`, de propósito.
+ *
+ * O Angular escopa nomes de keyframes do componente — mas só os de nível
+ * superior. Aninhado num `@media`, o nome fica **global**, e dois componentes
+ * com um `aparecer` cada passariam a disputar a mesma definição. Verificado no
+ * build: aqui sai `@keyframes _ngcontent-…_aparecer`; aninhado, saía
+ * `@keyframes aparecer` puro.
+ */
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* O global já zera a duração; aqui o ponto é tirar o deslocamento e a
+     rotação, para que não haja salto perceptível. */
+  .cartao {
+    animation: aparecer var(--duration-instant) linear both;
+  }
+}

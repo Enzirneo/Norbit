@@ -214,6 +214,69 @@ pela fórmula de luminância relativa da WCAG.
 > legível para quem tem visão boa num monitor bom. É exatamente o tipo de falha que a
 > auditoria da Fase 7 encontraria tarde, com a interface inteira já construída em cima.
 
+## Duas armadilhas do Angular 22 em estilo de componente
+
+As duas foram encontradas lendo o CSS que o build emite, não a documentação — e as
+duas afetam exatamente a arquitetura de tokens deste documento.
+
+### Variáveis CSS em estilo de componente são renomeadas
+
+O compilador reescreve **toda** variável em estilo de componente com um prefixo de
+namespace: `var(--surface-base)` sai do build como `var(--%NS%surface-base)`.
+
+Isso parece quebrar a camada semântica inteira, e não quebra: o renderizador substitui
+`%NS%` por string vazia por padrão, então `--surface-base` resolve normalmente. O
+namespace é opt-in, pensado para embutir a aplicação dentro de outra sem que os tokens
+dos dois colidam.
+
+> **O que isto custa, se um dia for ligado:** cada referência a um token global em
+> estilo de componente passa a precisar do prefixo `--global--`
+> (`var(--global--surface-base)`), que é o escape hatch que o compilador reconhece.
+> Ligar o namespace sem reescrever essas referências deixaria a aplicação sem cor
+> nenhuma, e o sintoma seria "o tema sumiu", não um erro.
+
+### `@keyframes` só é escopado no nível superior
+
+Um `@keyframes` declarado no topo do arquivo de estilo do componente sai do build como
+`@keyframes _ngcontent-…_nome`. **Aninhado dentro de um `@media`, sai como
+`@keyframes nome`** — global, e passível de colisão com qualquer outro componente que
+use o mesmo nome.
+
+A primeira versão da animação de entrada reduzida tinha o `@keyframes` dentro do bloco
+de `prefers-reduced-motion`, e funcionava — porque uso e declaração ficaram os dois sem
+prefixo. Funcionava por coincidência. Agora os keyframes ficam no nível superior e o
+`@media` só redefine qual deles o elemento usa.
+
+## Camada semântica: o que já existe
+
+Implementada em `libs/design-tokens/src/lib/semanticos.ts`, com o preset `nebula`. Os
+outros três são a Fase 4, e cada um vai passar pelo mesmo teste de contraste.
+
+O gerador emite as duas nomenclaturas, com papéis diferentes:
+
+| Saída                                 | Para quê                                                                      |
+| ------------------------------------- | ----------------------------------------------------------------------------- |
+| `--surface-base`, `--text-primary`, … | o contrato do tema, com os nomes deste documento; usado em SCSS de componente |
+| `--color-surface`, `--color-muted`, … | o `@theme` do Tailwind, que gera `bg-surface`, `text-muted`, `border-edge`    |
+
+A segunda existe porque mapear `--text-primary` direto produziria a classe
+`text-text-primary`. Verificado no CSS final, nos três níveis:
+
+```
+.text-danger{color:var(--color-danger)}
+  --color-danger: var(--state-danger)
+    --state-danger: #FF6B8A
+```
+
+### Duas atribuições que saíram de medir, não de escolher
+
+- **`borderDefault` é `dust-300`, não `dust-400`.** O `dust-400` dá 2.47:1 contra a
+  superfície base e reprova o mínimo de 3:1 de um contorno de componente. É o mesmo
+  token que **não** serve para texto: bom para borda, ruim para letra.
+- **`textOnAccent` é `space-900`, não `dust-000`.** Texto claro sobre o acento dá
+  3.23:1 e reprova; texto escuro dá 5.68:1. Botão de acento leva letra escura, mesmo
+  que o instinto diga o contrário.
+
 ## Componentes do MVP
 
 Em `apps/web/src/app/ui`, construídos nesta ordem porque cada um depende dos anteriores:

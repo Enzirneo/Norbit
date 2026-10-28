@@ -1,0 +1,29 @@
+<span class="marca">
+  <svg
+    class="sinal"
+    viewBox="0 0 32 32"
+    role="img"
+    aria-label="Norbit"
+    focusable="false"
+  >
+    <!-- A órbita, achatada: vista de ângulo, não de cima. -->
+    <ellipse
+      cx="16"
+      cy="16"
+      rx="14"
+      ry="7.5"
+      transform="rotate(-20 16 16)"
+      fill="none"
+      stroke="currentColor"
+      stroke-opacity="0.45"
+      stroke-width="1.5"
+    />
+    <!-- O corpo central e o satélite sobre a órbita. -->
+    <circle cx="16" cy="16" r="3.2" fill="currentColor" />
+    <circle cx="28.1" cy="11.2" r="2.1" class="satelite" />
+  </svg>
+
+  @if (!somenteSinal()) {
+  <span class="nome">Norbit</span>
+  }
+</span>

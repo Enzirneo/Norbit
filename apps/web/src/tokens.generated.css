@@ -1,7 +1,8 @@
 /* ARQUIVO GERADO — NÃO EDITE À MÃO.
-   Fonte: libs/design-tokens/src/lib/primitives.ts
+   Fonte: libs/design-tokens/src/lib/{primitives,semanticos}.ts
    Regerar: npm run tokens:build */
 
+/* Camada 1 — primitivos. Nenhum componente deve usá-los direto. */
 @theme {
   --color-space-900: #070812;
   --color-space-800: #0b0d17;
@@ -31,4 +32,46 @@
 
   --ease-orbit: cubic-bezier(0.34, 1.26, 0.64, 1);
   --ease-settle: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* Camada 2, para o Tailwind gerar utilitários legíveis a partir dos
+   semânticos: bg-surface, text-muted, border-edge, bg-accent. */
+  --color-surface: var(--surface-base);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-overlay: var(--surface-overlay);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-primary: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-on-accent: var(--text-on-accent);
+  --color-edge: var(--border-default);
+  --color-edge-subtle: var(--border-subtle);
+  --color-focus: var(--border-focus);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-muted: var(--accent-muted);
+  --color-success: var(--state-success);
+  --color-warning: var(--state-warning);
+  --color-danger: var(--state-danger);
+}
+
+/* Camada 2 — semânticos, com os nomes do docs/04. Trocar de preset
+   redefine este bloco e nenhum componente é tocado. */
+:root {
+  --surface-base: #0b0d17;
+  --surface-raised: #13162a;
+  --surface-overlay: #1c2038;
+  --surface-sunken: #070812;
+  --text-primary: #f4f5fa;
+  --text-secondary: #c9cde0;
+  --text-muted: #9aa0bc;
+  --text-on-accent: #070812;
+  --border-subtle: #1c2038;
+  --border-default: #6e7595;
+  --border-focus: #6d7cff;
+  --accent: #6d7cff;
+  --accent-hover: #8793ff;
+  --accent-muted: #1f2547;
+  --state-success: #4adebb;
+  --state-warning: #ffb357;
+  --state-danger: #ff6b8a;
 }

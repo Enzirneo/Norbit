@@ -1,55 +1,66 @@
 @let u = usuario();
 
-<main
-  class="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-4"
->
-  <header>
-    <h1 class="text-2xl font-semibold">Olá, {{ u?.displayName }}</h1>
-    <p class="mt-1 text-sm text-dust-200">
-      A sessão está de pé. A agenda em si é a Fase 2 — esta página existe só
-      para provar que a autenticação funciona de ponta a ponta.
-    </p>
+<nb-fundo-orbital />
+
+<div class="pagina">
+  <header class="barra">
+    <nb-marca />
+    <button nb-botao aparencia="texto" type="button" (click)="sair()">
+      Sair
+    </button>
   </header>
 
-  <dl
-    class="flex flex-col gap-2 rounded border border-dust-300/30 bg-space-700 p-4 text-sm"
-  >
-    <div class="flex justify-between gap-4">
-      <dt class="text-dust-200">Handle</dt>
-      <dd>&#64;{{ u?.handle }}</dd>
-    </div>
-    <div class="flex justify-between gap-4">
-      <dt class="text-dust-200">E-mail</dt>
-      <dd>{{ u?.email }}</dd>
-    </div>
-    <div class="flex justify-between gap-4">
-      <dt class="text-dust-200">Fuso</dt>
-      <dd>{{ u?.timeZone }}</dd>
-    </div>
-  </dl>
+  <main class="conteudo">
+    <section class="saudacao">
+      <h1 class="titulo">Olá, {{ u?.displayName }}</h1>
+      <p class="subtitulo">
+        A sessão está de pé. A agenda em si é a Fase 2 — esta página existe para
+        provar que a autenticação funciona de ponta a ponta.
+      </p>
+    </section>
 
-  <section class="flex flex-col gap-2">
-    <button
-      type="button"
-      (click)="recarregarPerfil()"
-      class="rounded border border-nebula px-3 py-2 text-sm text-nebula"
-    >
-      Chamar uma rota protegida
-    </button>
-    @if (perfilRecarregado(); as resultado) {
-    <p class="text-sm text-dust-200">{{ resultado }}</p>
-    }
-    <p class="text-xs text-dust-200">
-      Depois de 15 minutos o access token expira. Clicar aqui continua
-      funcionando: o interceptor renova sozinho, sem esta tela saber.
-    </p>
-  </section>
+    <!--
+      Estado vazio com o vocabulário do docs/04: "Nada em órbita hoje".
+      Ele vira a visão de hoje de verdade na Fase 2.
+    -->
+    <section class="vazio">
+      <p class="vazio-titulo">Nada em órbita hoje</p>
+      <p class="vazio-texto">Quando houver agenda, ela aparece aqui.</p>
+    </section>
 
-  <button
-    type="button"
-    (click)="sair()"
-    class="self-start text-sm text-dust-200 underline"
-  >
-    Sair
-  </button>
-</main>
+    <dl class="dados">
+      <div class="linha">
+        <dt>Handle</dt>
+        <dd>&#64;{{ u?.handle }}</dd>
+      </div>
+      <div class="linha">
+        <dt>E-mail</dt>
+        <dd>{{ u?.email }}</dd>
+      </div>
+      <div class="linha">
+        <dt>Fuso</dt>
+        <dd>{{ u?.timeZone }}</dd>
+      </div>
+    </dl>
+
+    <section class="prova">
+      <button
+        nb-botao
+        aparencia="contorno"
+        type="button"
+        (click)="recarregarPerfil()"
+      >
+        Chamar uma rota protegida
+      </button>
+
+      @if (perfilRecarregado(); as resultado) {
+      <p class="prova-resultado">{{ resultado }}</p>
+      }
+
+      <p class="prova-nota">
+        Depois de 15 minutos o access token expira. Clicar aqui continua
+        funcionando: o interceptor renova sozinho, sem esta tela saber.
+      </p>
+    </section>
+  </main>
+</div>

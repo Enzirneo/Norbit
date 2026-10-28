@@ -1,17 +1,15 @@
 /* Estilo global do Norbit.
  *
- * Aqui ficam apenas o reset e as bases que valem para toda a aplicação. A
- * camada semântica de tema, os quatro presets e o fundo orbital entram na
- * Fase 4 — ver docs/04-design-system.md. Os primitivos vêm de
- * tokens.generated.css, carregado antes deste arquivo via tailwind.css.
+ * Aqui ficam o reset, as bases que valem para toda a aplicação e o estilo do
+ * controle de formulário. Os tokens vêm de tokens.generated.css, carregado
+ * antes deste arquivo via tailwind.css — primitivos e camada semântica.
+ *
+ * Os outros três presets (eclipse, dawn, vacuum) e o acento escolhido pela
+ * pessoa entram na Fase 4. Ver docs/04-design-system.md.
  */
 
 :root {
-  /* Acento padrão. Na Fase 4 este valor passa a ser escrito pelo app a partir
-     de UserSettings.accentColor, e as variações saem dele em OKLCH. */
-  --accent: var(--color-nebula);
-
-  color-scheme: dark light;
+  color-scheme: dark;
 }
 
 *,
@@ -28,9 +26,10 @@ body {
 
 body {
   /* Fundo explícito: sem ele, o tema escuro pisca branco no primeiro paint. */
-  background-color: var(--color-space-800);
-  color: var(--color-dust-100);
+  background-color: var(--surface-base);
+  color: var(--text-primary);
   font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -41,8 +40,47 @@ time,
 }
 
 :focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--border-focus);
   outline-offset: 2px;
+}
+
+/* ── Controle de formulário ──────────────────────────────────────────────────
+ *
+ * Global, e não dentro do componente `nb-campo`, porque o controle é conteúdo
+ * projetado: estilizá-lo de dentro exigiria `::ng-deep`, que é depreciado.
+ * Esta é a alternativa honesta — uma classe que a página aplica no input.
+ */
+.nb-entrada {
+  width: 100%;
+  padding: calc(var(--space-unit) * 2.5) calc(var(--space-unit) * 3);
+  border: 1px solid var(--border-default);
+  border-radius: calc(var(--space-unit) * 2);
+  background-color: color-mix(in oklab, var(--surface-sunken) 60%, transparent);
+  color: var(--text-primary);
+  font: inherit;
+  transition:
+    border-color var(--duration-quick) var(--ease-settle),
+    background-color var(--duration-quick) var(--ease-settle);
+
+  &::placeholder {
+    color: var(--text-muted);
+  }
+
+  &:hover:not(:focus) {
+    border-color: var(--text-muted);
+  }
+
+  &:focus {
+    border-color: var(--border-focus);
+    background-color: var(--surface-sunken);
+    /* O `outline` global já marca o foco; aqui a borda reforça sem somar dois
+       anéis concêntricos. */
+    outline-offset: 1px;
+  }
+
+  &[aria-invalid='true'] {
+    border-color: var(--state-danger);
+  }
 }
 
 /* Quem pediu menos movimento recebe menos movimento. A opção manual de

@@ -1,0 +1,100 @@
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--space-unit) * 2);
+  padding: calc(var(--space-unit) * 2.5) calc(var(--space-unit) * 4);
+  border: 1px solid transparent;
+  border-radius: calc(var(--space-unit) * 2);
+  font: inherit;
+  font-weight: 550;
+  line-height: 1.2;
+  cursor: pointer;
+  // `quick` para hover e foco, conforme a tabela de durações do docs/04.
+  transition:
+    background-color var(--duration-quick) var(--ease-settle),
+    border-color var(--duration-quick) var(--ease-settle),
+    color var(--duration-quick) var(--ease-settle),
+    translate var(--duration-quick) var(--ease-settle);
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  // O deslocamento de 1px dá a sensação de pressionar sem mover o layout.
+  &:not(:disabled):active {
+    translate: 0 1px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+}
+
+.botao--solido {
+  background-color: var(--accent);
+  // Letra escura sobre o acento, não clara: medido, dá 5.68:1 contra 3.23:1.
+  color: var(--text-on-accent);
+
+  &:not(:disabled):hover {
+    background-color: var(--accent-hover);
+  }
+}
+
+.botao--contorno {
+  border-color: var(--border-default);
+  background-color: transparent;
+  color: var(--text-primary);
+
+  &:not(:disabled):hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+.botao--texto {
+  padding-inline: calc(var(--space-unit));
+  background-color: transparent;
+  color: var(--text-muted);
+
+  &:not(:disabled):hover {
+    color: var(--text-primary);
+  }
+}
+
+/**
+ * O indicador de carregamento.
+ *
+ * Um ponto percorrendo uma órbita, não um spinner — é o que o docs/04 pede
+ * para estados de carregamento, e é a assinatura do produto aparecendo num
+ * lugar pequeno.
+ */
+.orbita {
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentcolor;
+  border-radius: 50%;
+  border-inline-end-color: transparent;
+  animation: orbitar 700ms linear infinite;
+}
+
+@keyframes orbitar {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .botao {
+    transition-duration: var(--duration-instant);
+  }
+
+  // Sem girar, mas o elemento continua presente: ele comunica "ocupado", e
+  // sumir deixaria o botão inerte sem explicação visual.
+  .orbita {
+    animation: none;
+    opacity: 0.6;
+  }
+}

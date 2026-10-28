@@ -1,0 +1,24 @@
+<nb-fundo-orbital />
+
+<main class="pagina">
+  <div class="cartao">
+    <header class="cabecalho">
+      <nb-marca />
+      <h1 class="titulo">{{ titulo() }}</h1>
+      @if (subtitulo()) {
+      <p class="subtitulo">{{ subtitulo() }}</p>
+      }
+    </header>
+
+    <!--
+      Os dois destinos têm seletor explícito de propósito. Um `<ng-content>`
+      sem seletor captura tudo o que ainda não foi projetado — inclusive o
+      rodapé, que apareceria dentro do cartão.
+    -->
+    <ng-content select="[corpo]" />
+  </div>
+
+  <footer class="rodape">
+    <ng-content select="[rodape]" />
+  </footer>
+</main>
