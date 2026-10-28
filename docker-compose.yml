@@ -1,0 +1,75 @@
+# Norbit — infraestrutura de desenvolvimento local
+#
+# Apenas a infraestrutura roda em container. Angular e NestJS rodam no host via
+# `nx serve`, porque hot reload dentro de container no Windows é lento e o file
+# watching é pouco confiável. Ver docs/02-arquitetura.md.
+#
+#   docker compose up -d
+#   docker compose down          # para, preservando os dados
+#   docker compose down -v       # apaga os volumes também
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: norbit-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-norbit}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-norbit_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-norbit}
+      # Necessário para que a ordenação e a comparação de texto se comportem igual
+      # em qualquer máquina onde o projeto for clonado.
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-norbit} -d ${POSTGRES_DB:-norbit}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: norbit-redis
+    restart: unless-stopped
+    # appendonly garante que os jobs de lembrete agendados sobrevivam a um restart
+    # do container — sem isso, reiniciar o Redis perde os lembretes pendentes.
+    command: redis-server --appendonly yes
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer:latest
+    container_name: norbit-adminer
+    restart: unless-stopped
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+      ADMINER_DESIGN: dracula
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # Captura os e-mails enviados em desenvolvimento (convites, recuperação de senha)
+  # sem entregá-los a ninguém. Interface em http://localhost:8025
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: norbit-mailpit
+    restart: unless-stopped
+    ports:
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+
+volumes:
+  postgres-data:
+  redis-data:

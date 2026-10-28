@@ -1,0 +1,162 @@
+name: CI
+
+# Dispara em todo PR para homologação e produção, e nos pushes diretos a elas
+# (que só devem acontecer via merge de PR — ver docs/06-fluxo-de-trabalho.md).
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  # Os jobs ficam inertes até a Fase 0 criar o package.json, para não encher o
+  # repositório de execuções vermelhas antes de existir código.
+  guard:
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: check
+        run: |
+          if [ -f package.json ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::package.json ainda não existe — CI aguardando a Fase 0."
+          fi
+
+  lint:
+    needs: guard
+    if: needs.guard.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # nx affected compara com a base; precisa do histórico.
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - uses: nrwl/nx-set-shas@v4
+      - run: npx nx affected -t lint --parallel=3
+      - run: npx nx format:check
+
+  test:
+    needs: guard
+    if: needs.guard.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+
+    # Banco real nos testes de integração: mock de Prisma testaria o mock,
+    # não a query. Ver docs/06-fluxo-de-trabalho.md.
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: norbit
+          POSTGRES_PASSWORD: norbit_test
+          POSTGRES_DB: norbit_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://norbit:norbit_test@localhost:5432/norbit_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: ci-secret-nao-usar-em-producao
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx prisma migrate deploy
+      - uses: nrwl/nx-set-shas@v4
+      - run: npx nx affected -t test --parallel=3 --coverage
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage
+          path: coverage/
+          retention-days: 7
+
+  build:
+    needs: [guard, lint, test]
+    if: needs.guard.outputs.ready == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - uses: nrwl/nx-set-shas@v4
+      - run: npx nx affected -t build --parallel=3 --configuration=production
+
+  e2e:
+    needs: [guard, build]
+    # E2E é caro: só no caminho para produção.
+    if: needs.guard.outputs.ready == 'true' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: norbit
+          POSTGRES_PASSWORD: norbit_test
+          POSTGRES_DB: norbit_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://norbit:norbit_test@localhost:5432/norbit_test?schema=public
+      JWT_ACCESS_SECRET: ci-secret-nao-usar-em-producao
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx prisma migrate deploy && npx prisma db seed
+      - run: npx nx e2e web-e2e
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

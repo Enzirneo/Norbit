@@ -1,0 +1,602 @@
+// Norbit — esquema do banco
+// Fonte da verdade do modelo de dados. A migration inicial já está escrita em
+// prisma/migrations/ — aplique com:
+//   docker compose up -d && npx prisma migrate deploy
+//
+// Convenções:
+//   - Toda data/hora é `timestamptz` (@db.Timestamptz). Guardamos sempre em UTC.
+//   - Exclusão é lógica (`deletedAt`) nas entidades que o usuário vê, física nas
+//     tabelas técnicas (sessões, jobs, tokens).
+//   - IDs são UUID v7 gerados pela aplicação: ordenáveis por tempo, o que mantém a
+//     localidade dos índices (ao contrário do UUID v4, que fragmenta o B-tree).
+
+// A URL de conexão NÃO vive mais aqui: desde o Prisma 7 ela fica em
+// `prisma.config.ts`, na raiz do projeto.
+generator client {
+  provider = "prisma-client"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum CalendarRole {
+  OWNER
+  EDITOR
+  CONTRIBUTOR
+  VIEWER
+}
+
+enum CalendarKind {
+  PERSONAL // agenda própria do usuário
+  SHARED   // criada para um grupo
+}
+
+enum Visibility {
+  INHERITED // segue a visibilidade da agenda
+  PRIVATE   // visível apenas para quem criou
+}
+
+enum EventStatus {
+  CONFIRMED
+  TENTATIVE
+  CANCELLED
+}
+
+enum RsvpStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  TENTATIVE
+}
+
+enum TaskPriority {
+  NONE
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum ReminderChannel {
+  PUSH
+  EMAIL
+  IN_APP
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  REVOKED
+  EXPIRED
+}
+
+enum NotificationType {
+  CALENDAR_INVITE
+  EVENT_CREATED
+  EVENT_UPDATED
+  EVENT_CANCELLED
+  TASK_ASSIGNED
+  TASK_COMPLETED
+  REMINDER
+  MEMBER_JOINED
+  DAILY_DIGEST
+}
+
+enum ActivityAction {
+  CREATED
+  UPDATED
+  DELETED
+  COMPLETED
+  JOINED
+  LEFT
+  ROLE_CHANGED
+}
+
+enum ThemeMode {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
+enum CalendarView {
+  MONTH
+  WEEK
+  DAY
+  AGENDA
+}
+
+// ─── Identidade ──────────────────────────────────────────────────────────────
+
+model User {
+  id           String    @id @db.Uuid
+  email        String    @unique @db.Citext
+  // Nulo quando a conta foi criada apenas por OAuth (previsto para o futuro).
+  passwordHash String?
+  handle       String    @unique @db.Citext // @enzo — identificador público curto
+  displayName  String
+  avatarUrl    String?
+  // Fuso do usuário, IANA (ex.: "America/Sao_Paulo"). Usado para renderizar as
+  // datas guardadas em UTC e para calcular a hora do resumo diário.
+  timeZone     String    @default("America/Sao_Paulo")
+  locale       String    @default("pt-BR")
+
+  emailVerifiedAt DateTime? @db.Timestamptz
+  lastSeenAt      DateTime? @db.Timestamptz
+  createdAt       DateTime  @default(now()) @db.Timestamptz
+  updatedAt       DateTime  @updatedAt @db.Timestamptz
+  deletedAt       DateTime? @db.Timestamptz
+
+  settings          UserSettings?
+  sessions          Session[]
+  oauthAccounts     OAuthAccount[]
+  pushSubscriptions PushSubscription[]
+
+  ownedCalendars  Calendar[]         @relation("CalendarOwner")
+  memberships     CalendarMember[]
+  sentInvites     CalendarInvite[]   @relation("InviteSender")
+  createdEvents   Event[]            @relation("EventCreator")
+  rsvps           EventParticipant[]
+  createdTasks    Task[]             @relation("TaskCreator")
+  assignedTasks   Task[]             @relation("TaskAssignee")
+  reminders       Reminder[]
+  notifications   Notification[]
+  activities      Activity[]
+
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model UserSettings {
+  userId String @id @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Aparência
+  theme         ThemeMode    @default(SYSTEM)
+  // Nome do preset orbital (ver docs/04-design-system.md), ex.: "nebula".
+  themePreset   String       @default("nebula")
+  accentColor   String       @default("#6D7CFF") // hex, validado na aplicação
+  // 0 = compacta, 1 = confortável, 2 = espaçosa
+  density       Int          @default(1)
+  reducedMotion Boolean      @default(false)
+
+  // Comportamento do calendário
+  defaultView  CalendarView @default(WEEK)
+  weekStartsOn Int          @default(0) // 0 = domingo … 6 = sábado
+  use24Hour    Boolean      @default(true)
+  dayStartHour Int          @default(7)
+  dayEndHour   Int          @default(23)
+  showWeekends Boolean      @default(true)
+
+  // Notificações
+  pushEnabled       Boolean @default(true)
+  emailEnabled      Boolean @default(false)
+  dailyDigest       Boolean @default(false)
+  dailyDigestHour   Int     @default(8)
+  // Silencia envios fora do intervalo; nulo = sem silêncio.
+  quietHoursStart   Int?
+  quietHoursEnd     Int?
+
+  // Espaço para preferências futuras sem exigir migration a cada ajuste de UI.
+  extra Json @default("{}")
+
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  @@map("user_settings")
+}
+
+model Session {
+  id String @id @db.Uuid
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Apenas o hash do refresh token é persistido; o valor cru vive só no cookie.
+  refreshTokenHash String   @unique
+  // Agrupa os tokens originados de um mesmo login. Detectado reúso de um token já
+  // rotacionado, a família inteira é revogada.
+  familyId         String   @db.Uuid
+  userAgent        String?
+  ipAddress        String?
+  expiresAt        DateTime @db.Timestamptz
+  revokedAt        DateTime? @db.Timestamptz
+  createdAt        DateTime @default(now()) @db.Timestamptz
+
+  @@index([userId, revokedAt])
+  @@index([familyId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+// Previsto para login com Google/Apple. Vazio no MVP; existe para não exigir
+// alteração estrutural quando OAuth entrar.
+model OAuthAccount {
+  id String @id @db.Uuid
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  provider       String // "google" | "apple"
+  providerUserId String
+  createdAt      DateTime @default(now()) @db.Timestamptz
+
+  @@unique([provider, providerUserId])
+  @@index([userId])
+  @@map("oauth_accounts")
+}
+
+// ─── Agendas e compartilhamento ──────────────────────────────────────────────
+
+model Calendar {
+  id String @id @db.Uuid
+
+  ownerId String @db.Uuid
+  owner   User   @relation("CalendarOwner", fields: [ownerId], references: [id])
+
+  name        String
+  description String?
+  kind        CalendarKind @default(PERSONAL)
+  color       String       @default("#6D7CFF")
+  icon        String?      // nome do ícone ou emoji
+  timeZone    String       @default("America/Sao_Paulo")
+  // Exatamente uma agenda por usuário é a padrão, garantido por índice parcial
+  // único (ver observação no fim do arquivo).
+  isDefault   Boolean      @default(false)
+  archivedAt  DateTime?    @db.Timestamptz
+
+  createdAt DateTime  @default(now()) @db.Timestamptz
+  updatedAt DateTime  @updatedAt @db.Timestamptz
+  deletedAt DateTime? @db.Timestamptz
+
+  members    CalendarMember[]
+  invites    CalendarInvite[]
+  events     Event[]
+  tasks      Task[]
+  tags       Tag[]
+  activities Activity[]
+
+  @@index([ownerId, deletedAt])
+  @@map("calendars")
+}
+
+model CalendarMember {
+  calendarId String   @db.Uuid
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  role CalendarRole @default(VIEWER)
+  // Cada membro pode escolher com que cor **ele** vê essa agenda, sem alterar a
+  // cor que os outros veem. É o que torna a sobreposição de agendas legível.
+  colorOverride String?
+  // Oculta a agenda das visões deste membro sem removê-lo dela.
+  isHidden      Boolean  @default(false)
+  // Silencia notificações desta agenda só para este membro.
+  isMuted       Boolean  @default(false)
+  // Ordem na barra lateral, por membro.
+  position      Int      @default(0)
+
+  joinedAt  DateTime @default(now()) @db.Timestamptz
+  updatedAt DateTime @updatedAt @db.Timestamptz
+
+  @@id([calendarId, userId])
+  @@index([userId, isHidden])
+  @@map("calendar_members")
+}
+
+model CalendarInvite {
+  id String @id @db.Uuid
+
+  calendarId String   @db.Uuid
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  invitedById String @db.Uuid
+  invitedBy   User   @relation("InviteSender", fields: [invitedById], references: [id])
+
+  // Nulo quando é convite por link aberto, em vez de dirigido a um e-mail.
+  email     String?      @db.Citext
+  role      CalendarRole @default(VIEWER)
+  tokenHash String       @unique
+  status    InviteStatus @default(PENDING)
+  // Limita quantas pessoas podem entrar por um convite de link; nulo = ilimitado.
+  maxUses   Int?
+  useCount  Int          @default(0)
+
+  expiresAt  DateTime  @db.Timestamptz
+  acceptedAt DateTime? @db.Timestamptz
+  createdAt  DateTime  @default(now()) @db.Timestamptz
+
+  @@index([calendarId, status])
+  @@index([email, status])
+  @@map("calendar_invites")
+}
+
+// ─── Eventos ─────────────────────────────────────────────────────────────────
+
+model Event {
+  id String @id @db.Uuid
+
+  calendarId String   @db.Uuid
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  createdById String @db.Uuid
+  createdBy   User   @relation("EventCreator", fields: [createdById], references: [id])
+
+  title       String
+  description String?
+  location    String?
+  color       String? // sobrescreve a cor da agenda para este evento
+
+  startsAt DateTime @db.Timestamptz
+  endsAt   DateTime @db.Timestamptz
+  isAllDay Boolean  @default(false)
+  // Fuso em que o evento foi criado. Necessário para recorrência correta: "toda
+  // terça às 9h" deve continuar às 9h locais mesmo após mudança de horário de
+  // verão, o que exige saber o fuso de origem — UTC sozinho não basta.
+  timeZone String
+
+  status     EventStatus @default(CONFIRMED)
+  visibility Visibility  @default(INHERITED)
+
+  // ── Recorrência ──
+  // Guardamos a regra (RRULE, RFC 5545) e expandimos as ocorrências sob demanda,
+  // em vez de materializar milhares de linhas. Ex.: "FREQ=WEEKLY;BYDAY=TU,TH".
+  recurrenceRule  String?
+  recurrenceUntil DateTime? @db.Timestamptz // cópia desnormalizada do UNTIL, para filtrar por índice
+
+  // Uma ocorrência destacada da série (o "mover só este" do usuário) é uma linha
+  // própria apontando para a série-mãe, com a data original preservada para que a
+  // expansão saiba suprimir aquela instância.
+  recurrenceParentId String? @db.Uuid
+  recurrenceParent   Event?  @relation("EventSeries", fields: [recurrenceParentId], references: [id], onDelete: Cascade)
+  recurrenceChildren Event[] @relation("EventSeries")
+  originalStartsAt   DateTime? @db.Timestamptz
+
+  // Datas excluídas da série (o "excluir só este"), em ISO-8601 UTC.
+  excludedDates DateTime[] @db.Timestamptz
+
+  // ── Integração externa (previsto, não usado no MVP) ──
+  externalId     String?
+  externalSource String? // "google" | "ics" | "caldav"
+
+  createdAt DateTime  @default(now()) @db.Timestamptz
+  updatedAt DateTime  @updatedAt @db.Timestamptz
+  deletedAt DateTime? @db.Timestamptz
+
+  participants EventParticipant[]
+  reminders    Reminder[]
+  tags         EventTag[]
+
+  // O índice que sustenta a consulta mais frequente do produto: "todos os eventos
+  // destas agendas neste intervalo de datas".
+  @@index([calendarId, startsAt, endsAt])
+  @@index([recurrenceParentId])
+  @@index([calendarId, recurrenceRule, recurrenceUntil])
+  @@index([createdById])
+  @@unique([calendarId, externalSource, externalId])
+  @@map("events")
+}
+
+model EventParticipant {
+  eventId String @db.Uuid
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  status      RsvpStatus @default(PENDING)
+  isOrganizer Boolean    @default(false)
+  respondedAt DateTime?  @db.Timestamptz
+  createdAt   DateTime   @default(now()) @db.Timestamptz
+
+  @@id([eventId, userId])
+  @@index([userId, status])
+  @@map("event_participants")
+}
+
+// ─── Tarefas ─────────────────────────────────────────────────────────────────
+
+model Task {
+  id String @id @db.Uuid
+
+  calendarId String   @db.Uuid
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  createdById String @db.Uuid
+  createdBy   User   @relation("TaskCreator", fields: [createdById], references: [id])
+
+  assigneeId String? @db.Uuid
+  assignee   User?   @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  title    String
+  notes    String?
+  priority TaskPriority @default(NONE)
+
+  dueAt       DateTime? @db.Timestamptz
+  // Tarefa com prazo apenas de data, sem hora definida.
+  isDueAllDay Boolean   @default(false)
+  completedAt DateTime? @db.Timestamptz
+
+  visibility Visibility @default(INHERITED)
+  // Ordenação manual dentro da lista. Float permite inserir entre dois itens sem
+  // reindexar a lista inteira a cada arrastar-e-soltar.
+  position   Float      @default(0)
+
+  parentTaskId String? @db.Uuid
+  parentTask   Task?   @relation("Subtasks", fields: [parentTaskId], references: [id], onDelete: Cascade)
+  subtasks     Task[]  @relation("Subtasks")
+
+  recurrenceRule String?
+
+  createdAt DateTime  @default(now()) @db.Timestamptz
+  updatedAt DateTime  @updatedAt @db.Timestamptz
+  deletedAt DateTime? @db.Timestamptz
+
+  reminders Reminder[]
+  tags      TaskTag[]
+
+  @@index([calendarId, completedAt, dueAt])
+  @@index([assigneeId, completedAt])
+  @@index([parentTaskId])
+  @@map("tasks")
+}
+
+// ─── Etiquetas ───────────────────────────────────────────────────────────────
+
+model Tag {
+  id String @id @db.Uuid
+
+  calendarId String   @db.Uuid
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  name  String
+  color String @default("#8B8FA3")
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  events EventTag[]
+  tasks  TaskTag[]
+
+  @@unique([calendarId, name])
+  @@map("tags")
+}
+
+model EventTag {
+  eventId String @db.Uuid
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tagId   String @db.Uuid
+  tag     Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([eventId, tagId])
+  @@index([tagId])
+  @@map("event_tags")
+}
+
+model TaskTag {
+  taskId String @db.Uuid
+  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  tagId  String @db.Uuid
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, tagId])
+  @@index([tagId])
+  @@map("task_tags")
+}
+
+// ─── Lembretes e notificações ────────────────────────────────────────────────
+
+model Reminder {
+  id String @id @db.Uuid
+
+  // Pertence a um evento OU a uma tarefa — exatamente um dos dois, garantido por
+  // CHECK constraint (ver observação no fim do arquivo).
+  eventId String? @db.Uuid
+  event   Event?  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  taskId  String? @db.Uuid
+  task    Task?   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  // Quem recebe. Cada membro define os próprios lembretes para o mesmo evento.
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Minutos antes do início. 0 = na hora; negativo = depois do início.
+  offsetMinutes Int
+  channel       ReminderChannel @default(PUSH)
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  @@index([eventId])
+  @@index([taskId])
+  @@index([userId])
+  @@map("reminders")
+}
+
+model Notification {
+  id String @id @db.Uuid
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type  NotificationType
+  title String
+  body  String?
+  // Alvo para onde a notificação navega, e metadados de renderização:
+  // { entity: "event", id: "...", calendarId: "...", actorId: "..." }
+  data  Json             @default("{}")
+
+  readAt    DateTime? @db.Timestamptz
+  createdAt DateTime  @default(now()) @db.Timestamptz
+
+  // Sustenta o contador de não lidas e a lista ordenada.
+  @@index([userId, readAt, createdAt])
+  @@map("notifications")
+}
+
+model PushSubscription {
+  id String @id @db.Uuid
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Credenciais do Web Push (VAPID).
+  endpoint  String  @unique
+  p256dh    String
+  auth      String
+  userAgent String?
+
+  // Atualizado a cada envio bem-sucedido; assinaturas mortas são removidas quando
+  // o serviço de push responde 404/410.
+  lastUsedAt DateTime? @db.Timestamptz
+  createdAt  DateTime  @default(now()) @db.Timestamptz
+
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+// ─── Atividade ───────────────────────────────────────────────────────────────
+
+// Alimenta o "quem fez o quê" das agendas compartilhadas. É um log append-only:
+// nunca atualizado, só inserido e eventualmente expurgado por idade.
+model Activity {
+  id String @id @db.Uuid
+
+  calendarId String   @db.Uuid
+  calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
+
+  actorId String @db.Uuid
+  actor   User   @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  action     ActivityAction
+  entityType String // "event" | "task" | "member" | "calendar"
+  entityId   String @db.Uuid
+  // Título no momento da ação, para o feed continuar legível após a exclusão da
+  // entidade, e o diff dos campos alterados.
+  snapshot   Json   @default("{}")
+
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  @@index([calendarId, createdAt])
+  @@index([actorId, createdAt])
+  @@map("activities")
+}
+
+// ─── Restrições que o Prisma não expressa ────────────────────────────────────
+//
+// O Prisma não representa extensões, índices parciais nem CHECK constraints no
+// schema. As quatro abaixo já estão escritas à mão no fim da migration inicial,
+// em prisma/migrations/20261028120000_init/migration.sql:
+//
+// 1. CREATE EXTENSION citext — comparação de e-mail e handle sem distinção de
+//    maiúsculas, o que impede "Enzo@x.com" e "enzo@x.com" como contas distintas
+// 2. Índice parcial único garantindo uma só agenda padrão por usuário
+// 3. CHECK: um lembrete aponta para um evento OU uma tarefa, nunca ambos
+// 4. CHECK: o fim de um evento nunca vem antes do início
+//
+// **Ao alterar este schema**, gere a próxima migration com
+// `npx prisma migrate dev` e confira se alguma dessas restrições foi perdida —
+// um `migrate reset` recria o banco a partir das migrations, então elas só
+// sobrevivem porque estão versionadas no SQL.
