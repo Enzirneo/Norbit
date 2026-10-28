@@ -49,9 +49,9 @@ hora. Expandir um RRULE corretamente exige conhecer o fuso em que a regra foi es
 
 Duas abordagens existem para eventos recorrentes:
 
-| Abordagem | Como funciona | Problema |
-|---|---|---|
-| Materializar | Criar uma linha por ocorrência | "Todo dia, para sempre" gera linhas infinitas; editar a série vira atualização em massa |
+| Abordagem              | Como funciona                                                         | Problema                                                                                 |
+| ---------------------- | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Materializar           | Criar uma linha por ocorrência                                        | "Todo dia, para sempre" gera linhas infinitas; editar a série vira atualização em massa  |
 | **Guardar a regra** ✅ | Uma linha com o RRULE, expandida sob demanda para o intervalo visível | Exige a função de expansão, que fica em `libs/domain` e é compartilhada pelos dois lados |
 
 Escolhemos a segunda. As três operações que o usuário espera ficam assim:
@@ -102,14 +102,14 @@ e os eventos recorrentes vêm de uma segunda consulta sobre
 
 As outras consultas previstas e seus índices:
 
-| Consulta | Índice |
-|---|---|
-| Agendas visíveis de um usuário | `calendar_members(user_id, is_hidden)` |
-| Não lidas + lista de notificações | `notifications(user_id, read_at, created_at)` |
-| Tarefas abertas de uma agenda por prazo | `tasks(calendar_id, completed_at, due_at)` |
-| Minhas tarefas atribuídas | `tasks(assignee_id, completed_at)` |
-| Feed de atividade de uma agenda | `activities(calendar_id, created_at)` |
-| Convites pendentes de um e-mail | `calendar_invites(email, status)` |
+| Consulta                                | Índice                                        |
+| --------------------------------------- | --------------------------------------------- |
+| Agendas visíveis de um usuário          | `calendar_members(user_id, is_hidden)`        |
+| Não lidas + lista de notificações       | `notifications(user_id, read_at, created_at)` |
+| Tarefas abertas de uma agenda por prazo | `tasks(calendar_id, completed_at, due_at)`    |
+| Minhas tarefas atribuídas               | `tasks(assignee_id, completed_at)`            |
+| Feed de atividade de uma agenda         | `activities(calendar_id, created_at)`         |
+| Convites pendentes de um e-mail         | `calendar_invites(email, status)`             |
 
 ## Como criar o banco
 
@@ -143,11 +143,11 @@ npm run db:studio          # ou Adminer em http://localhost:8080
 > 17 tabelas existem, e as três restrições escritas à mão rejeitaram dados inválidos
 > quando testadas de propósito:
 >
-> | Tentativa | Resultado |
-> |---|---|
+> | Tentativa                               | Resultado                                                                          |
+> | --------------------------------------- | ---------------------------------------------------------------------------------- |
 > | Segunda agenda padrão para o mesmo dono | `duplicate key value violates unique constraint "calendars_one_default_per_owner"` |
-> | Evento terminando antes de começar | `violates check constraint "events_valid_range"` |
-> | Lembrete sem evento nem tarefa | `violates check constraint "reminders_one_target"` |
+> | Evento terminando antes de começar      | `violates check constraint "events_valid_range"`                                   |
+> | Lembrete sem evento nem tarefa          | `violates check constraint "reminders_one_target"`                                 |
 
 ### Duas pegadinhas do Prisma 7
 

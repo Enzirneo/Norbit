@@ -44,7 +44,11 @@ export function toCssVariables(tokens: TokenSet, prefix: string): string {
  * Envolve os tokens num seletor, pronto para injetar na página ou escrever em
  * arquivo.
  */
-export function toCssRule(selector: string, tokens: TokenSet, prefix: string): string {
+export function toCssRule(
+  selector: string,
+  tokens: TokenSet,
+  prefix: string,
+): string {
   const declarations = toCssVariables(tokens, prefix)
     .split('\n')
     .map((line) => `  ${line}`)

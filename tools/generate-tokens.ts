@@ -30,6 +30,12 @@ const camadas = primitives
 // deles (bg-nebula, duration-base) além de deixá-los como variáveis CSS.
 const css = `${AVISO}\n\n@theme {\n${camadas}\n}\n`;
 
-const destino = join(process.cwd(), 'apps', 'web', 'src', 'tokens.generated.css');
+const destino = join(
+  process.cwd(),
+  'apps',
+  'web',
+  'src',
+  'tokens.generated.css',
+);
 writeFileSync(destino, css, 'utf8');
 console.log(`tokens gerados: ${destino}`);

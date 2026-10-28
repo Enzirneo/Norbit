@@ -11,7 +11,8 @@
     "prepare": "husky",
     "tokens:build": "tsx tools/generate-tokens.ts",
     "db:seed": "tsx prisma/seed.ts",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "format": "nx format:write"
   },
   "devDependencies": {
     "@angular-devkit/core": "~22.2.0",

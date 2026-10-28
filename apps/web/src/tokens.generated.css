@@ -4,20 +4,20 @@
 
 @theme {
   --color-space-900: #070812;
-  --color-space-800: #0B0D17;
-  --color-space-700: #13162A;
-  --color-space-600: #1C2038;
-  --color-space-500: #2A2F4A;
-  --color-dust-400: #4A5070;
-  --color-dust-300: #6E7595;
-  --color-dust-200: #9AA0BC;
-  --color-dust-100: #C9CDE0;
-  --color-dust-000: #F4F5FA;
-  --color-nebula: #6D7CFF;
-  --color-aurora: #4ADEBB;
-  --color-solar: #FFB357;
-  --color-pulsar: #FF6B8A;
-  --color-cosmos: #A97BFF;
+  --color-space-800: #0b0d17;
+  --color-space-700: #13162a;
+  --color-space-600: #1c2038;
+  --color-space-500: #2a2f4a;
+  --color-dust-400: #4a5070;
+  --color-dust-300: #6e7595;
+  --color-dust-200: #9aa0bc;
+  --color-dust-100: #c9cde0;
+  --color-dust-000: #f4f5fa;
+  --color-nebula: #6d7cff;
+  --color-aurora: #4adebb;
+  --color-solar: #ffb357;
+  --color-pulsar: #ff6b8a;
+  --color-cosmos: #a97bff;
 
   --space-unit: 4px;
   --space-row-height-compact: 28px;

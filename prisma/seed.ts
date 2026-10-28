@@ -95,7 +95,11 @@ async function main(): Promise<void> {
   await prisma.calendarMember.createMany({
     data: [
       { calendarId: agendaEnzo.id, userId: enzo.id, role: 'OWNER' },
-      { calendarId: maria.ownedCalendars[0].id, userId: maria.id, role: 'OWNER' },
+      {
+        calendarId: maria.ownedCalendars[0].id,
+        userId: maria.id,
+        role: 'OWNER',
+      },
     ],
   });
 

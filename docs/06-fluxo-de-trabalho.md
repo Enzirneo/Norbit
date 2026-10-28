@@ -40,15 +40,15 @@ feat/* fix/* chore/* …          trabalho do dia a dia
 
 Padrão: `tipo/escopo-curto-em-kebab-case`
 
-| Prefixo | Para quê | Exemplo |
-|---|---|---|
-| `feat/` | Funcionalidade nova | `feat/recorrencia-eventos` |
-| `fix/` | Correção de bug | `fix/fuso-horario-verao` |
+| Prefixo     | Para quê                                  | Exemplo                                 |
+| ----------- | ----------------------------------------- | --------------------------------------- |
+| `feat/`     | Funcionalidade nova                       | `feat/recorrencia-eventos`              |
+| `fix/`      | Correção de bug                           | `fix/fuso-horario-verao`                |
 | `refactor/` | Melhoria interna, sem mudar comportamento | `refactor/extrai-calendar-access-guard` |
-| `test/` | Apenas testes | `test/expansao-rrule` |
-| `chore/` | Build, deps, configuração | `chore/atualiza-prisma` |
-| `docs/` | Documentação | `docs/revisa-modelo-dados` |
-| `hotfix/` | Emergência em produção | `hotfix/login-500` |
+| `test/`     | Apenas testes                             | `test/expansao-rrule`                   |
+| `chore/`    | Build, deps, configuração                 | `chore/atualiza-prisma`                 |
+| `docs/`     | Documentação                              | `docs/revisa-modelo-dados`              |
+| `hotfix/`   | Emergência em produção                    | `hotfix/login-500`                      |
 
 Regras:
 
@@ -83,11 +83,11 @@ próxima entrega vinda de `dev`, e o bug "volta sozinho".
 
 A estratégia é diferente em cada nível, e isso é deliberado:
 
-| Caminho | Estratégia | Por quê |
-|---|---|---|
-| `feat/*` → `dev` | **Squash merge** | Uma funcionalidade = um commit em `dev`. O histórico fica legível, e os 14 commits de "ajuste", "wip" e "agora vai" desaparecem |
-| `dev` → `main` | **Merge commit** (`--no-ff`) | Preserva o histórico e, principalmente, mantém as duas branches convergentes. Squash aqui faria `main` e `dev` divergirem e cada entrega daria conflito |
-| `hotfix/*` → `main` | Merge commit | Mesma razão |
+| Caminho             | Estratégia                   | Por quê                                                                                                                                                 |
+| ------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `feat/*` → `dev`    | **Squash merge**             | Uma funcionalidade = um commit em `dev`. O histórico fica legível, e os 14 commits de "ajuste", "wip" e "agora vai" desaparecem                         |
+| `dev` → `main`      | **Merge commit** (`--no-ff`) | Preserva o histórico e, principalmente, mantém as duas branches convergentes. Squash aqui faria `main` e `dev` divergirem e cada entrega daria conflito |
+| `hotfix/*` → `main` | Merge commit                 | Mesma razão                                                                                                                                             |
 
 Depois do squash merge, apague a branch. O GitHub faz isso automaticamente se
 configurado.
@@ -163,11 +163,11 @@ Sem isso, o fluxo é só uma intenção — e numa sexta-feira à noite a inten�
 
 ## Ambientes
 
-| Ambiente | Branch | Banco | Para quê |
-|---|---|---|---|
-| Local | qualquer | Postgres em Docker, com seed | Desenvolver |
-| Homologação | `dev` | Postgres próprio, dados realistas | Validar de verdade, no celular |
-| Produção | `main` | Postgres com backup automático | Uso real |
+| Ambiente    | Branch   | Banco                             | Para quê                       |
+| ----------- | -------- | --------------------------------- | ------------------------------ |
+| Local       | qualquer | Postgres em Docker, com seed      | Desenvolver                    |
+| Homologação | `dev`    | Postgres próprio, dados realistas | Validar de verdade, no celular |
+| Produção    | `main`   | Postgres com backup automático    | Uso real                       |
 
 Homologação **não** compartilha banco com produção. Parece obvio, mas é o atalho que
 todo projeto pessoal tenta tomar, e é como se apaga dado real rodando um `migrate reset`.
@@ -243,12 +243,12 @@ três meses.
 
 Número global de cobertura é fácil de enganar. Por camada, não:
 
-| Camada | Mínimo | Por quê |
-|---|---|---|
-| `libs/domain` | **95%** | Lógica pura e crítica. Não há desculpa |
-| `apps/api` (services) | 80% | Caminho felizes e erros de permissão |
-| `libs/contracts` | — | Só tipos e schemas |
-| `apps/web` | 60% | Estado e serviços sim; template não |
+| Camada                | Mínimo  | Por quê                                |
+| --------------------- | ------- | -------------------------------------- |
+| `libs/domain`         | **95%** | Lógica pura e crítica. Não há desculpa |
+| `apps/api` (services) | 80%     | Caminho felizes e erros de permissão   |
+| `libs/contracts`      | —       | Só tipos e schemas                     |
+| `apps/web`            | 60%     | Estado e serviços sim; template não    |
 
 Travado no CI. Cobertura que cai reprova o PR.
 
@@ -278,15 +278,15 @@ Princípios viram discussão; limites viram CI. Então a maior parte disto está
 ```jsonc
 // .eslintrc — limites que reprovam o build
 {
-  "complexity": ["error", 10],              // ramificação demais = extraia
-  "max-depth": ["error", 3],                // 4 níveis de if aninhado = repense
+  "complexity": ["error", 10], // ramificação demais = extraia
+  "max-depth": ["error", 3], // 4 níveis de if aninhado = repense
   "max-lines-per-function": ["error", 50],
-  "max-lines": ["error", 400],              // arquivo maior = tem mais de uma razão de existir
-  "max-params": ["error", 4],               // mais que isso = passe um objeto
+  "max-lines": ["error", 400], // arquivo maior = tem mais de uma razão de existir
+  "max-params": ["error", 4], // mais que isso = passe um objeto
   "no-console": "error",
   "@typescript-eslint/no-explicit-any": "error",
   "@typescript-eslint/explicit-function-return-type": "error",
-  "@typescript-eslint/no-floating-promises": "error"   // promise sem await engole erro
+  "@typescript-eslint/no-floating-promises": "error", // promise sem await engole erro
 }
 ```
 
@@ -302,15 +302,29 @@ projetos, o lint **impede** o import errado. Cada projeto declara sua tag em
     {
       "sourceTag": "scope:domain",
       "onlyDependOnLibsWithTags": ["scope:domain"],
-      "bannedExternalImports": ["@prisma/*", "@angular/*", "@nestjs/*", "express", "pg"]
+      "bannedExternalImports": [
+        "@prisma/*",
+        "@angular/*",
+        "@nestjs/*",
+        "express",
+        "pg",
+      ],
     },
-    { "sourceTag": "scope:api", "onlyDependOnLibsWithTags": ["scope:domain", "scope:contracts"] },
+    {
+      "sourceTag": "scope:api",
+      "onlyDependOnLibsWithTags": ["scope:domain", "scope:contracts"],
+    },
     {
       "sourceTag": "scope:web",
-      "onlyDependOnLibsWithTags": ["scope:domain", "scope:contracts", "scope:design-tokens", "scope:ui"],
-      "bannedExternalImports": ["@prisma/*", "@nestjs/*", "pg", "ioredis"]
-    }
-  ]
+      "onlyDependOnLibsWithTags": [
+        "scope:domain",
+        "scope:contracts",
+        "scope:design-tokens",
+        "scope:ui",
+      ],
+      "bannedExternalImports": ["@prisma/*", "@nestjs/*", "pg", "ioredis"],
+    },
+  ],
 }
 ```
 
@@ -333,7 +347,7 @@ commits. `expandRecurrence`, não `expand` ou `doStuff`. Booleano começa com `i
 ou `can`. Nada de abreviação inventada: `calendar`, não `cal`.
 
 **Funções.** Fazem uma coisa, num só nível de abstração. Se você precisa de comentário
-explicando *o que* o bloco faz, ele quer ser uma função com aquele nome.
+explicando _o que_ o bloco faz, ele quer ser uma função com aquele nome.
 
 **Comentários.** Explicam **por quê**, nunca o quê. O código já diz o quê, e diz a
 verdade — o comentário envelhece e mente. Comentário bom:
@@ -377,7 +391,7 @@ Uma tarefa está pronta quando **todas** as linhas valem:
 Os comandos `gh` abaixo usam o [GitHub CLI](https://cli.github.com), já instalado e
 autenticado nesta máquina (v2.102.0). Ele vive em `~/.local/gh/bin/gh.exe` e **não está
 no PATH**, nem do PowerShell nem do Git Bash — então `gh` direto no terminal falha com
-*command not found*. Para resolver de vez:
+_command not found_. Para resolver de vez:
 
 ```powershell
 # PowerShell, uma vez:

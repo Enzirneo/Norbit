@@ -193,16 +193,16 @@ Ideias registradas para não se perderem, em ordem de valor percebido:
 
 ## Totais
 
-| Fase | Estimativa |
-|---|---|
-| 0 — Fundação | ✅ concluída |
-| 1 — Contas | 4 dias |
-| 2 — Núcleo | 2 semanas |
-| 3 — Compartilhamento | 1,5 semana |
-| 4 — Tema | 1 semana |
-| 5 — Notificações | 1 semana |
-| 6 — PWA e deploy | 4 dias |
-| **MVP completo** | **~7 a 8 semanas** |
+| Fase                 | Estimativa         |
+| -------------------- | ------------------ |
+| 0 — Fundação         | ✅ concluída       |
+| 1 — Contas           | 4 dias             |
+| 2 — Núcleo           | 2 semanas          |
+| 3 — Compartilhamento | 1,5 semana         |
+| 4 — Tema             | 1 semana           |
+| 5 — Notificações     | 1 semana           |
+| 6 — PWA e deploy     | 4 dias             |
+| **MVP completo**     | **~7 a 8 semanas** |
 
 É uma estimativa de trabalho concentrado. Em ritmo de projeto noturno e de fim de
 semana, conte com três a quatro meses — e note que **a fase 2 sozinha vale mais que as

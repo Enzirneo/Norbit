@@ -2,7 +2,10 @@ import { toCssVariables, toCssRule } from './css-variables';
 
 describe('toCssVariables', () => {
   it('converte cada entrada em uma custom property com o prefixo', () => {
-    const css = toCssVariables({ nebula: '#6D7CFF', aurora: '#4ADEBB' }, 'color');
+    const css = toCssVariables(
+      { nebula: '#6D7CFF', aurora: '#4ADEBB' },
+      'color',
+    );
 
     expect(css).toBe('--color-nebula: #6D7CFF;\n--color-aurora: #4ADEBB;');
   });
@@ -14,7 +17,10 @@ describe('toCssVariables', () => {
   });
 
   it('separa o degrau numérico do nome: space900 vira space-900', () => {
-    const css = toCssVariables({ space900: '#070812', dust000: '#F4F5FA' }, 'color');
+    const css = toCssVariables(
+      { space900: '#070812', dust000: '#F4F5FA' },
+      'color',
+    );
 
     expect(css).toBe('--color-space-900: #070812;\n--color-dust-000: #F4F5FA;');
   });

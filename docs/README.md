@@ -5,14 +5,14 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 
 ## Índice
 
-| Documento | Conteúdo |
-|---|---|
-| [01 — Visão e Escopo](01-visao-e-escopo.md) | O que o Norbit é, para quem, o que entra no MVP e o que fica fora |
-| [02 — Arquitetura](02-arquitetura.md) | Stack, monorepo, camadas, Docker, autenticação, tempo real |
-| [03 — Modelo de Dados](03-modelo-de-dados.md) | Entidades, relações, decisões de modelagem, índices |
-| [04 — Design System](04-design-system.md) | Tema orbital, tokens, customização por usuário, motion |
-| [05 — Roadmap](05-roadmap.md) | Fases de execução, ordem de implementação, critérios de pronto |
-| [06 — Fluxo de Trabalho](06-fluxo-de-trabalho.md) | Branches, commits, PRs, CI, TDD e Clean Code |
+| Documento                                         | Conteúdo                                                          |
+| ------------------------------------------------- | ----------------------------------------------------------------- |
+| [01 — Visão e Escopo](01-visao-e-escopo.md)       | O que o Norbit é, para quem, o que entra no MVP e o que fica fora |
+| [02 — Arquitetura](02-arquitetura.md)             | Stack, monorepo, camadas, Docker, autenticação, tempo real        |
+| [03 — Modelo de Dados](03-modelo-de-dados.md)     | Entidades, relações, decisões de modelagem, índices               |
+| [04 — Design System](04-design-system.md)         | Tema orbital, tokens, customização por usuário, motion            |
+| [05 — Roadmap](05-roadmap.md)                     | Fases de execução, ordem de implementação, critérios de pronto    |
+| [06 — Fluxo de Trabalho](06-fluxo-de-trabalho.md) | Branches, commits, PRs, CI, TDD e Clean Code                      |
 
 ## Estado atual
 
