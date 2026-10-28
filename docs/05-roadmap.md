@@ -86,8 +86,9 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
 
 - [ ] CRUD de agendas, com a agenda pessoal padrão criada no cadastro
 - [ ] CRUD de eventos: título, descrição, local, início/fim, dia inteiro, cor
-- [ ] Recorrência: RRULE em `libs/domain`, expansão por intervalo, com testes cobrindo
-      horário de verão, "editar só este" e "excluir só este"
+- [x] Recorrência: RRULE em `libs/domain`, expansão por intervalo, com testes cobrindo
+      horário de verão e "excluir só este" — ver [08](08-recorrencia.md). O motor está
+      pronto; falta a **escrita** das exceções ("editar só este" cria a linha filha)
 - [ ] CRUD de tarefas: prazo, prioridade, concluir, subtarefas, reordenar
 - [ ] Visão de mês (grade), semana e dia (grade de horas), e lista de próximos
 - [ ] Navegação de datas, "hoje", linha de agora
@@ -98,6 +99,13 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
 
 **Pronto quando:** dá para usar como agenda pessoal de verdade, sem compartilhar nada.
 
+> **Risco desta fase — endereçado primeiro.** A recorrência foi a entrega inicial da
+> fase, antes de qualquer tela, exatamente como este aviso pedia. O motor tem 55 testes
+> escritos antes da implementação, e eles foram verificados por mutação: um deles passava
+> com o bug plantado e teve de ser reescrito. Ver [08](08-recorrencia.md).
+>
+> O texto original do aviso, que continua valendo para a escrita das exceções:
+>
 > **Risco desta fase:** a recorrência. É a parte onde quase todo projeto de calendário
 > erra. Escreva os testes de `libs/domain` **antes** da interface — depois, com a tela
 > pronta, a tentação de "resolver no front" é grande e o resultado divergente.

@@ -1,3 +1,11 @@
 export * from './lib/domain';
 
 export * from './lib/auth/rotacao-de-refresh';
+
+export * from './lib/tempo/zona';
+
+// `civil.ts` fica de fora de propósito: é aritmética interna da expansão, e
+// expor seria convidar o resto do código a fazer conta de calendário por conta
+// própria em vez de pedir as ocorrências.
+export * from './lib/recorrencia/rrule';
+export * from './lib/recorrencia/expandir';
