@@ -359,9 +359,17 @@ Uma tarefa está pronta quando **todas** as linhas valem:
 
 ## Comandos do dia a dia
 
-Os comandos `gh` abaixo precisam do [GitHub CLI](https://cli.github.com), que ainda
-**não está instalado** nesta máquina (`winget install GitHub.cli`). Sem ele, abra os PRs
-pela interface web — o fluxo é o mesmo.
+Os comandos `gh` abaixo usam o [GitHub CLI](https://cli.github.com), já instalado e
+autenticado nesta máquina (v2.102.0). Ele vive em `~/.local/gh/bin/gh.exe` e **não está
+no PATH**, nem do PowerShell nem do Git Bash — então `gh` direto no terminal falha com
+*command not found*. Para resolver de vez:
+
+```powershell
+# PowerShell, uma vez:
+$p = [Environment]::GetEnvironmentVariable('Path', 'User')
+[Environment]::SetEnvironmentVariable('Path', "$p;$env:USERPROFILE\.local\gh\bin", 'User')
+# depois reabra o terminal
+```
 
 ```bash
 # começar algo
