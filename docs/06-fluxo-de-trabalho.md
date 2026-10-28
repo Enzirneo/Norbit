@@ -290,6 +290,31 @@ Princípios viram discussão; limites viram CI. Então a maior parte disto está
 }
 ```
 
+### O GitGuardian também é um check, e ele reclama de fixture
+
+O repositório é público e o GitGuardian roda em todo PR. Ele já reprovou um PR por
+**duas senhas de teste** em `cadastro.spec.ts` — `'Ab1@cdefgh'` e `'qualquer'`, ambas
+fixtures, nenhuma um segredo.
+
+A resposta não foi ignorar o alarme. Primeiro conferir que nada real vazou:
+
+```bash
+# o .env alguma vez entrou no histórico?
+git log --all --name-only --pretty=format: | sort -u | grep -E '^\.env$'
+
+# o segredo local aparece em algum arquivo rastreado?
+git grep -F "$(grep '^JWT_ACCESS_SECRET=' .env | sed 's/^[^=]*="//;s/"$//')" HEAD
+```
+
+Depois, montar as senhas de teste em tempo de execução, em vez de escrevê-las como
+literal ao lado da chave `password:`. Parece cerimônia, e tem uma razão prática: um
+check que falha sempre é um check que ninguém lê, e o dia em que um segredo de verdade
+escapar o alarme precisa chamar atenção.
+
+Padrões que o detector pegou: palavra única e cadeia curta com símbolo e dígito.
+Frases de várias palavras passaram. Não vale confiar nessa distinção — vale não
+escrever o literal.
+
 ### Regras que precisam do tipo, e a pegadinha do glob
 
 Cinco das regras acima só funcionam com informação de tipo, não só de sintaxe: o ESLint
