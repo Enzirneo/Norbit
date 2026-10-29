@@ -1,0 +1,256 @@
+/**
+ * As visões de semana e dia.
+ *
+ * A altura do dia é fixa em pixels e a grade rola; as posições das faixas são
+ * **porcentagens**, calculadas em `libs/domain`. É o que faz um dia de 23 ou 25
+ * horas se distribuir certo sem o CSS saber que isso existe.
+ */
+
+/* Altura de uma hora. Vinte e quatro delas dão a altura do dia, inclusive nos
+   dias de virada: a grade continua com a mesma altura, e as frações mudam. */
+$hora: 3rem;
+
+:host {
+  /* Como em visao-de-mes.scss: elemento de componente nasce `display: inline`,
+     e sem isto a grade não estica. */
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.quadro {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--space-unit) * 4);
+  background: var(--surface-raised);
+  overflow: hidden;
+}
+
+/* A largura do eixo das horas aparece em três lugares; um valor só. */
+$eixo: 3.5rem;
+
+.topo,
+.tira {
+  display: grid;
+  grid-template-columns: $eixo 1fr;
+  flex-shrink: 0;
+}
+
+.topo {
+  border-block-end: 1px solid var(--border-subtle);
+}
+
+.dias {
+  display: grid;
+}
+
+.dia-cabecalho {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: calc(var(--space-unit) * 1.5);
+  padding: calc(var(--space-unit) * 2);
+
+  &:not(:first-child) {
+    border-inline-start: 1px solid var(--border-subtle);
+  }
+}
+
+.dia-nome {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dia-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(var(--space-unit) * 6);
+  height: calc(var(--space-unit) * 6);
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.dia-numero--hoje {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.tira {
+  border-block-end: 1px solid var(--border-subtle);
+  background: var(--surface-sunken);
+}
+
+.tira-rotulo {
+  padding: calc(var(--space-unit) * 2);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  text-align: end;
+}
+
+.tira-grade {
+  display: grid;
+  gap: 2px;
+  padding: calc(var(--space-unit) * 1) 0;
+}
+
+.faixa-dia-inteiro {
+  margin-inline: 2px;
+  padding: 1px calc(var(--space-unit) * 1.5);
+  border: 0;
+  border-inline-start: 2px solid;
+  border-radius: calc(var(--space-unit) * 1);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.75rem;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.25);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+.rolagem {
+  display: grid;
+  grid-template-columns: $eixo 1fr;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.eixo {
+  position: relative;
+  height: calc($hora * 24);
+}
+
+.eixo-hora {
+  position: absolute;
+  right: calc(var(--space-unit) * 2);
+  /* Sobe meia linha para o texto ficar alinhado com o traço, e não abaixo. */
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.grade {
+  display: grid;
+  height: calc($hora * 24);
+}
+
+.coluna {
+  position: relative;
+
+  &:not(:first-child) {
+    border-inline-start: 1px solid var(--border-subtle);
+  }
+}
+
+/* A hora clicável. Sem aparência de botão: o retorno visual é o `:hover`. */
+.celula-de-hora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  padding: 0;
+  border: 0;
+  border-block-start: 1px solid var(--border-subtle);
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background: color-mix(in oklab, var(--surface-overlay) 60%, transparent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: -2px;
+  }
+}
+
+.coluna--hoje {
+  background: color-mix(in oklab, var(--accent) 5%, transparent);
+}
+
+.faixa {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  /* Recuo à direita para a faixa de trás aparecer por baixo quando há colunas,
+     e para duas colunas vizinhas não se tocarem. */
+  padding: 2px calc(var(--space-unit) * 1.5);
+  border: 0;
+  border-inline-start: 2px solid;
+  border-radius: calc(var(--space-unit) * 1);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.75rem;
+  text-align: start;
+  overflow: hidden;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.2);
+    /* Sobe acima das vizinhas no hover: numa faixa estreita, o título só cabe
+       assim. */
+    z-index: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: -1px;
+    z-index: 1;
+  }
+}
+
+.faixa-hora {
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.faixa-titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* A linha de agora fica acima das faixas: ela é referência, e escondida atrás
+   de um evento não serve para nada. */
+.agora {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  border-block-start: 2px solid var(--state-danger);
+  pointer-events: none;
+
+  /* O ponto na ponta esquerda, que é o que torna a linha legível quando ela
+     cruza uma faixa colorida. */
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -3px;
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--state-danger);
+  }
+}

@@ -9,8 +9,8 @@
         nb-botao
         aparencia="texto"
         type="button"
-        aria-label="Mês anterior"
-        (click)="mesAnterior()"
+        [attr.aria-label]="'Período anterior'"
+        (click)="anterior()"
       >
         ←
       </button>
@@ -25,8 +25,8 @@
         nb-botao
         aparencia="texto"
         type="button"
-        aria-label="Mês seguinte"
-        (click)="mesSeguinte()"
+        [attr.aria-label]="'Período seguinte'"
+        (click)="seguinte()"
       >
         →
       </button>
@@ -39,6 +39,26 @@
       >
         Hoje
       </button>
+    </div>
+
+    <!--
+      Alternador de visão. `radiogroup` e não três botões soltos: a escolha é
+      exclusiva, e é isso que o leitor de tela precisa ouvir — com botões,
+      nenhum deles anunciaria estar selecionado.
+    -->
+    <div class="visoes" role="radiogroup" aria-label="Visão do calendário">
+      @for (opcao of visoes; track opcao.valor) {
+      <button
+        class="visao"
+        type="button"
+        role="radio"
+        [class.visao--ativa]="visao() === opcao.valor"
+        [attr.aria-checked]="visao() === opcao.valor"
+        (click)="mudarVisao(opcao.valor)"
+      >
+        {{ opcao.rotulo }}
+      </button>
+      }
     </div>
 
     <div class="conta">
@@ -93,8 +113,7 @@
     <main class="principal">
       @if (erro(); as mensagem) {
       <p class="erro" role="alert">{{ mensagem }}</p>
-      }
-
+      } @if (visao() === 'MONTH') {
       <nb-visao-de-mes
         [grade]="grade()"
         [ocorrencias]="visiveis()"
@@ -104,10 +123,19 @@
         (diaSelecionado)="criarEm($event)"
         (selecionada)="editar($event)"
       />
-
-      @if (vazio()) {
+      } @else {
+      <nb-visao-de-horas
+        [dias]="diasVisiveis()"
+        [ocorrencias]="visiveis()"
+        [agendas]="agendas()"
+        [fuso]="fuso()"
+        [hoje]="hoje()"
+        (horaSelecionada)="criarEmHora($event)"
+        (selecionada)="editar($event)"
+      />
+      } @if (vazio()) {
       <!-- O vocabulário do docs/04 para estado vazio. -->
-      <p class="vazio">Nada em órbita neste mês.</p>
+      <p class="vazio">Nada em órbita por aqui.</p>
       }
     </main>
   </div>
