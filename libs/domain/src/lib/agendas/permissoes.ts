@@ -18,19 +18,29 @@ export type Papel = 'OWNER' | 'EDITOR' | 'CONTRIBUTOR' | 'VIEWER';
 export type AcaoDeAgenda =
   | 'ver'
   | 'criar-evento'
+  | 'criar-tarefa'
   | 'editar-agenda'
   | 'excluir-agenda'
   | 'gerenciar-membros';
 
-/** Ações cujo veredito também depende de quem criou o evento. */
-export type AcaoDeEvento = 'editar-evento' | 'excluir-evento';
+/**
+ * Ações cujo veredito também depende de quem criou o item.
+ *
+ * Evento e tarefa aparecem separados, e não sob um "conteúdo" genérico, por dois
+ * motivos: a mensagem de recusa diz qual das duas coisas a pessoa tentou mexer, e
+ * o dia em que as duas divergirem (uma agenda só de leitura para tarefas, por
+ * exemplo) a matriz já tem onde expressar isso. O **alcance** é um só, porque a
+ * regra hoje é a mesma.
+ */
+export type AcaoDeItem =
+  'editar-evento' | 'excluir-evento' | 'editar-tarefa' | 'excluir-tarefa';
 
-/** Até onde o papel alcança nos eventos da agenda. */
+/** Até onde o papel alcança nos itens da agenda — eventos e tarefas. */
 type Alcance = 'qualquer' | 'proprios' | 'nenhum';
 
 type Capacidades = {
   readonly naAgenda: readonly AcaoDeAgenda[];
-  readonly nosEventos: Alcance;
+  readonly nosItens: Alcance;
 };
 
 /**
@@ -46,23 +56,24 @@ const MATRIZ: Record<Papel, Capacidades> = {
     naAgenda: [
       'ver',
       'criar-evento',
+      'criar-tarefa',
       'editar-agenda',
       'excluir-agenda',
       'gerenciar-membros',
     ],
-    nosEventos: 'qualquer',
+    nosItens: 'qualquer',
   },
   EDITOR: {
-    naAgenda: ['ver', 'criar-evento'],
-    nosEventos: 'qualquer',
+    naAgenda: ['ver', 'criar-evento', 'criar-tarefa'],
+    nosItens: 'qualquer',
   },
   CONTRIBUTOR: {
-    naAgenda: ['ver', 'criar-evento'],
-    nosEventos: 'proprios',
+    naAgenda: ['ver', 'criar-evento', 'criar-tarefa'],
+    nosItens: 'proprios',
   },
   VIEWER: {
     naAgenda: ['ver'],
-    nosEventos: 'nenhum',
+    nosItens: 'nenhum',
   },
 };
 
@@ -75,13 +86,17 @@ export function podeNaAgenda(papel: Papel, acao: AcaoDeAgenda): boolean {
   return capacidadesDe(papel)?.naAgenda.includes(acao) ?? false;
 }
 
-export function podeNoEvento(entrada: {
+export function podeNoItem(entrada: {
   readonly papel: Papel;
-  readonly acao: AcaoDeEvento;
+  readonly acao: AcaoDeItem;
   readonly ehAutor: boolean;
 }): boolean {
-  const alcance = capacidadesDe(entrada.papel)?.nosEventos ?? 'nenhum';
+  const alcance = capacidadesDe(entrada.papel)?.nosItens ?? 'nenhum';
 
+  // A `acao` não participa da decisão **hoje** — editar e excluir têm a mesma
+  // regra nas duas entidades. Ela está na assinatura porque é o que torna a
+  // divergência futura uma alteração nesta função, e não uma nova função solta
+  // em algum controller.
   switch (alcance) {
     case 'qualquer':
       return true;

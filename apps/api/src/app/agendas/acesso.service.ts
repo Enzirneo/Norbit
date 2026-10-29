@@ -14,9 +14,9 @@ import {
 } from '@nestjs/common';
 import {
   podeNaAgenda,
-  podeNoEvento,
+  podeNoItem,
   type AcaoDeAgenda,
-  type AcaoDeEvento,
+  type AcaoDeItem,
   type Papel,
 } from '@norbit/domain';
 import { PrismaService, type Calendar, type CalendarRole } from '@norbit/db';
@@ -106,17 +106,18 @@ export class AcessoService {
   }
 
   /**
-   * O veredito sobre um evento, que também depende de quem o criou.
+   * O veredito sobre um item — evento ou tarefa —, que também depende de quem o
+   * criou.
    *
    * Síncrono de propósito: quem chama já tem o papel e o evento em mão, e uma
    * assinatura `async` aqui sugeriria uma consulta que não existe.
    */
-  exigirNoEvento(entrada: {
+  exigirNoItem(entrada: {
     readonly papel: Papel;
-    readonly acao: AcaoDeEvento;
+    readonly acao: AcaoDeItem;
     readonly ehAutor: boolean;
   }): void {
-    if (!podeNoEvento(entrada)) {
+    if (!podeNoItem(entrada)) {
       throw new ForbiddenException(recusa(entrada.acao));
     }
   }
@@ -158,15 +159,18 @@ export function paraRole(papel: Papel): CalendarRole {
   return papel;
 }
 
-function recusa(acao: AcaoDeAgenda | AcaoDeEvento): string {
-  const texto: Record<AcaoDeAgenda | AcaoDeEvento, string> = {
+function recusa(acao: AcaoDeAgenda | AcaoDeItem): string {
+  const texto: Record<AcaoDeAgenda | AcaoDeItem, string> = {
     ver: 'Você não tem acesso a esta agenda.',
     'criar-evento': 'Seu papel nesta agenda não permite criar eventos.',
     'editar-agenda': 'Só quem é dono pode alterar esta agenda.',
     'excluir-agenda': 'Só quem é dono pode excluir esta agenda.',
     'gerenciar-membros': 'Só quem é dono pode gerenciar os membros.',
+    'criar-tarefa': 'Seu papel nesta agenda não permite criar tarefas.',
     'editar-evento': 'Você só pode editar os eventos que você criou.',
     'excluir-evento': 'Você só pode excluir os eventos que você criou.',
+    'editar-tarefa': 'Você só pode editar as tarefas que você criou.',
+    'excluir-tarefa': 'Você só pode excluir as tarefas que você criou.',
   };
 
   return texto[acao];

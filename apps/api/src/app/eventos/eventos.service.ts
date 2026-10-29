@@ -278,7 +278,7 @@ export class EventosService {
       acao: 'ver',
     });
 
-    this.acesso.exigirNoEvento({
+    this.acesso.exigirNoItem({
       papel,
       acao: entrada.acao,
       ehAutor: evento.createdById === entrada.userId,

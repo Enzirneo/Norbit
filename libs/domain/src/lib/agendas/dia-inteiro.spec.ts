@@ -8,7 +8,7 @@
  * errado para quem não está no fuso do servidor.
  */
 import { paraHoraLocal } from '../tempo/zona';
-import { normalizarDiaInteiro } from './dia-inteiro';
+import { fimExclusivoDoDia, normalizarDiaInteiro } from './dia-inteiro';
 
 const SAO_PAULO = 'America/Sao_Paulo';
 const NOVA_YORK = 'America/New_York';
@@ -126,5 +126,56 @@ describe('normalizarDiaInteiro', () => {
 
       expect((fim.getTime() - inicio.getTime()) / 3_600_000).toBe(25);
     });
+  });
+});
+
+describe('fimExclusivoDoDia', () => {
+  it('fecha o dia na meia-noite seguinte, no fuso pedido', () => {
+    const fim = fimExclusivoDoDia(new Date('2026-06-15T13:45:00Z'), SAO_PAULO);
+
+    expect(local(fim, SAO_PAULO)).toBe('2026-06-16 00:00');
+  });
+
+  it('é idempotente', () => {
+    // Sem isto, um PATCH que não mexe no prazo empurraria a tarefa um dia para
+    // frente a cada salvamento — e ninguém notaria até reclamarem que a tarefa
+    // "nunca fica atrasada".
+    const uma = fimExclusivoDoDia(new Date('2026-06-15T13:45:00Z'), SAO_PAULO);
+    const duas = fimExclusivoDoDia(uma, SAO_PAULO);
+
+    expect(duas.toISOString()).toBe(uma.toISOString());
+  });
+
+  it('respeita o fuso, não o do servidor', () => {
+    // 02:00Z do dia 15 ainda é o dia 14 em Nova York, então o dia fecha um dia
+    // antes do que fecharia em São Paulo.
+    const quando = new Date('2026-06-15T02:00:00Z');
+
+    expect(local(fimExclusivoDoDia(quando, NOVA_YORK), NOVA_YORK)).toBe(
+      '2026-06-15 00:00',
+    );
+    expect(local(fimExclusivoDoDia(quando, SAO_PAULO), SAO_PAULO)).toBe(
+      '2026-06-15 00:00',
+    );
+  });
+
+  it('não tem piso de um dia, ao contrário do evento', () => {
+    // Um prazo não tem duração: a meia-noite do dia 15 fecha o dia 14, e isso
+    // é o correto. Um evento no mesmo caso ganharia um dia inteiro.
+    const meiaNoiteDoDia15 = new Date('2026-06-15T03:00:00Z');
+
+    expect(
+      local(fimExclusivoDoDia(meiaNoiteDoDia15, SAO_PAULO), SAO_PAULO),
+    ).toBe('2026-06-15 00:00');
+    expect(
+      local(
+        normalizarDiaInteiro({
+          inicio: meiaNoiteDoDia15,
+          fim: meiaNoiteDoDia15,
+          fuso: SAO_PAULO,
+        }).fim,
+        SAO_PAULO,
+      ),
+    ).toBe('2026-06-16 00:00');
   });
 });
