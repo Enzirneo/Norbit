@@ -5,7 +5,8 @@ export const appRoutes: Route[] = [
   {
     path: '',
     canActivate: [exigeSessao],
-    loadComponent: () => import('./paginas/inicio').then((m) => m.Inicio),
+    loadComponent: () =>
+      import('./calendario/paginas/calendario').then((m) => m.Calendario),
   },
   {
     path: 'entrar',

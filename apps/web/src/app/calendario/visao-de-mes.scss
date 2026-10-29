@@ -1,0 +1,160 @@
+/**
+ * A grade de mês.
+ *
+ * Só a camada semântica: nenhuma cor literal, nenhum primitivo. As cores das
+ * barras vêm do template, porque são escolhidas pela pessoa em cada agenda.
+ */
+
+/* Três trilhas de faixa, como FAIXAS_VISIVEIS no componente. Mudar uma exige
+   mudar a outra, e por isso as duas dizem o mesmo número por escrito. */
+$trilhas: 3;
+
+.grade {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--space-unit) * 4);
+  overflow: hidden;
+  background: var(--surface-raised);
+}
+
+.cabecalho {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-block-end: 1px solid var(--border-subtle);
+}
+
+.nome-do-dia {
+  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 2);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.semana {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  /* Linha 1: o número do dia. Linhas 2..4: as trilhas. Linha final: o "+N". */
+  grid-template-rows: auto repeat($trilhas, auto) auto;
+  flex: 1;
+  min-height: 0;
+  row-gap: 2px;
+
+  /* A borda vai só entre as semanas, para a última não dobrar com a do bloco. */
+  &:not(:last-child) {
+    border-block-end: 1px solid var(--border-subtle);
+  }
+}
+
+.fundo {
+  grid-row: 1 / -1;
+
+  /* Linha vertical entre os dias, sem dobrar na primeira coluna. */
+  &:not(:first-of-type) {
+    border-inline-start: 1px solid var(--border-subtle);
+  }
+}
+
+.fundo--fora {
+  /* Dia de outro mês: presente, mas claramente secundário. */
+  background: var(--surface-sunken);
+}
+
+.fundo--hoje {
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+}
+
+.numero-area {
+  grid-row: 1;
+  display: flex;
+  justify-content: flex-end;
+  padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 2) 0;
+}
+
+.numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(var(--space-unit) * 6);
+  height: calc(var(--space-unit) * 6);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.numero--hoje {
+  background: var(--accent);
+  color: var(--text-on-accent);
+  font-weight: 600;
+}
+
+.barra {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 1);
+  min-width: 0;
+  /* O recuo lateral é o que deixa a cor do fundo do dia aparecer entre barras
+     de dias vizinhos — sem ele duas barras adjacentes pareceriam uma só. */
+  margin-inline: 2px;
+  padding: 1px calc(var(--space-unit) * 1.5);
+  border: 0;
+  border-inline-start: 2px solid;
+  border-radius: calc(var(--space-unit) * 1);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.75rem;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover {
+    filter: brightness(1.25);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+.barra-hora {
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.barra-titulo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mais {
+  grid-row: #{$trilhas + 2};
+  padding: 0 calc(var(--space-unit) * 2) calc(var(--space-unit) * 1);
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+}
+
+/* No celular a grade de mês não cabe com faixas legíveis. Ela continua
+   navegável, mas as barras viram pontos — a visão de dia é o padrão ali, e ela
+   é a próxima entrega. */
+@media (max-width: 40rem) {
+  .barra-hora,
+  .barra-titulo {
+    display: none;
+  }
+
+  .barra {
+    height: calc(var(--space-unit) * 1.5);
+    padding: 0;
+    border-inline-start-width: 0;
+    border-radius: 999px;
+    background-clip: padding-box;
+  }
+}

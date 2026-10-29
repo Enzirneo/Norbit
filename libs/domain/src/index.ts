@@ -15,3 +15,7 @@ export * from './lib/agendas/permissoes';
 export * from './lib/agendas/dia-inteiro';
 
 export * from './lib/tarefas/ordenacao';
+
+export * from './lib/calendario/grade-de-mes';
+export * from './lib/calendario/faixas';
+export * from './lib/calendario/semana';

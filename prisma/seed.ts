@@ -9,15 +9,36 @@
  * Uso: npm run db:seed
  */
 import 'dotenv/config';
-import { randomUUID } from 'node:crypto';
+// UUID v7, como o resto da aplicação. Não é detalhe: o schema documenta v7
+// ("ordenáveis por tempo, o que mantém a localidade dos índices"), e as rotas
+// validam a versão com `ParseUUIDPipe({ version: '7' })` — uma linha semeada
+// com v4 seria recusada com 400 ao ser editada pela API.
+import { uuidv7 } from 'uuidv7';
 import { PrismaPg } from '@prisma/adapter-pg';
+import * as argon2 from '@node-rs/argon2';
 import { PrismaClient } from '@norbit/db';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
-/** Hash fixo da senha "norbit123", só para desenvolvimento. */
-const SENHA_DEV = '$argon2id$v=19$m=65536,t=3,p=4$DESENVOLVIMENTO$seed';
+/**
+ * A senha das contas de desenvolvimento.
+ *
+ * O hash é **calculado aqui**, com os mesmos parâmetros do `SenhasService`, e
+ * não escrito à mão. Uma versão anterior trazia um texto que parecia um hash
+ * Argon2 e não era — o resultado é que nenhuma das contas semeadas conseguia
+ * entrar, e o comentário afirmava o contrário. Um seed que cria usuários sem
+ * login utilizável não serve para a única coisa que ele existe para fazer.
+ */
+const SENHA_DEV = 'norbit123';
+
+/** Os mesmos parâmetros de `apps/api/src/app/auth/senhas.service.ts`. */
+const ARGON: argon2.Options = {
+  algorithm: argon2.Algorithm.Argon2id,
+  memoryCost: 19_456,
+  timeCost: 2,
+  parallelism: 1,
+};
 
 const FUSO = 'America/Sao_Paulo';
 
@@ -56,8 +77,12 @@ async function main(): Promise<void> {
     await prisma.user.deleteMany({ where: { id: { in: idsExistentes } } });
   }
 
-  const enzoId = randomUUID();
-  const mariaId = randomUUID();
+  // Calculado uma vez e reaproveitado: Argon2id nos parâmetros da OWASP custa
+  // ~50 ms por chamada, e o seed cria várias contas.
+  const passwordHash = await argon2.hash(SENHA_DEV, ARGON);
+
+  const enzoId = uuidv7();
+  const mariaId = uuidv7();
 
   const enzo = await prisma.user.create({
     data: {
@@ -65,13 +90,13 @@ async function main(): Promise<void> {
       email: EMAIL_ENZO,
       handle: 'enzo',
       displayName: 'Enzo',
-      passwordHash: SENHA_DEV,
+      passwordHash,
       timeZone: FUSO,
       emailVerifiedAt: new Date(),
       settings: { create: { themePreset: 'nebula', accentColor: '#6d7cff' } },
       ownedCalendars: {
         create: {
-          id: randomUUID(),
+          id: uuidv7(),
           name: 'Minha órbita',
           kind: 'PERSONAL',
           color: '#6d7cff',
@@ -89,13 +114,13 @@ async function main(): Promise<void> {
       email: EMAIL_MARIA,
       handle: 'maria',
       displayName: 'Maria',
-      passwordHash: SENHA_DEV,
+      passwordHash,
       timeZone: FUSO,
       emailVerifiedAt: new Date(),
       settings: { create: { themePreset: 'dawn', accentColor: '#4adebb' } },
       ownedCalendars: {
         create: {
-          id: randomUUID(),
+          id: uuidv7(),
           name: 'Órbita da Maria',
           kind: 'PERSONAL',
           color: '#4adebb',
@@ -126,7 +151,7 @@ async function main(): Promise<void> {
   // A agenda compartilhada: o caso que o produto existe para resolver.
   const compartilhada = await prisma.calendar.create({
     data: {
-      id: randomUUID(),
+      id: uuidv7(),
       ownerId: enzo.id,
       name: 'Nós dois',
       description: 'O que os dois precisam saber',
@@ -146,7 +171,7 @@ async function main(): Promise<void> {
   await prisma.event.createMany({
     data: [
       {
-        id: randomUUID(),
+        id: uuidv7(),
         calendarId: compartilhada.id,
         createdById: enzo.id,
         title: 'Jantar de sexta',
@@ -158,7 +183,7 @@ async function main(): Promise<void> {
       {
         // O caso que mais quebra implementações de calendário: a regra tem de
         // continuar às 9h locais mesmo após a virada do horário de verão.
-        id: randomUUID(),
+        id: uuidv7(),
         calendarId: compartilhada.id,
         createdById: maria.id,
         title: 'Academia',
@@ -168,7 +193,7 @@ async function main(): Promise<void> {
         recurrenceRule: 'FREQ=WEEKLY;BYDAY=TU,TH',
       },
       {
-        id: randomUUID(),
+        id: uuidv7(),
         calendarId: compartilhada.id,
         createdById: enzo.id,
         title: 'Viagem',
@@ -180,7 +205,7 @@ async function main(): Promise<void> {
       {
         // Privado: não deve aparecer para a Maria, mesmo ela sendo EDITOR da
         // agenda. É o teste de privacidade que a Fase 3 tem de provar.
-        id: randomUUID(),
+        id: uuidv7(),
         calendarId: compartilhada.id,
         createdById: enzo.id,
         title: 'Consulta médica',
@@ -195,7 +220,7 @@ async function main(): Promise<void> {
   await prisma.task.createMany({
     data: [
       {
-        id: randomUUID(),
+        id: uuidv7(),
         calendarId: compartilhada.id,
         createdById: enzo.id,
         assigneeId: maria.id,
@@ -205,7 +230,7 @@ async function main(): Promise<void> {
         position: 1,
       },
       {
-        id: randomUUID(),
+        id: uuidv7(),
         calendarId: agendaEnzo.id,
         createdById: enzo.id,
         title: 'Renovar a habilitação',

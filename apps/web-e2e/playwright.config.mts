@@ -31,26 +31,47 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
-  webServer: {
-    command: isCI ? 'npx nx run web:serve-static' : 'npx nx run web:serve',
-    url: getReadyUrl('http://localhost:4200'),
-    reuseExistingServer: true,
-    cwd: workspaceRoot,
-  },
+  /*
+   * Dois servidores: a aplicação não tem o que mostrar sem a API.
+   *
+   * O `serve-static` do CI não tem o proxy de desenvolvimento que redireciona
+   * `/api` para a porta 3000, então o `BASE_URL` do navegador e o da API
+   * precisam combinar — por isso a API sobe de verdade nos dois ambientes, e
+   * não só localmente.
+   *
+   * `reuseExistingServer` aproveita os servidores que já estiverem de pé na
+   * máquina de quem desenvolve, em vez de brigar pela porta.
+   */
+  webServer: [
+    {
+      command: 'npx nx run api:serve',
+      url: 'http://localhost:3000/api',
+      reuseExistingServer: true,
+      cwd: workspaceRoot,
+      timeout: 120_000,
+    },
+    {
+      command: isCI ? 'npx nx run web:serve-static' : 'npx nx run web:serve',
+      url: getReadyUrl('http://localhost:4200'),
+      reuseExistingServer: true,
+      cwd: workspaceRoot,
+      timeout: 120_000,
+    },
+  ],
+  /*
+   * Só Chromium.
+   *
+   * O job de CI instala apenas `chromium` (`playwright install --with-deps
+   * chromium`), então Firefox e WebKit falhariam por navegador ausente — eles
+   * vinham do gerador do Nx e nunca chegaram a rodar. Três navegadores também
+   * triplicam o custo de um job que o próprio workflow chama de caro; quando a
+   * compatibilidade entre motores for uma questão real, a decisão volta com um
+   * motivo.
+   */
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-    },
-
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
-
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
     },
 
     // Uncomment for mobile browsers support

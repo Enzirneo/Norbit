@@ -93,8 +93,9 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
       expansão da série-mãe suprime a instância substituída
 - [x] CRUD de tarefas: prazo, prioridade, concluir, subtarefas, reordenar — ver
       [10](10-tarefas.md)
-- [ ] Visão de mês (grade), semana e dia (grade de horas), e lista de próximos
-- [ ] Navegação de datas, "hoje", linha de agora
+- [x] Visão de **mês** (grade) — ver [11](11-visao-de-mes.md). Semana, dia e lista de
+      próximos ainda não
+- [x] Navegação de datas e "hoje". A linha de agora depende da grade de horas
 - [ ] Criar evento clicando/arrastando na grade
 - [ ] Arrastar para mover e redimensionar para mudar a duração
 - [ ] Paleta de comandos (`Cmd/Ctrl+K`) e atalhos de teclado

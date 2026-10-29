@@ -1,0 +1,112 @@
+@let u = usuario();
+
+<div class="tela">
+  <header class="topo">
+    <nb-marca />
+
+    <div class="navegacao">
+      <button
+        nb-botao
+        aparencia="texto"
+        type="button"
+        aria-label="Mês anterior"
+        (click)="mesAnterior()"
+      >
+        ←
+      </button>
+
+      <!--
+        `aria-live` no título: quem navega por teclado e leitor de tela precisa
+        ouvir que o mês mudou. Sem isto, as setas parecem não fazer nada.
+      -->
+      <h1 class="titulo" aria-live="polite">{{ titulo() }}</h1>
+
+      <button
+        nb-botao
+        aparencia="texto"
+        type="button"
+        aria-label="Mês seguinte"
+        (click)="mesSeguinte()"
+      >
+        →
+      </button>
+
+      <button
+        nb-botao
+        aparencia="contorno"
+        type="button"
+        (click)="irParaHoje()"
+      >
+        Hoje
+      </button>
+    </div>
+
+    <div class="conta">
+      <span class="handle">&#64;{{ u?.handle }}</span>
+      <button nb-botao aparencia="texto" type="button" (click)="sair()">
+        Sair
+      </button>
+    </div>
+  </header>
+
+  <div class="corpo">
+    <aside class="lateral">
+      <h2 class="lateral-titulo">Agendas</h2>
+
+      <ul class="agendas">
+        @for (agenda of agendas(); track agenda.id) {
+        <li>
+          <!--
+              Caixa de seleção de verdade, e não um botão com aparência de
+              caixa: o estado "marcado" precisa chegar ao leitor de tela, e
+              `aria-checked` à mão é uma reimplementação que sempre falta algo.
+            -->
+          <label class="agenda">
+            <input
+              class="agenda-caixa"
+              type="checkbox"
+              [checked]="!estaOculta(agenda.id)"
+              (change)="alternarAgenda(agenda.id)"
+            />
+            <span
+              class="agenda-cor"
+              [style.background-color]="agenda.color"
+              aria-hidden="true"
+            ></span>
+            <span class="agenda-nome">{{ agenda.name }}</span>
+            @if (agenda.isDefault) {
+            <span class="agenda-marca" title="Agenda padrão">padrão</span>
+            }
+          </label>
+        </li>
+        } @empty {
+        <li class="lateral-vazio">Nenhuma agenda ainda.</li>
+        }
+      </ul>
+
+      <p class="lateral-nota">
+        Esconder uma agenda vale só para esta sessão: guardar a preferência
+        depende de uma rota que ainda não existe.
+      </p>
+    </aside>
+
+    <main class="principal">
+      @if (erro(); as mensagem) {
+      <p class="erro" role="alert">{{ mensagem }}</p>
+      }
+
+      <nb-visao-de-mes
+        [grade]="grade()"
+        [ocorrencias]="visiveis()"
+        [agendas]="agendas()"
+        [fuso]="fuso()"
+        [hoje]="hoje()"
+      />
+
+      @if (vazio()) {
+      <!-- O vocabulário do docs/04 para estado vazio. -->
+      <p class="vazio">Nada em órbita neste mês.</p>
+      }
+    </main>
+  </div>
+</div>
