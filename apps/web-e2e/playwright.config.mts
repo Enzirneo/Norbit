@@ -25,6 +25,27 @@ const baseURL = process.env['BASE_URL'] || getReadyUrl('http://localhost:4200');
  */
 export default defineConfig({
   ...nxE2EPreset(import.meta.dirname, { testDir: './src' }),
+  /*
+   * Um worker só.
+   *
+   * Os testes compartilham **um** banco: eles criam, alteram e apagam eventos
+   * nas mesmas agendas. Em paralelo, um teste que conta barras na tela vê o que
+   * outro acabou de criar, e a falha aparece de forma intermitente e sem
+   * relação com o código que a causou — o pior tipo de teste instável.
+   *
+   * O custo é tempo de execução, e para uma suíte deste tamanho ele é menor que
+   * o de uma falha que ninguém consegue reproduzir.
+   */
+  workers: 1,
+  /*
+   * 60 s por teste.
+   *
+   * Cada um entra pela interface de verdade (duas requisições e uma navegação)
+   * e espera a grade receber os dados antes de agir. Os 30 s do padrão ficam
+   * apertados num worker só, e o sintoma de estourar é a pior mensagem
+   * possível: "timeout", sem dizer em qual passo.
+   */
+  timeout: 60_000,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     baseURL,

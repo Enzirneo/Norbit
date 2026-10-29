@@ -9,7 +9,11 @@
  */
 import { ConfigModule } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common';
 import type {
   CriarEvento,
   EventoVisivel,
@@ -544,6 +548,67 @@ describe('EventosService', () => {
       });
 
       expect(r).toEqual([]);
+    });
+  });
+
+  describe('porId', () => {
+    it('devolve a linha gravada, com a regra de recorrência', async () => {
+      const criado = await criar({
+        title: 'Terapia',
+        startsAt: new Date('2026-06-02T12:00:00Z'),
+        endsAt: new Date('2026-06-02T13:00:00Z'),
+        recurrenceRule: 'FREQ=WEEKLY;BYDAY=TU',
+      });
+
+      const lido = await eventos.porId(enzo, criado.id);
+
+      expect(lido.recurrenceRule).toBe('FREQ=WEEKLY;BYDAY=TU');
+      expect(lido.visibility).toBe('INHERITED');
+    });
+
+    it('um membro qualquer consegue ler', async () => {
+      await virarMembro(prisma, agenda, maria, 'VIEWER');
+      const criado = await criar({
+        title: 'Do Enzo',
+        startsAt: new Date('2026-06-15T12:00:00Z'),
+        endsAt: new Date('2026-06-15T13:00:00Z'),
+      });
+
+      expect((await eventos.porId(maria, criado.id)).title).toBe('Do Enzo');
+    });
+
+    it('não é a porta de entrada para o que a consulta esconde', async () => {
+      // Sem esta verificação, a rota por id devolveria o evento privado que a
+      // listagem filtra — e a privacidade valeria só na tela de calendário.
+      await virarMembro(prisma, agenda, maria, 'EDITOR');
+      const privado = await eventos.criar({
+        userId: enzo,
+        calendarId: agenda,
+        dados: {
+          ...evento({
+            title: 'Consulta médica',
+            startsAt: new Date('2026-06-15T12:00:00Z'),
+            endsAt: new Date('2026-06-15T13:00:00Z'),
+          }),
+          visibility: 'PRIVATE',
+        },
+      });
+
+      await expect(eventos.porId(maria, privado.id)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('evento de agenda que eu não vejo dá o mesmo 404', async () => {
+      const criado = await criar({
+        title: 'Do Enzo',
+        startsAt: new Date('2026-06-15T12:00:00Z'),
+        endsAt: new Date('2026-06-15T13:00:00Z'),
+      });
+
+      await expect(eventos.porId(maria, criado.id)).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 

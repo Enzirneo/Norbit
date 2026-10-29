@@ -1,0 +1,151 @@
+/* O formulário de evento, dentro do diálogo. Só camada semântica. */
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 4);
+}
+
+.entrada {
+  width: 100%;
+  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 3);
+  border: 1px solid var(--border-default);
+  border-radius: calc(var(--space-unit) * 2);
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9375rem;
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+textarea.entrada {
+  resize: vertical;
+}
+
+.periodo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: calc(var(--space-unit) * 3);
+}
+
+.par {
+  display: flex;
+  gap: calc(var(--space-unit) * 2);
+}
+
+.marcacao {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 2);
+  font-size: 0.9375rem;
+  cursor: pointer;
+
+  input {
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+}
+
+.dias,
+.escopo {
+  display: flex;
+  gap: calc(var(--space-unit) * 2);
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.escopo {
+  flex-direction: column;
+}
+
+.dias {
+  flex-wrap: wrap;
+}
+
+.dias-titulo,
+.escopo-titulo {
+  padding: 0 0 calc(var(--space-unit) * 2);
+  color: var(--text-secondary);
+  font-size: 0.8125rem;
+}
+
+.dias-titulo {
+  /* `legend` em flex quebra a linha de forma inconsistente entre navegadores;
+     ocupar a largura inteira é o que mantém os dias numa faixa abaixo dele. */
+  width: 100%;
+}
+
+.dia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: calc(var(--space-unit) * 11);
+  padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
+  border: 1px solid var(--border-default);
+  border-radius: calc(var(--space-unit) * 2);
+  font-size: 0.8125rem;
+  cursor: pointer;
+
+  &:has(.dia-caixa:focus-visible) {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+.dia--ativo {
+  border-color: var(--accent);
+  background: color-mix(in oklab, var(--accent) 20%, transparent);
+}
+
+/* A caixa fica escondida porque o rótulo inteiro é o alvo de clique — mas
+   `display: none` a tiraria da ordem de tabulação, e o seletor ficaria
+   inacessível por teclado. */
+.dia-caixa {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.aviso {
+  margin: 0;
+  padding: calc(var(--space-unit) * 3);
+  border: 1px solid var(--state-danger);
+  border-radius: calc(var(--space-unit) * 2);
+  background: color-mix(in oklab, var(--state-danger) 12%, transparent);
+  font-size: 0.875rem;
+}
+
+.nota {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+
+  code {
+    font-size: 0.75rem;
+    word-break: break-all;
+  }
+}
+
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 2);
+  padding-block-start: calc(var(--space-unit) * 2);
+  border-block-start: 1px solid var(--border-subtle);
+}
+
+.espaco {
+  flex: 1;
+}
+
+.perigo {
+  color: var(--state-danger);
+}

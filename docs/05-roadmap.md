@@ -96,7 +96,8 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
 - [x] Visão de **mês** (grade) — ver [11](11-visao-de-mes.md). Semana, dia e lista de
       próximos ainda não
 - [x] Navegação de datas e "hoje". A linha de agora depende da grade de horas
-- [ ] Criar evento clicando/arrastando na grade
+- [x] Criar evento **clicando** na grade, e editar clicando na faixa — ver
+      [12](12-formulario-de-evento.md). Arrastar para criar ainda não
 - [ ] Arrastar para mover e redimensionar para mudar a duração
 - [ ] Paleta de comandos (`Cmd/Ctrl+K`) e atalhos de teclado
 - [ ] Layout responsivo, com a visão de dia como padrão no celular

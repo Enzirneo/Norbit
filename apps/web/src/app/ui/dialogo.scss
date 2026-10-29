@@ -1,0 +1,48 @@
+/* O `<dialog>` nativo, vestido com a camada semântica. */
+
+.dialogo {
+  width: min(32rem, calc(100vw - var(--space-unit) * 8));
+  max-height: calc(100dvh - var(--space-unit) * 16);
+  padding: calc(var(--space-unit) * 6);
+  border: 1px solid var(--border-default);
+  border-radius: calc(var(--space-unit) * 4);
+  background: var(--surface-overlay);
+  color: var(--text-primary);
+  overflow-y: auto;
+
+  /* `::backdrop` não herda as custom properties do documento em todos os
+     navegadores, então a cor é literal aqui — é a única exceção do projeto, e
+     o valor é preto translúcido, não uma cor do tema. */
+  &::backdrop {
+    background: rgb(0 0 0 / 0.55);
+    backdrop-filter: blur(2px);
+  }
+
+  /* A entrada é discreta: um diálogo que salta disputa atenção com o
+     conteúdo dele. 180ms é o `--duration-quick`. */
+  @starting-style {
+    opacity: 0;
+    transform: translateY(calc(var(--space-unit) * 2));
+  }
+
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity var(--duration-quick) var(--ease-settle),
+    transform var(--duration-quick) var(--ease-settle),
+    overlay var(--duration-quick) allow-discrete,
+    display var(--duration-quick) allow-discrete;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogo {
+    transition: none;
+  }
+}
+
+.titulo {
+  margin: 0 0 calc(var(--space-unit) * 4);
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}

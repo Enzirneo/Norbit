@@ -101,6 +101,8 @@
         [agendas]="agendas()"
         [fuso]="fuso()"
         [hoje]="hoje()"
+        (diaSelecionado)="criarEm($event)"
+        (selecionada)="editar($event)"
       />
 
       @if (vazio()) {
@@ -110,3 +112,29 @@
     </main>
   </div>
 </div>
+
+<!--
+  O diálogo fica fora da casca porque o `<dialog>` nativo sobe para a camada
+  superior do navegador por conta própria — aninhá-lo dentro de um container com
+  `overflow` não o cortaria, mas deixaria a leitura do template sugerindo que
+  ele pertence à grade.
+
+  `@if` no alvo, e não só o `[aberto]`: sem isso o formulário permaneceria
+  montado depois de fechar, mantendo o evento anterior carregado e aparecendo
+  por um quadro na próxima abertura.
+-->
+@if (alvo(); as alvoAtual) {
+<nb-dialogo
+  [titulo]="tituloDoDialogo()"
+  [aberto]="true"
+  (fechado)="fecharDialogo()"
+>
+  <nb-formulario-de-evento
+    [alvo]="alvoAtual"
+    [agendas]="agendas()"
+    [fuso]="fuso()"
+    (salvo)="aoSalvar()"
+    (cancelado)="fecharDialogo()"
+  />
+</nb-dialogo>
+}

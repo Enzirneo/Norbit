@@ -7,7 +7,13 @@
  */
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import type { AgendaVisivel, OcorrenciaVisivel } from '@norbit/contracts';
+import type {
+  AgendaVisivel,
+  AtualizarEvento,
+  CriarEvento,
+  EventoVisivel,
+  OcorrenciaVisivel,
+} from '@norbit/contracts';
 import type { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -35,5 +41,59 @@ export class CalendarioService {
       .set('ate', intervalo.ate.toISOString());
 
     return this.http.get<OcorrenciaVisivel[]>('/api/eventos', { params });
+  }
+
+  /**
+   * A linha gravada de um evento.
+   *
+   * O formulário de edição precisa dela, e não da ocorrência: a regra de
+   * recorrência, a visibilidade e as datas excluídas não cabem numa ocorrência.
+   */
+  evento(id: string): Observable<EventoVisivel> {
+    return this.http.get<EventoVisivel>(`/api/eventos/${id}`);
+  }
+
+  criarEvento(
+    calendarId: string,
+    dados: CriarEvento,
+  ): Observable<EventoVisivel> {
+    return this.http.post<EventoVisivel>(
+      `/api/agendas/${calendarId}/eventos`,
+      dados,
+    );
+  }
+
+  atualizarEvento(
+    id: string,
+    dados: AtualizarEvento,
+  ): Observable<EventoVisivel> {
+    return this.http.patch<EventoVisivel>(`/api/eventos/${id}`, dados);
+  }
+
+  removerEvento(id: string): Observable<void> {
+    return this.http.delete<void>(`/api/eventos/${id}`);
+  }
+
+  /**
+   * As duas operações de "só este".
+   *
+   * O instante vai no caminho, e é o `inicioOriginal` da ocorrência — a
+   * identidade dela dentro da série (ver docs/08). `encodeURIComponent` porque
+   * um ISO-8601 tem `:` e `+`, que em caminho de URL não são literais.
+   */
+  excluirOcorrencia(id: string, inicioOriginal: string): Observable<void> {
+    return this.http.delete<void>(
+      `/api/eventos/${id}/ocorrencias/${encodeURIComponent(inicioOriginal)}`,
+    );
+  }
+
+  destacarOcorrencia(
+    id: string,
+    inicioOriginal: string,
+  ): Observable<EventoVisivel> {
+    return this.http.post<EventoVisivel>(
+      `/api/eventos/${id}/ocorrencias/${encodeURIComponent(inicioOriginal)}/destacar`,
+      {},
+    );
   }
 }

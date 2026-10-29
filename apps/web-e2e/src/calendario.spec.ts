@@ -11,6 +11,7 @@
  * `prisma/seed.ts`.
  */
 import { test, expect, type Page } from '@playwright/test';
+import { restaurarBanco } from './apoio';
 
 const EMAIL = 'enzo@norbit.dev';
 const SENHA = 'norbit123';
@@ -37,6 +38,11 @@ async function entrar(page: Page): Promise<void> {
 }
 
 test.describe('calendário', () => {
+  // Cada teste parte do mesmo estado: ver `restaurarBanco`.
+  test.beforeEach(() => {
+    restaurarBanco();
+  });
+
   test('entrar leva à grade do mês atual', async ({ page }) => {
     await entrar(page);
 

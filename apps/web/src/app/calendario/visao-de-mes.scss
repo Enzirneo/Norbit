@@ -9,6 +9,23 @@
    mudar a outra, e por isso as duas dizem o mesmo número por escrito. */
 $trilhas: 3;
 
+/*
+ * O host precisa ser um item de flex que estica.
+ *
+ * Um elemento de componente do Angular nasce `display: inline`, então o `flex: 1`
+ * de `.grade` lá dentro não encontra ninguém esticando por fora: a grade
+ * colapsa na altura do conteúdo, cada semana fica com a altura do número do
+ * dia, e não sobra espaço vazio no dia para clicar e criar um evento.
+ *
+ * Encontrado pelo e2e: o clique no dia caía sempre sobre uma faixa.
+ */
+:host {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
 .grade {
   display: flex;
   flex: 1;
@@ -16,7 +33,9 @@ $trilhas: 3;
   min-height: 0;
   border: 1px solid var(--border-subtle);
   border-radius: calc(var(--space-unit) * 4);
-  overflow: hidden;
+  /* `auto` e não `hidden`: seis semanas cheias podem passar da altura da tela, e
+     cortar o conteúdo esconderia eventos. Rolar é a resposta honesta. */
+  overflow: auto;
   background: var(--surface-raised);
 }
 
@@ -39,10 +58,27 @@ $trilhas: 3;
 .semana {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  /* Linha 1: o número do dia. Linhas 2..4: as trilhas. Linha final: o "+N". */
-  grid-template-rows: auto repeat($trilhas, auto) auto;
-  flex: 1;
-  min-height: 0;
+  /* Linha 1: o número do dia. Linhas 2..4: as trilhas. Linha final: o "+N".
+     A última é `1fr` para absorver a sobra: sem isso as linhas ficam coladas no
+     topo da semana, a célula sobra vazia embaixo, e o fundo clicável fica com a
+     altura do número — ou seja, inteiramente coberto por ele. */
+  /* A última linha tem piso: com as três trilhas ocupadas, `1fr` sobra em
+     frações de pixel e o dia fica **sem espaço clicável** — criar um evento
+     num dia cheio deixaria de funcionar. O piso garante uma faixa. */
+  grid-template-rows: auto repeat($trilhas, auto) minmax(14px, 1fr);
+  /*
+   * A semana cresce para preencher, mas **nunca encolhe abaixo do conteúdo**.
+   *
+   * Com `flex: 1; min-height: 0` cada semana recebia uma fatia igual da altura
+   * disponível, e uma semana com as três trilhas ocupadas precisa de mais que
+   * isso: o grid transbordava e o fundo dela invadia a semana seguinte. O efeito
+   * visível era faixas de uma semana aparecendo sobre as células da outra, e os
+   * cliques na semana de cima sendo capturados pela de baixo.
+   *
+   * Encontrado pelo e2e, na mensagem "subtree intercepts pointer events".
+   */
+  flex: 1 0 auto;
+  min-height: min-content;
   row-gap: 2px;
 
   /* A borda vai só entre as semanas, para a última não dobrar com a do bloco. */
@@ -53,6 +89,21 @@ $trilhas: 3;
 
 .fundo {
   grid-row: 1 / -1;
+  /* É um `button`, então precisa perder a aparência de botão. O alvo de clique
+     é o dia inteiro, e o retorno visual é o `:hover` abaixo. */
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-overlay);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: -2px;
+  }
 
   /* Linha vertical entre os dias, sem dobrar na primeira coluna. */
   &:not(:first-of-type) {
@@ -71,6 +122,11 @@ $trilhas: 3;
 
 .numero-area {
   grid-row: 1;
+  /* O número não é interativo, e ele fica **por cima** do fundo clicável do dia
+     (mesma coluna, e depois no DOM). Sem isto ele engole o clique, e criar um
+     evento clicando no dia simplesmente não funciona — foi assim que o e2e
+     encontrou o defeito. */
+  pointer-events: none;
   display: flex;
   justify-content: flex-end;
   padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 2) 0;
