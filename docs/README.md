@@ -14,13 +14,14 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [05 — Roadmap](05-roadmap.md)                     | Fases de execução, ordem de implementação, critérios de pronto    |
 | [06 — Fluxo de Trabalho](06-fluxo-de-trabalho.md) | Branches, commits, PRs, CI, TDD e Clean Code                      |
 | [07 — Autenticação](07-autenticacao.md)           | Tokens, rotação, detecção de reúso, senhas e o que foi verificado |
+| [08 — Recorrência](08-recorrencia.md)             | Fuso horário, RRULE, expansão e as políticas de cada caso difícil |
 
 ## Estado atual
 
-**Fase 1 em andamento.** Monorepo de pé, banco criado, e a autenticação funcionando de
-ponta a ponta: cadastro, login, saída, renovação com rotação e detecção de reúso, mais
-o interceptor e os guards no Angular. As telas existem, mas são **cruas de propósito** —
-o visual é o próximo passo. Falta perfil e recuperação de senha.
+**Fase 2 começando.** Monorepo de pé, banco criado, autenticação funcionando de ponta a
+ponta (com visual), e o **motor de recorrência** pronto e testado — a parte que o
+roadmap aponta como o risco da fase. Faltam da Fase 1 o perfil e a recuperação de senha;
+da Fase 2, tudo o que é tela.
 
 Ver o [roadmap](05-roadmap.md) e a [documentação da autenticação](07-autenticacao.md).
 
