@@ -73,6 +73,14 @@ export class EventosController {
     return this.eventos.consultar(quem.id, consulta);
   }
 
+  @Get('eventos/:id')
+  async porId(
+    @UsuarioAtual() quem: Requisitante,
+    @Param('id', uuidNaRota) eventId: string,
+  ): Promise<EventoVisivel> {
+    return this.eventos.porId(quem.id, eventId);
+  }
+
   @Post('agendas/:calendarId/eventos')
   async criar(
     @UsuarioAtual() quem: Requisitante,

@@ -22,8 +22,13 @@ import type { AgendaVisivel, OcorrenciaVisivel } from '@norbit/contracts';
 import { gradeDeMes, intervaloDaGrade, paraHoraLocal } from '@norbit/domain';
 import { AuthService } from '../../auth/auth.service';
 import { Botao } from '../../ui/botao';
+import { Dialogo } from '../../ui/dialogo';
 import { Marca } from '../../ui/marca';
 import { CalendarioService } from '../calendario.service';
+import {
+  FormularioDeEvento,
+  type AlvoDoFormulario,
+} from '../formulario-de-evento';
 import { VisaoDeMes } from '../visao-de-mes';
 
 /**
@@ -37,7 +42,7 @@ const INICIO_DA_SEMANA = 0;
 
 @Component({
   selector: 'nb-calendario',
-  imports: [Botao, Marca, VisaoDeMes],
+  imports: [Botao, Dialogo, FormularioDeEvento, Marca, VisaoDeMes],
   templateUrl: './calendario.html',
   styleUrl: './calendario.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -115,6 +120,18 @@ export class Calendario {
     () => !this.carregando() && this.visiveis().length === 0,
   );
 
+  /**
+   * O que o diálogo está editando, ou `null` com ele fechado.
+   *
+   * Um sinal só para as duas coisas: o diálogo abre porque existe alvo, e não
+   * por um booleano separado que pode discordar dele.
+   */
+  protected readonly alvo = signal<AlvoDoFormulario | null>(null);
+
+  protected readonly tituloDoDialogo = computed(() =>
+    this.alvo()?.modo === 'editar' ? 'Editar evento' : 'Novo evento',
+  );
+
   constructor() {
     this.api.agendas().subscribe({
       next: (agendas) => this.agendas.set(agendas),
@@ -147,6 +164,34 @@ export class Calendario {
 
   protected estaOculta(id: string): boolean {
     return this.ocultas().has(id);
+  }
+
+  protected criarEm(dia: string): void {
+    this.alvo.set({ modo: 'criar', dia });
+  }
+
+  protected editar(ocorrencia: OcorrenciaVisivel): void {
+    this.alvo.set({
+      modo: 'editar',
+      eventoId: ocorrencia.id,
+      // A identidade da instância, não a da linha: é por ela que "só este"
+      // sabe qual ocorrência substituir. Ver docs/08.
+      inicioOriginal: ocorrencia.inicioOriginal,
+      ehRecorrente: ocorrencia.ehRecorrente,
+    });
+  }
+
+  protected fecharDialogo(): void {
+    this.alvo.set(null);
+  }
+
+  protected aoSalvar(): void {
+    this.alvo.set(null);
+    // Recarrega em vez de remendar a lista na memória: uma alteração pode criar
+    // uma linha filha, mudar a regra da série ou mover o evento para fora do
+    // mês, e reproduzir isso no cliente seria uma segunda implementação da
+    // expansão.
+    this.carregar();
   }
 
   protected sair(): void {

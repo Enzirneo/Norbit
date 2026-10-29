@@ -14,12 +14,20 @@
       -->
     @for (celula of semana.celulas; track celula.ano * 10000 + celula.mes * 100
     + celula.dia) {
-    <div
+    <!--
+          O fundo do dia é um `button`: clicar no vazio cria um evento ali, e
+          um `div` com `(click)` não chegaria pelo teclado. As faixas vêm
+          depois no DOM e por isso ficam por cima dele.
+        -->
+    <button
       class="fundo"
+      type="button"
       [class.fundo--fora]="!celula.noMes"
       [class.fundo--hoje]="ehHoje(celula)"
       [style.grid-column]="$index + 1"
-    ></div>
+      [attr.aria-label]="'Criar evento em ' + comoRotulo(celula)"
+      (click)="diaSelecionado.emit(comoTexto(celula))"
+    ></button>
 
     <div class="numero-area" [style.grid-column]="$index + 1">
       <span class="numero" [class.numero--hoje]="ehHoje(celula)">

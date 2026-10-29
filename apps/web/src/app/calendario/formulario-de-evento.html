@@ -1,0 +1,181 @@
+<form class="formulario" [formGroup]="formulario" (ngSubmit)="salvar()">
+  @if (erros()['formulario']; as mensagem) {
+  <p class="aviso" role="alert">{{ mensagem }}</p>
+  } @if (!pronto()) {
+  <!--
+      Nada de campos antes de o evento chegar: ao editar, a resposta da API
+      preenche o formulário com `reset()`, e qualquer coisa já digitada seria
+      descartada em silêncio.
+    -->
+  <p class="nota" aria-live="polite">Carregando o evento…</p>
+  } @else {
+  <nb-campo rotulo="Título" [erro]="erros()['title']">
+    <input
+      class="entrada"
+      type="text"
+      formControlName="title"
+      autocomplete="off"
+      placeholder="Jantar, reunião, consulta…"
+    />
+  </nb-campo>
+
+  <nb-campo rotulo="Agenda" [erro]="erros()['calendarId']">
+    <select class="entrada" formControlName="calendarId">
+      @for (agenda of agendasPermitidas(); track agenda.id) {
+      <option [value]="agenda.id">{{ agenda.name }}</option>
+      }
+    </select>
+  </nb-campo>
+
+  <label class="marcacao">
+    <input type="checkbox" formControlName="isAllDay" />
+    <span>Dia inteiro</span>
+  </label>
+
+  <div class="periodo">
+    <nb-campo rotulo="Início" [erro]="erros()['startsAt']">
+      <div class="par">
+        <input class="entrada" type="date" formControlName="dataInicio" />
+        @if (!formulario.controls.isAllDay.value) {
+        <input class="entrada" type="time" formControlName="horaInicio" />
+        }
+      </div>
+    </nb-campo>
+
+    <nb-campo rotulo="Fim" [erro]="erros()['endsAt']">
+      <div class="par">
+        <input class="entrada" type="date" formControlName="dataFim" />
+        @if (!formulario.controls.isAllDay.value) {
+        <input class="entrada" type="time" formControlName="horaFim" />
+        }
+      </div>
+    </nb-campo>
+  </div>
+
+  <nb-campo rotulo="Repetição">
+    <select class="entrada" formControlName="repeticao">
+      <option value="nao-repete">Não repete</option>
+      <option value="diaria">Todos os dias</option>
+      <option value="semanal">Toda semana</option>
+      <option value="mensal">Todo mês</option>
+      <option value="anual">Todo ano</option>
+      @if (regraPersonalizada()) {
+      <!--
+          A opção só existe quando o evento já tem uma regra que o seletor não
+          sabe expressar. Escolher qualquer outra troca a regra de propósito; o
+          que não pode acontecer é trocá-la sem querer, e é por isso que ela
+          aparece selecionada em vez de o seletor cair em "não repete".
+        -->
+      <option value="personalizada">Personalizada</option>
+      }
+    </select>
+  </nb-campo>
+
+  @if (escopoEhSomenteEste()) {
+  <p class="nota">
+    A repetição é da série inteira: para alterá-la, escolha "todos os eventos"
+    abaixo.
+  </p>
+  } @if (formulario.controls.repeticao.value === 'semanal' &&
+  !escopoEhSomenteEste()) {
+  <fieldset class="dias">
+    <legend class="dias-titulo">Nos dias</legend>
+    @for (dia of dias; track dia.valor) {
+    <label class="dia" [class.dia--ativo]="temDia(dia.valor)">
+      <input
+        class="dia-caixa"
+        type="checkbox"
+        [checked]="temDia(dia.valor)"
+        (change)="alternarDia(dia.valor)"
+      />
+      <span>{{ dia.rotulo }}</span>
+    </label>
+    }
+  </fieldset>
+  } @if ( formulario.controls.repeticao.value === 'personalizada' &&
+  regraPersonalizada() ) {
+  <p class="nota">
+    Esta repetição usa uma regra que este formulário ainda não sabe editar:
+    <code>{{ regraPersonalizada() }}</code>. Ela é preservada como está — e
+    escolher outra opção acima substitui a regra.
+  </p>
+  }
+
+  <nb-campo rotulo="Local" [erro]="erros()['location']">
+    <input class="entrada" type="text" formControlName="location" />
+  </nb-campo>
+
+  <nb-campo rotulo="Descrição" [erro]="erros()['description']">
+    <textarea class="entrada" rows="3" formControlName="description"></textarea>
+  </nb-campo>
+
+  @if (precisaEscolherEscopo()) {
+  <fieldset class="escopo">
+    <legend class="escopo-titulo">Aplicar a</legend>
+    <label class="marcacao">
+      <input type="radio" formControlName="escopo" value="este" />
+      <span>Somente este evento</span>
+    </label>
+    <label class="marcacao">
+      <input type="radio" formControlName="escopo" value="todos" />
+      <span>Todos os eventos da série</span>
+    </label>
+  </fieldset>
+  }
+
+  <footer class="acoes">
+    @if (editando() && !somenteLeitura()) { @if (confirmandoExclusao()) {
+    <button
+      nb-botao
+      aparencia="texto"
+      type="button"
+      class="perigo"
+      [ocupado]="enviando()"
+      (click)="excluir()"
+    >
+      Confirmar exclusão
+    </button>
+    <button
+      nb-botao
+      aparencia="texto"
+      type="button"
+      (click)="confirmandoExclusao.set(false)"
+    >
+      Manter
+    </button>
+    } @else {
+    <!--
+          Dois passos para excluir. Numa série, o que o botão apaga depende do
+          escopo escolhido acima, e isso é informação demais para um clique só.
+        -->
+    <button
+      nb-botao
+      aparencia="texto"
+      type="button"
+      (click)="confirmandoExclusao.set(true)"
+    >
+      Excluir
+    </button>
+    } }
+
+    <span class="espaco"></span>
+
+    <button
+      nb-botao
+      aparencia="contorno"
+      type="button"
+      (click)="cancelado.emit()"
+    >
+      Cancelar
+    </button>
+
+    @if (somenteLeitura()) {
+    <p class="nota">Seu papel nesta agenda não permite alterar este evento.</p>
+    } @else {
+    <button nb-botao type="submit" [ocupado]="enviando()">
+      {{ editando() ? 'Salvar' : 'Criar evento' }}
+    </button>
+    }
+  </footer>
+  }
+</form>

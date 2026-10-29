@@ -62,6 +62,41 @@ export class EventosService {
       .sort((a, b) => a.inicio.localeCompare(b.inicio));
   }
 
+  /**
+   * Um evento pelo id.
+   *
+   * O formulário de edição precisa da **linha**, não da ocorrência: a regra de
+   * recorrência, a visibilidade e as datas excluídas não cabem numa ocorrência
+   * (ver `OcorrenciaVisivel`), e inventá-las no cliente a partir do que a
+   * consulta devolve seria adivinhar.
+   *
+   * Exige só `ver`: quem vê o evento na grade pode abrir o que está gravado. A
+   * permissão de **alterar** é verificada na alteração.
+   */
+  async porId(userId: string, eventId: string): Promise<EventoVisivel> {
+    const evento = await this.prisma.event.findFirst({
+      where: { id: eventId, deletedAt: null },
+    });
+
+    if (!evento) {
+      throw new NotFoundException('Evento não encontrado.');
+    }
+
+    await this.acesso.abrir({
+      calendarId: evento.calendarId,
+      userId,
+      acao: 'ver',
+    });
+
+    // `PRIVATE` de outra pessoa não é visível nem pelo id — do contrário a rota
+    // seria a porta de entrada para o que a consulta esconde.
+    if (evento.visibility === 'PRIVATE' && evento.createdById !== userId) {
+      throw new NotFoundException('Evento não encontrado.');
+    }
+
+    return paraEventoVisivel(evento);
+  }
+
   async criar(entrada: {
     readonly userId: string;
     readonly calendarId: string;

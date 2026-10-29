@@ -19,3 +19,5 @@ export * from './lib/tarefas/ordenacao';
 export * from './lib/calendario/grade-de-mes';
 export * from './lib/calendario/faixas';
 export * from './lib/calendario/semana';
+export * from './lib/formulario/campos-de-tempo';
+export * from './lib/formulario/repeticao';

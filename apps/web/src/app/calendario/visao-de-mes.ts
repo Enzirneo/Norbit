@@ -74,6 +74,8 @@ export class VisaoDeMes {
   readonly hoje = input.required<{ ano: number; mes: number; dia: number }>();
 
   readonly selecionada = output<OcorrenciaVisivel>();
+  /** O dia clicado no espaço vazio, em `AAAA-MM-DD`. */
+  readonly diaSelecionado = output<string>();
 
   protected readonly diasDaSemana = computed(() => nomesDosDias(this.grade()));
 
@@ -87,6 +89,21 @@ export class VisaoDeMes {
       this.desenhar(celulas, porChave, cores),
     );
   });
+
+  /** `AAAA-MM-DD` da célula, que é o que o formulário recebe. */
+  protected comoTexto(celula: CelulaDaGrade): string {
+    const dois = (n: number): string => String(n).padStart(2, '0');
+    return `${celula.ano}-${dois(celula.mes)}-${dois(celula.dia)}`;
+  }
+
+  /** Para o rótulo do botão de dia: "15 de junho". */
+  protected comoRotulo(celula: CelulaDaGrade): string {
+    return new Intl.DateTimeFormat('pt-BR', {
+      day: 'numeric',
+      month: 'long',
+      timeZone: 'UTC',
+    }).format(new Date(Date.UTC(celula.ano, celula.mes - 1, celula.dia)));
+  }
 
   protected ehHoje(celula: CelulaDaGrade): boolean {
     const hoje = this.hoje();
