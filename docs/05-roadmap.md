@@ -84,11 +84,13 @@ O desenho e o que foi verificado rodando estão em
 
 A fase maior e a mais importante. Aqui o produto passa a existir.
 
-- [ ] CRUD de agendas, com a agenda pessoal padrão criada no cadastro
-- [ ] CRUD de eventos: título, descrição, local, início/fim, dia inteiro, cor
+- [x] CRUD de agendas, com a agenda pessoal padrão criada no cadastro — ver
+      [09](09-agendas-e-eventos.md)
+- [x] CRUD de eventos: título, descrição, local, início/fim, dia inteiro, cor
 - [x] Recorrência: RRULE em `libs/domain`, expansão por intervalo, com testes cobrindo
-      horário de verão e "excluir só este" — ver [08](08-recorrencia.md). O motor está
-      pronto; falta a **escrita** das exceções ("editar só este" cria a linha filha)
+      horário de verão e "excluir só este" — ver [08](08-recorrencia.md). O motor e a
+      **escrita** das exceções estão prontos: "editar só este" cria a linha filha, e a
+      expansão da série-mãe suprime a instância substituída
 - [ ] CRUD de tarefas: prazo, prioridade, concluir, subtarefas, reordenar
 - [ ] Visão de mês (grade), semana e dia (grade de horas), e lista de próximos
 - [ ] Navegação de datas, "hoje", linha de agora
@@ -98,6 +100,15 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
 - [ ] Layout responsivo, com a visão de dia como padrão no celular
 
 **Pronto quando:** dá para usar como agenda pessoal de verdade, sem compartilhar nada.
+
+> **Antecipado da Fase 3, por necessidade.** A matriz de papéis e a gestão de membros
+> (alterar papel, remover, sair) entraram aqui, porque evento vive dentro de agenda e não
+> havia como autorizar a criação de evento sem decidir primeiro quem pode o quê. A
+> filtragem de `PRIVATE` na query veio junto, pelo mesmo motivo: o contrato aceitava o
+> campo, e campo chamado "privado" que não esconde nada é pior que campo inexistente.
+>
+> Ficou na Fase 3 o que depende de e-mail: os convites. Ver
+> [09](09-agendas-e-eventos.md).
 
 > **Risco desta fase — endereçado primeiro.** A recorrência foi a entrega inicial da
 > fase, antes de qualquer tela, exatamente como este aviso pedia. O motor tem 55 testes
@@ -116,10 +127,13 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
 
 - [ ] Convites por e-mail e por link, com token de uso único e expiração
 - [ ] Aceitar/recusar convite, entrada na agenda
-- [ ] Gestão de membros: alterar papel, remover, sair da agenda
-- [ ] `CalendarAccessGuard` aplicando a matriz de papéis em toda rota
-- [ ] Visibilidade `PRIVATE` filtrada na query, com teste que prova que o evento
-      privado de A não aparece na resposta da API para B
+- [x] Gestão de membros: alterar papel, remover, sair da agenda — entregue na Fase 2
+- [x] A matriz de papéis aplicada em toda rota. Virou o `AcessoService` e não um guard: a
+      autorização de um evento depende de **quem o criou**, e um guard do Nest decide
+      antes de o controller buscar a linha. Ver [09](09-agendas-e-eventos.md)
+- [x] Visibilidade `PRIVATE` filtrada na query, com teste que prova que o evento privado
+      de A não aparece na resposta da API para B — nem para um `EDITOR`
+- [ ] Transferir a posse da agenda (troca `ownerId`, com confirmação própria)
 - [ ] Sobreposição de agendas, com seletor na barra lateral e cor por membro
 - [ ] Participantes e RSVP nos eventos
 - [ ] Atribuir tarefa a um membro

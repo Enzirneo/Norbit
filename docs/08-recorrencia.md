@@ -88,11 +88,22 @@ pertence à regra; a exclusão é posterior. Devolver a vaga para a contagem far
 RFC manda. Aproximar para o dia 30 ou 28 inventaria um compromisso num dia que a pessoa
 não escolheu.
 
-### Sobreposição, não contenção
+### Sobreposição, não contenção — num intervalo semiaberto
 
 A consulta de intervalo devolve a ocorrência que **cruza** o intervalo, não só a que
 começa dentro dele. A viagem de uma semana que começou no mês passado tem de aparecer na
 visão deste mês.
+
+O intervalo é semiaberto: `[de, ate)`. A primeira versão fechava a borda de baixo
+(`fim >= de`), e isso só ficou visível quando o evento de dia inteiro passou a ter fim
+exclusivo (ver [09](09-agendas-e-eventos.md)): o dia inteiro do dia 15 termina exatamente
+na meia-noite que abre o 16, e aparecia nas duas visões. Dois dias consecutivos não podem
+reivindicar o mesmo instante.
+
+O marco de duração zero é a exceção, e está escrito como tal: `fim > de` o descartaria do
+intervalo que começa nele, e um evento sem duração ("entrega do relatório") não apareceria
+em visão nenhuma. Tratado como ponto, ele cai em exatamente um dos dois intervalos
+vizinhos.
 
 ### Duração exata, e não de parede
 
@@ -135,10 +146,11 @@ virar um tempo de resposta inexplicável.
 A terceira depende do campo `inicioOriginal` que cada ocorrência carrega: é a identidade
 dela, e é por ele que a exceção se refere à instância que substitui.
 
-> **O que ainda não existe:** a escrita. `expandir` já devolve `inicioOriginal` e já
-> aplica `excludedDates`, mas as rotas que criam a linha de exceção e que suprimem a
-> instância substituída são o passo seguinte da Fase 2. Hoje isto é o motor, sem o
-> volante.
+> **A escrita existe.** As rotas que criam a linha de exceção e que suprimem a instância
+> substituída foram entregues junto com o CRUD de eventos — ver
+> [09](09-agendas-e-eventos.md). `excludedDates` e `originalStartsAt` são mecanismos
+> separados de propósito: um é a exclusão, o outro é a substituição, e separá-los é o que
+> permite desfazer um sem o outro.
 
 ## O que os testes cobrem
 

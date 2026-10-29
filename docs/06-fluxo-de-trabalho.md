@@ -216,6 +216,43 @@ uma regra de recorrência errada corrompe silenciosamente a agenda de todo mundo
 falha e falha. Sem isso você não sabe se corrigiu, e nada impede a regressão daqui a
 três meses.
 
+### Teste verde não prova nada: verifique por mutação
+
+O passo vermelho valida o teste contra a **ausência** do código. Não valida o teste
+contra um código **errado** — e é aí que mora o teste que parece verificar uma coisa e
+verifica outra.
+
+A prática adotada aqui: depois de os testes passarem, **plante o defeito de propósito** e
+confirme que algum teste falha. Em `libs/domain` isso é um `perl -0pi -e` e dez segundos.
+
+Já encontrou três coisas que o passo vermelho não tinha encontrado:
+
+1. Um teste de duração de recorrência que passava com **as duas** implementações, porque
+   usava um evento que não atravessava virada de horário de verão — ver
+   [08](08-recorrencia.md).
+2. Um `Object.hasOwn` com um comentário dizendo que era a defesa contra papel de permissão
+   inválido, e que **nenhum teste** notava a remoção — porque ele não defendia nada. Ver
+   [09](09-agendas-e-eventos.md).
+3. Uma afirmação que estava num comentário e em lugar nenhum mais ("o dono não se tranca
+   fora da própria agenda"), descoberta porque a mutação que a violava passava verde.
+
+> **Confirme que a mutação foi aplicada.** Duas das mutações feitas no PR das agendas
+> "passaram" só porque o `perl` não casou o padrão — o arquivo nunca mudou. Verde de
+> mutação não aplicada é pior que não ter mutado: você sai acreditando que o teste é bom.
+> Use substituição que **falha alto** quando o padrão não existe:
+>
+> ```python
+> assert antigo in fonte, 'PADRÃO NÃO ENCONTRADO'
+> ```
+>
+> E cuidado com mutação que não **compila**: um import que vira inútil faz a suíte não
+> rodar, e o relatório diz "0 testes" em vez de "nenhum teste falhou". As duas situações
+> parecem a mesma na pressa, e não são.
+
+E nunca use `git checkout -- arquivo` para desfazer uma linha de um arquivo que você
+editou: ele reverte o arquivo **inteiro**. Custou as alterações do `schema.prisma` uma vez
+aqui.
+
 ### Onde ser pragmático
 
 - **Serviços NestJS:** teste de integração com banco real (Postgres de teste em
@@ -364,6 +401,32 @@ Quando foram ligadas, estas regras pegaram **três defeitos reais** no esqueleto
 pelo Nx — o mais sério deles um `bootstrap()` sem `catch` em `apps/api/src/main.ts`, que
 transformaria "porta ocupada" ou "banco fora do ar" numa `unhandled rejection` com
 rastro de pilha, em vez de uma mensagem e um código de saída.
+
+### Depois de mexer no `schema.prisma`, duas coisas que não são óbvias
+
+**1. Rode `npm run db:generate`.** O client gerado carrega a própria cópia dos `@default`
+do schema. Sem regerar, ele continua gravando o valor antigo — e isso é dado errado em
+silêncio, a menos que exista uma restrição no banco para barrá-lo (ver
+[03](03-modelo-de-dados.md)).
+
+**2. O cache do Nx não enxerga o client gerado.** `libs/db/src/generated/` está no
+`.gitignore`, e o Nx **não inclui arquivos ignorados no hash das tarefas**. Então regerar
+o client não invalidava cache nenhum, e um `nx serve` podia restaurar um bundle construído
+contra outro schema. Isso custou três sessões de depuração falsas no PR das agendas, com
+a API respondendo 500 por uma constraint que o código já respeitava.
+
+Resolvido declarando o schema e as migrations como entrada global no `nx.json`:
+
+```json
+"sharedGlobals": [
+  "{workspaceRoot}/prisma/schema.prisma",
+  "{workspaceRoot}/prisma/migrations/**/*.sql"
+]
+```
+
+Verificado: `nx build api` duas vezes dá cache hit; alterar o schema e rodar de novo dá
+cache miss. **Toda saída gerada e ignorada pelo git precisa da fonte dela declarada como
+entrada** — do contrário o Nx acerta o hash e erra a realidade.
 
 ### Fronteiras entre camadas, também automáticas
 

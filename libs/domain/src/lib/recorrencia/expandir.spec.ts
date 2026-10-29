@@ -371,6 +371,67 @@ describe('expandir', () => {
     });
   });
 
+  describe('as bordas do intervalo consultado', () => {
+    // O intervalo é semiaberto: `[de, ate)`. Isso deixou de ser detalhe quando
+    // o evento de dia inteiro passou a ter fim **exclusivo** (meia-noite a
+    // meia-noite — ver `agendas/dia-inteiro.ts`): com a borda inclusiva, o dia
+    // 15 aparecia também na visão do dia 16, porque o fim dele é exatamente a
+    // meia-noite que abre o 16.
+    const DIA_16 = {
+      de: em('2026-06-16T03:00:00Z'),
+      ate: em('2026-06-17T03:00:00Z'),
+    };
+
+    it('exclui o evento que termina exatamente quando o intervalo começa', () => {
+      // O dia inteiro do dia 15 em São Paulo: 15/06 00:00 a 16/06 00:00 locais.
+      const r = expandir(
+        evento({ inicio: '2026-06-15T03:00:00Z', fim: '2026-06-16T03:00:00Z' }),
+        DIA_16,
+      );
+
+      expect(r).toEqual([]);
+    });
+
+    it('exclui o evento que começa exatamente quando o intervalo termina', () => {
+      const r = expandir(
+        evento({ inicio: '2026-06-17T03:00:00Z', fim: '2026-06-18T03:00:00Z' }),
+        DIA_16,
+      );
+
+      expect(r).toEqual([]);
+    });
+
+    it('inclui o evento que começa exatamente quando o intervalo começa', () => {
+      const r = expandir(
+        evento({ inicio: '2026-06-16T03:00:00Z', fim: '2026-06-17T03:00:00Z' }),
+        DIA_16,
+      );
+
+      expect(inicios(r)).toEqual(['2026-06-16T03:00:00.000Z']);
+    });
+
+    describe('o marco de duração zero', () => {
+      // "Entrega do relatório" é um evento legítimo sem duração, e com a borda
+      // semiaberta ele precisaria de atenção: `fim > de` o descartaria do
+      // intervalo que começa exatamente nele. Ele é tratado como ponto, e cai
+      // em **exatamente um** dos dois intervalos vizinhos.
+      it('aparece no intervalo que começa nele', () => {
+        const r = expandir(evento({ inicio: '2026-06-16T03:00:00Z' }), DIA_16);
+
+        expect(inicios(r)).toEqual(['2026-06-16T03:00:00.000Z']);
+      });
+
+      it('não aparece no intervalo que termina nele', () => {
+        const r = expandir(evento({ inicio: '2026-06-16T03:00:00Z' }), {
+          de: em('2026-06-15T03:00:00Z'),
+          ate: em('2026-06-16T03:00:00Z'),
+        });
+
+        expect(r).toEqual([]);
+      });
+    });
+  });
+
   describe('proteção contra regra patológica', () => {
     it('recusa expandir uma série sem fim por um intervalo absurdo', () => {
       // Sem limite, uma consulta de "todos os dias" por mil anos travaria o

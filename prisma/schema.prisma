@@ -166,7 +166,7 @@ model UserSettings {
   theme         ThemeMode    @default(SYSTEM)
   // Nome do preset orbital (ver docs/04-design-system.md), ex.: "nebula".
   themePreset   String       @default("nebula")
-  accentColor   String       @default("#6D7CFF") // hex, validado na aplicação
+  accentColor   String       @default("#6d7cff") // hex, validado na aplicação
   // 0 = compacta, 1 = confortável, 2 = espaçosa
   density       Int          @default(1)
   reducedMotion Boolean      @default(false)
@@ -247,7 +247,7 @@ model Calendar {
   name        String
   description String?
   kind        CalendarKind @default(PERSONAL)
-  color       String       @default("#6D7CFF")
+  color       String       @default("#6d7cff")
   icon        String?      // nome do ícone ou emoji
   timeZone    String       @default("America/Sao_Paulo")
   // Exatamente uma agenda por usuário é a padrão, garantido por índice parcial
@@ -462,7 +462,7 @@ model Tag {
   calendar   Calendar @relation(fields: [calendarId], references: [id], onDelete: Cascade)
 
   name  String
-  color String @default("#8B8FA3")
+  color String @default("#8b8fa3")
 
   createdAt DateTime @default(now()) @db.Timestamptz
 
@@ -603,6 +603,14 @@ model Activity {
 // 2. Índice parcial único garantindo uma só agenda padrão por usuário
 // 3. CHECK: um lembrete aponta para um evento OU uma tarefa, nunca ambos
 // 4. CHECK: o fim de um evento nunca vem antes do início
+//
+// E cinco em 20261029024149_cores_em_minusculo:
+//
+// 5-9. CHECK: toda cor é `#rrggbb` minúsculo, nas cinco colunas que guardam cor
+//      (`calendars`, `tags`, `user_settings`, `calendar_members`, `events`). O
+//      contrato `corHex` já normalizava a entrada, mas os DEFAULT desta migration
+//      estavam em maiúsculas — e um DEFAULT do banco não passa por contrato
+//      nenhum. A restrição é o que fecha esse caminho.
 //
 // **Ao alterar este schema**, gere a próxima migration com
 // `npx prisma migrate dev` e confira se alguma dessas restrições foi perdida —

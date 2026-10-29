@@ -74,6 +74,40 @@ describe('AuthService', () => {
       expect(gravado?.settings).not.toBeNull();
     });
 
+    it('cria a agenda padrão junto, com a linha de membro do dono', async () => {
+      // Sem a agenda padrão, a primeira tela útil depois do cadastro seria um
+      // formulário de "crie uma agenda", e todo evento criado precisaria
+      // escolher onde cair.
+      const { usuario } = await auth.cadastrar(CADASTRO, CONTEXTO);
+
+      const agendas = await prisma.calendar.findMany({
+        where: { ownerId: usuario.id },
+        include: { members: true },
+      });
+
+      expect(agendas).toHaveLength(1);
+      expect(agendas[0]?.isDefault).toBe(true);
+      expect(agendas[0]?.kind).toBe('PERSONAL');
+      expect(agendas[0]?.members).toEqual([
+        expect.objectContaining({ userId: usuario.id, role: 'OWNER' }),
+      ]);
+    });
+
+    it('a cor da agenda padrão nasce em minúsculo', async () => {
+      // Encontrado sondando a API de fora: o DEFAULT do banco estava em
+      // maiúsculas, e um DEFAULT não passa por contrato nenhum — então a agenda
+      // criada junto com a conta era a única linha do sistema com a grafia
+      // errada. Hoje há CHECK no banco também; este teste é o que explica por
+      // quê.
+      const { usuario } = await auth.cadastrar(CADASTRO, CONTEXTO);
+
+      const agenda = await prisma.calendar.findFirstOrThrow({
+        where: { ownerId: usuario.id },
+      });
+
+      expect(agenda.color).toBe(agenda.color.toLowerCase());
+    });
+
     it('nunca guarda a senha em claro', async () => {
       const { usuario } = await auth.cadastrar(CADASTRO, CONTEXTO);
 
