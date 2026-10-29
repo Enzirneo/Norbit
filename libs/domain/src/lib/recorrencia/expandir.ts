@@ -292,17 +292,35 @@ function avulso(evento: EventoRecorrente, intervalo: Intervalo): Ocorrencia[] {
 }
 
 /**
- * Sobreposição, não contenção.
+ * Sobreposição, não contenção — num intervalo **semiaberto**: `[de, ate)`.
  *
  * A viagem que começou no mês passado e termina neste tem de aparecer na visão
  * deste mês; filtrar só por data de início a esconderia.
+ *
+ * Semiaberto porque a visão de um dia vai da meia-noite dele à meia-noite do
+ * seguinte, e dois dias consecutivos não podem reivindicar o mesmo instante. A
+ * primeira versão fechava a borda de baixo (`fim >= de`), e isso só ficou
+ * visível quando o evento de dia inteiro passou a ter fim exclusivo (ver
+ * `agendas/dia-inteiro.ts`): o dia inteiro do dia 15 termina exatamente na
+ * meia-noite que abre o 16, e aparecia nas duas visões.
+ *
+ * O marco de duração zero é a exceção, e por isso está escrito: `fim > de` o
+ * descartaria do intervalo que começa exatamente nele, e um evento sem duração
+ * ("entrega do relatório") não apareceria em visão nenhuma. Tratado como ponto,
+ * ele cai em exatamente um dos dois intervalos vizinhos.
  */
 function seCruzam(
   evento: { inicio: Date; fim: Date },
   intervalo: Intervalo,
 ): boolean {
-  return (
-    evento.inicio.getTime() < intervalo.ate.getTime() &&
-    evento.fim.getTime() >= intervalo.de.getTime()
-  );
+  const inicio = evento.inicio.getTime();
+  const fim = evento.fim.getTime();
+  const de = intervalo.de.getTime();
+  const ate = intervalo.ate.getTime();
+
+  if (inicio >= ate) {
+    return false;
+  }
+
+  return fim === inicio ? inicio >= de : fim > de;
 }

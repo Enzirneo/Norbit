@@ -45,6 +45,9 @@ const CREDENCIAL_INVALIDA = 'E-mail ou senha incorretos.';
 
 const SESSAO_INVALIDA = 'Sessão inválida. Entre novamente.';
 
+/** O nome da agenda criada junto com a conta. A pessoa renomeia se quiser. */
+const NOME_DA_AGENDA_PADRAO = 'Minha agenda';
+
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
@@ -165,21 +168,43 @@ export class AuthService {
 
   // ─── privados ──────────────────────────────────────────────────────────────
 
+  /**
+   * Cria o usuário, as preferências e a agenda padrão numa inserção só.
+   *
+   * O Prisma resolve as escritas aninhadas na mesma transação, então não existe
+   * conta sem preferências nem conta sem agenda. A agenda padrão importa mais
+   * do que parece: sem ela, a primeira tela útil depois do cadastro seria um
+   * formulário de "crie uma agenda", e todo evento criado precisaria escolher
+   * onde cair. O índice parcial único do banco garante uma só por usuário.
+   *
+   * A linha de membro do próprio dono é criada junto, como em
+   * `AgendasService.criar`: `ownerId` é a fonte da verdade do papel de dono, mas
+   * a lista de membros precisa mostrá-lo.
+   */
   private async criarUsuario(
     dados: Cadastro,
     passwordHash: string,
   ): Promise<User> {
+    const id = uuidv7();
+
     try {
-      // `settings` aninhado: o Prisma resolve as duas inserções na mesma
-      // transação, então não existe usuário sem preferências.
       return await this.prisma.user.create({
         data: {
-          id: uuidv7(),
+          id,
           email: dados.email,
           handle: dados.handle,
           displayName: dados.displayName,
           passwordHash,
           settings: { create: {} },
+          ownedCalendars: {
+            create: {
+              id: uuidv7(),
+              name: NOME_DA_AGENDA_PADRAO,
+              kind: 'PERSONAL',
+              isDefault: true,
+              members: { create: { user: { connect: { id } }, role: 'OWNER' } },
+            },
+          },
         },
       });
     } catch (erro) {

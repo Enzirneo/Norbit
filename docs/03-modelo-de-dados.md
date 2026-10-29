@@ -148,6 +148,18 @@ npm run db:studio          # ou Adminer em http://localhost:8080
 > | Segunda agenda padrão para o mesmo dono | `duplicate key value violates unique constraint "calendars_one_default_per_owner"` |
 > | Evento terminando antes de começar      | `violates check constraint "events_valid_range"`                                   |
 > | Lembrete sem evento nem tarefa          | `violates check constraint "reminders_one_target"`                                 |
+> | Cor em maiúsculas                       | `violates check constraint "calendars_color_hex"`                                  |
+
+> **Cinco restrições a mais, na segunda migration.** `20261029024149_cores_em_minusculo`
+> acrescentou um CHECK de formato em cada uma das cinco colunas que guardam cor
+> (`calendars`, `tags`, `user_settings`, `calendar_members`, `events`): `#rrggbb`
+> minúsculo, sempre.
+>
+> Elas nasceram de um defeito real. O contrato `corHex` já normalizava a entrada para
+> minúscula, mas os `@default` desta migration inicial estavam em maiúsculas — e um
+> DEFAULT do banco **não passa por validação de aplicação nenhuma**. A agenda criada junto
+> com a conta era a única linha do sistema com a grafia errada, e isso só apareceu
+> sondando a API de fora. Ver [09](09-agendas-e-eventos.md).
 
 ### Duas pegadinhas do Prisma 7
 
@@ -160,12 +172,16 @@ Além disso, o Prisma 8 (hoje em release candidate) exige Node ≥ 22.18, e a su
 está no 22.14. Fixe a major 7 no `package.json` por enquanto, ou atualize o Node antes
 de migrar.
 
-### Por que as quatro restrições estão no banco, e não só no código
+### Por que as restrições estão no banco, e não só no código
 
 O Prisma não expressa índices parciais nem CHECK constraints no schema, então elas foram
 escritas à mão no fim da migration. Valem estar ali porque é o banco que impede o dado
 inválido de existir — independente de qual parte da aplicação, script de manutenção ou
 seed tentou gravá-lo.
+
+E a lista de "qual parte" é maior do que parece: o caminho que furou a normalização de cor
+não foi um controller esquecido, foi o **valor padrão do próprio banco**. Validação na
+aplicação é a mensagem decente; a restrição é a garantia.
 
 ### Nomes das colunas
 

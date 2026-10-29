@@ -68,13 +68,13 @@ async function main(): Promise<void> {
       passwordHash: SENHA_DEV,
       timeZone: FUSO,
       emailVerifiedAt: new Date(),
-      settings: { create: { themePreset: 'nebula', accentColor: '#6D7CFF' } },
+      settings: { create: { themePreset: 'nebula', accentColor: '#6d7cff' } },
       ownedCalendars: {
         create: {
           id: randomUUID(),
           name: 'Minha órbita',
           kind: 'PERSONAL',
-          color: '#6D7CFF',
+          color: '#6d7cff',
           isDefault: true,
           timeZone: FUSO,
         },
@@ -92,13 +92,13 @@ async function main(): Promise<void> {
       passwordHash: SENHA_DEV,
       timeZone: FUSO,
       emailVerifiedAt: new Date(),
-      settings: { create: { themePreset: 'dawn', accentColor: '#4ADEBB' } },
+      settings: { create: { themePreset: 'dawn', accentColor: '#4adebb' } },
       ownedCalendars: {
         create: {
           id: randomUUID(),
           name: 'Órbita da Maria',
           kind: 'PERSONAL',
-          color: '#4ADEBB',
+          color: '#4adebb',
           isDefault: true,
           timeZone: FUSO,
         },
@@ -131,13 +131,13 @@ async function main(): Promise<void> {
       name: 'Nós dois',
       description: 'O que os dois precisam saber',
       kind: 'SHARED',
-      color: '#A97BFF',
+      color: '#a97bff',
       timeZone: FUSO,
       members: {
         create: [
           { userId: enzo.id, role: 'OWNER' },
           // Maria vê esta agenda em verde, sem alterar a cor que o Enzo vê.
-          { userId: maria.id, role: 'EDITOR', colorOverride: '#4ADEBB' },
+          { userId: maria.id, role: 'EDITOR', colorOverride: '#4adebb' },
         ],
       },
     },

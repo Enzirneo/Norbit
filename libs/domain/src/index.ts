@@ -9,3 +9,7 @@ export * from './lib/tempo/zona';
 // própria em vez de pedir as ocorrências.
 export * from './lib/recorrencia/rrule';
 export * from './lib/recorrencia/expandir';
+
+export * from './lib/agendas/permissoes';
+
+export * from './lib/agendas/dia-inteiro';
