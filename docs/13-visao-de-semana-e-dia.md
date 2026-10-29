@@ -140,6 +140,26 @@ faixas simultâneas para provar que elas ficam lado a lado sem se sobrepor.
 > que _parece_ resultado de um defeito de navegação. Agora há um ajudante que clica e
 > espera a mudança.
 
+## Uma pendência de desempenho, medida
+
+O teste que exercita o limite de expansão (`LIMITE_DE_PERIODOS = 20 000`) **quebrou no
+CI** neste PR, por tempo: ~1 s nesta máquina, **7,4 s** no runner com `--coverage`, contra
+os 5 s do padrão do vitest. Não foi regressão — ele sempre esteve nessa borda, e passava ou
+falhava conforme a máquina do dia. Ganhou prazo explícito, com o motivo escrito ao lado.
+
+O prazo resolve o teste e **não** resolve a causa: a expansão percorre todos os períodos
+desde o **início da série**, não desde a janela consultada. Uma série diária criada em 2020
+e consultada em 2035 paga cerca de 5 500 iterações por consulta, cada uma com conversões de
+fuso. Hoje é imperceptível; não será.
+
+A correção é pular direto para a janela quando a regra permite — o que exclui séries com
+`COUNT`, porque a contagem é da série e não do intervalo (ver [08](08-recorrencia.md)).
+Fica como entrega própria, com medição antes e depois.
+
+> Um ganho veio junto, e esse era meu: `horaDe` construía um `Intl.DateTimeFormat` a cada
+> chamada — 168 por renderização de semana. Agora é cacheado por fuso, pelo mesmo motivo
+> registrado em `tempo/zona.ts`.
+
 ## O que ainda não existe
 
 - **Lista de próximos**, a quarta visão do roadmap.

@@ -186,14 +186,29 @@ function limitesDoDia(
   return { inicio, fim, duracao: fim.getTime() - inicio.getTime() };
 }
 
+/**
+ * Formatadores de hora, por fuso.
+ *
+ * Pelo mesmo motivo do cache em `tempo/zona.ts`: construir um
+ * `Intl.DateTimeFormat` é caro, e `horaDe` é chamado 24 vezes por dia e por
+ * coluna — 168 numa semana, a cada renderização. A primeira versão construía um
+ * formatador novo em cada chamada.
+ */
+const formatadoresDeHora = new Map<string, Intl.DateTimeFormat>();
+
 function horaDe(instante: Date, fuso: string): number {
-  const texto = new Intl.DateTimeFormat('en-US', {
-    hour: '2-digit',
-    hour12: false,
-    timeZone: fuso,
-  }).format(instante);
+  let formatador = formatadoresDeHora.get(fuso);
+
+  if (!formatador) {
+    formatador = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      hour12: false,
+      timeZone: fuso,
+    });
+    formatadoresDeHora.set(fuso, formatador);
+  }
 
   // `en-US` com `hour12: false` devolve "24" para a meia-noite em alguns
   // runtimes; o módulo 24 normaliza isso.
-  return Number(texto) % 24;
+  return Number(formatador.format(instante)) % 24;
 }
