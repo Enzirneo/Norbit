@@ -82,7 +82,7 @@ test.describe('calendário', () => {
 
     await expect(titulo).toContainText(mesAtual());
 
-    await page.getByRole('button', { name: 'Mês seguinte' }).click();
+    await page.getByRole('button', { name: 'Período seguinte' }).click();
     await expect(titulo).not.toContainText(mesAtual());
 
     await page.getByRole('button', { name: 'Hoje' }).click();
@@ -104,7 +104,7 @@ test.describe('calendário', () => {
     }
 
     await expect(page.locator('.barra')).toHaveCount(0);
-    await expect(page.getByText('Nada em órbita neste mês')).toBeVisible();
+    await expect(page.getByText('Nada em órbita por aqui')).toBeVisible();
   });
 
   test('sem sessão, a raiz leva para a entrada', async ({ page }) => {

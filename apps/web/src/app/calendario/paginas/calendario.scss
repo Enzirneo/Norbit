@@ -197,3 +197,38 @@
     display: none;
   }
 }
+
+/* Alternador de visão: três segmentos, um ativo. */
+.visoes {
+  display: flex;
+  padding: 2px;
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--space-unit) * 2.5);
+  background: var(--surface-sunken);
+}
+
+.visao {
+  padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3);
+  border: 0;
+  border-radius: calc(var(--space-unit) * 2);
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+.visao--ativa {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font-weight: 500;
+}

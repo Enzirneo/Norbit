@@ -21,3 +21,6 @@ export * from './lib/calendario/faixas';
 export * from './lib/calendario/semana';
 export * from './lib/formulario/campos-de-tempo';
 export * from './lib/formulario/repeticao';
+export * from './lib/calendario/grade-de-horas';
+export * from './lib/calendario/colunas';
+export * from './lib/calendario/navegacao';

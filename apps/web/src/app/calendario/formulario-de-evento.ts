@@ -54,6 +54,13 @@ export type AlvoDoFormulario =
       readonly modo: 'criar';
       /** O dia clicado na grade, em `AAAA-MM-DD`. */
       readonly dia: string;
+      /**
+       * A hora clicada, em `HH:MM`, quando vem da grade de horas.
+       *
+       * Ausente na visão de mês, onde o clique é num dia e não num horário: ali
+       * vale o padrão de 09:00.
+       */
+      readonly hora?: string;
     }
   | {
       readonly modo: 'editar';
@@ -180,7 +187,7 @@ export class FormularioDeEvento {
 
       untracked(() => {
         if (alvo.modo === 'criar') {
-          this.prepararCriacao(alvo.dia);
+          this.prepararCriacao(alvo.dia, alvo.hora);
         } else {
           this.carregar(alvo.eventoId);
         }
@@ -277,8 +284,13 @@ export class FormularioDeEvento {
 
   // ─── privados ──────────────────────────────────────────────────────────────
 
-  private prepararCriacao(dia: string): void {
+  private prepararCriacao(dia: string, hora?: string): void {
     const padrao = this.agendasPermitidas().find((a) => a.isDefault);
+
+    // Uma hora de duração a partir do horário clicado. É o palpite que quase
+    // sempre acerta, e ajustar é um campo ao lado.
+    const inicio = hora ?? '09:00';
+    const fim = umaHoraDepois(inicio);
 
     this.pronto.set(true);
     this.evento.set(null);
@@ -289,9 +301,9 @@ export class FormularioDeEvento {
       calendarId: padrao?.id ?? this.agendasPermitidas()[0]?.id ?? '',
       isAllDay: false,
       dataInicio: dia,
-      horaInicio: '09:00',
+      horaInicio: inicio,
       dataFim: dia,
-      horaFim: '10:00',
+      horaFim: fim,
       location: '',
       description: '',
       repeticao: 'nao-repete',
@@ -481,4 +493,23 @@ export class FormularioDeEvento {
     this.confirmandoExclusao.set(false);
     this.erros.set(errosDaApi(erro));
   }
+}
+
+/**
+ * Uma hora depois, no mesmo dia.
+ *
+ * Satura em 23:59 em vez de virar o dia: um evento das 23:30 à meia-noite teria
+ * de mexer na data de fim também, e um palpite que muda dois campos é pior que
+ * um palpite curto.
+ */
+function umaHoraDepois(hora: string): string {
+  const [h, m] = hora.split(':').map(Number);
+  const total = (h ?? 9) * 60 + (m ?? 0) + 60;
+
+  if (total >= 24 * 60) {
+    return '23:59';
+  }
+
+  const dois = (v: number): string => String(v).padStart(2, '0');
+  return `${dois(Math.floor(total / 60))}:${dois(total % 60)}`;
 }

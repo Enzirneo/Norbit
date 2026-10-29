@@ -19,6 +19,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [10 — Tarefas](10-tarefas.md)                           | Ordenação fracionária, subtarefas de um nível, prazo e conclusão  |
 | [11 — Visão de mês](11-visao-de-mes.md)                 | A grade, as barras de vários dias, e o e2e que passou a existir   |
 | [12 — Formulário de evento](12-formulario-de-evento.md) | Criar e editar pela tela, e os seis defeitos que o e2e achou      |
+| [13 — Semana e dia](13-visao-de-semana-e-dia.md)        | Grade de horas, linha de agora, eventos simultâneos lado a lado   |
 
 ## Estado atual
 
@@ -27,14 +28,16 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 recorrência, tarefas com ordenação manual) e a **primeira tela com dado de verdade**: a
 visão de mês.
 
-**Dá para usar**: criar, editar e excluir evento pela tela, inclusive as três operações de
-uma série recorrente. Falta da Fase 2 as visões de semana e dia, e o arrastar. Da Fase 1,
-o perfil e a recuperação de senha.
+**Dá para usar**: três visões (mês, semana e dia), com linha de agora, e criar, editar e
+excluir evento pela tela — inclusive as três operações de uma série recorrente. Falta da
+Fase 2 a lista de próximos, o arrastar e a paleta de comandos. Da Fase 1, o perfil e a
+recuperação de senha.
 
 Ver o [roadmap](05-roadmap.md), a [autenticação](07-autenticacao.md), a
 [recorrência](08-recorrencia.md), as [agendas e eventos](09-agendas-e-eventos.md), as
-[tarefas](10-tarefas.md), a [visão de mês](11-visao-de-mes.md) e o
-[formulário de evento](12-formulario-de-evento.md).
+[tarefas](10-tarefas.md), a [visão de mês](11-visao-de-mes.md), o
+[formulário de evento](12-formulario-de-evento.md) e as
+[visões de semana e dia](13-visao-de-semana-e-dia.md).
 
 Para abrir a aplicação com dados: `docker compose up -d && npm run db:seed`, depois
 `npx nx run-many -t serve` e entrar com `enzo@norbit.dev` / `norbit123`.

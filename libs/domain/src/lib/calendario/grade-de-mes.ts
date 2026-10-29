@@ -13,6 +13,16 @@ import { paraInstante } from '../tempo/zona';
 import { somarDias, type DataCivil } from '../recorrencia/civil';
 
 /**
+ * O **tipo** de data civil, reexportado.
+ *
+ * Só o tipo: as funções de aritmética (`somarDias`, `diasNoMes`) seguem
+ * internas, pela razão registrada no índice da lib — expô-las convidaria a
+ * interface a fazer conta de calendário por conta própria. Um tipo não faz
+ * conta, e sem ele a interface não tem como nomear o que recebe.
+ */
+export type { DataCivil };
+
+/**
  * Seis semanas, sempre.
  *
  * Altura fixa é uma decisão de interface tomada aqui porque muda o cálculo: com

@@ -1,0 +1,115 @@
+<div class="quadro">
+  <!-- Cabeçalho fixo: os dias, e a tira de dia inteiro. -->
+  <div class="topo">
+    <div class="canto" aria-hidden="true"></div>
+
+    <div
+      class="dias"
+      [style.grid-template-columns]="'repeat(' + colunas().length + ', minmax(0, 1fr))'"
+    >
+      @for (coluna of colunas(); track coluna.dia.ano * 10000 + coluna.dia.mes *
+      100 + coluna.dia.dia) {
+      <div class="dia-cabecalho" [class.dia-cabecalho--hoje]="coluna.ehHoje">
+        <span class="dia-nome">{{ coluna.rotuloCurto }}</span>
+        <span class="dia-numero" [class.dia-numero--hoje]="coluna.ehHoje">
+          {{ coluna.numero }}
+        </span>
+      </div>
+      }
+    </div>
+  </div>
+
+  @if (trilhasDeDiaInteiro() > 0) {
+  <div class="tira">
+    <div class="tira-rotulo">Dia inteiro</div>
+    <div
+      class="tira-grade"
+      [style.grid-template-columns]="'repeat(' + colunas().length + ', minmax(0, 1fr))'"
+      [style.grid-template-rows]="'repeat(' + trilhasDeDiaInteiro() + ', auto)'"
+    >
+      @for (faixa of diaInteiro(); track faixa.chave) {
+      <button
+        class="faixa-dia-inteiro"
+        type="button"
+        [style.grid-column]="faixa.coluna + ' / span ' + faixa.colunas"
+        [style.grid-row]="faixa.trilha + 1"
+        [style.background-color]="faixa.fundo"
+        [style.border-inline-start-color]="faixa.borda"
+        (click)="selecionada.emit(faixa.ocorrencia)"
+      >
+        {{ faixa.ocorrencia.title }}
+      </button>
+      }
+    </div>
+  </div>
+  }
+
+  <!-- A grade rola; o cabeçalho acima não. -->
+  <div class="rolagem">
+    <div class="eixo">
+      @for (marca of eixo(); track marca.hora) {
+      <span class="eixo-hora" [style.top.%]="marca.posicao * 100">
+        {{ marca.hora }}h
+      </span>
+      }
+    </div>
+
+    <div
+      class="grade"
+      [style.grid-template-columns]="'repeat(' + colunas().length + ', minmax(0, 1fr))'"
+    >
+      @for (coluna of colunas(); track coluna.dia.ano * 10000 + coluna.dia.mes *
+      100 + coluna.dia.dia) {
+      <!--
+          A coluna é o alvo de clique para criar. Um `button` não serve aqui: ele
+          precisaria conter as faixas, que também são botões, e botão dentro de
+          botão é HTML inválido. O acesso por teclado vem da visão de mês, onde
+          cada dia é um botão de verdade.
+        -->
+      <div class="coluna" [class.coluna--hoje]="coluna.ehHoje">
+        <!--
+            Cada hora é um `button`. A primeira versão era um `div` com
+            `(click)` e a hora saía da posição do cursor: mais preciso para o
+            mouse, e inalcançável por teclado.
+          -->
+        @for (celula of coluna.horas; track celula.hora) {
+        <button
+          class="celula-de-hora"
+          type="button"
+          [style.top.%]="celula.topo"
+          [style.height.%]="celula.altura"
+          [attr.aria-label]="celula.rotulo"
+          (click)="
+                horaSelecionada.emit({
+                  dia: comoTexto(coluna.dia),
+                  hora: celula.texto
+                })
+              "
+        ></button>
+        } @for (faixa of coluna.faixas; track faixa.chave) {
+        <button
+          class="faixa"
+          type="button"
+          [style.top.%]="faixa.topo"
+          [style.height.%]="faixa.altura"
+          [style.left.%]="faixa.esquerda"
+          [style.width.%]="faixa.largura"
+          [style.background-color]="faixa.fundo"
+          [style.border-inline-start-color]="faixa.borda"
+          (click)="selecionada.emit(faixa.ocorrencia)"
+        >
+          <span class="faixa-hora">{{ faixa.horario }}</span>
+          <span class="faixa-titulo">{{ faixa.ocorrencia.title }}</span>
+        </button>
+        } @if (coluna.agora !== null) {
+        <span
+          class="agora"
+          [style.top.%]="coluna.agora"
+          aria-label="Agora"
+        ></span>
+        }
+      </div>
+      }
+    </div>
+  </div>
+</div>

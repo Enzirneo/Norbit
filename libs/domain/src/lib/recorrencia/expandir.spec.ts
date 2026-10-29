@@ -433,6 +433,21 @@ describe('expandir', () => {
   });
 
   describe('proteção contra regra patológica', () => {
+    /*
+     * Prazo explícito, e generoso.
+     *
+     * Este teste exercita o limite de propósito: ele faz a expansão percorrer os
+     * 20 000 períodos inteiros antes de desistir, e cada período custa algumas
+     * conversões de fuso. Medido: ~1 s nesta máquina, **7,4 s** no runner do CI
+     * com `--coverage` — e os 5 s do padrão do vitest ficavam no meio, o que
+     * fazia o teste passar ou falhar conforme a máquina do dia.
+     *
+     * O prazo resolve o teste. O que ele **não** resolve está registrado como
+     * pendência em docs/13: a expansão percorre todos os períodos desde o início
+     * da série, então uma série diária de 2020 consultada em 2035 paga 5 500
+     * iterações por consulta. A correção é pular direto para a janela
+     * consultada, e ela não cabe neste PR.
+     */
     it('recusa expandir uma série sem fim por um intervalo absurdo', () => {
       // Sem limite, uma consulta de "todos os dias" por mil anos travaria o
       // servidor. O erro é explícito para que a causa apareça no log.
@@ -445,6 +460,6 @@ describe('expandir', () => {
           },
         ),
       ).toThrow(/limite/i);
-    });
+    }, 30_000);
   });
 });

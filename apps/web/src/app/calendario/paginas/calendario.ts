@@ -19,7 +19,16 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import type { AgendaVisivel, OcorrenciaVisivel } from '@norbit/contracts';
-import { gradeDeMes, intervaloDaGrade, paraHoraLocal } from '@norbit/domain';
+import {
+  avancarPeriodo,
+  type Periodo,
+  diasDaSemanaDe,
+  gradeDeMes,
+  intervaloDaGrade,
+  intervaloDosDias,
+  paraHoraLocal,
+  type DataCivil,
+} from '@norbit/domain';
 import { AuthService } from '../../auth/auth.service';
 import { Botao } from '../../ui/botao';
 import { Dialogo } from '../../ui/dialogo';
@@ -29,6 +38,7 @@ import {
   FormularioDeEvento,
   type AlvoDoFormulario,
 } from '../formulario-de-evento';
+import { VisaoDeHoras } from '../visao-de-horas';
 import { VisaoDeMes } from '../visao-de-mes';
 
 /**
@@ -40,9 +50,25 @@ import { VisaoDeMes } from '../visao-de-mes';
  */
 const INICIO_DA_SEMANA = 0;
 
+/**
+ * As visões que o produto tem hoje.
+ *
+ * É o `Periodo` de `libs/domain`: a lista mora onde a navegação a usa, e não em
+ * duas cópias que podem discordar. O `CalendarView` do banco também tem
+ * `AGENDA`, que ainda não existe na tela.
+ */
+export type Visao = Periodo;
+
 @Component({
   selector: 'nb-calendario',
-  imports: [Botao, Dialogo, FormularioDeEvento, Marca, VisaoDeMes],
+  imports: [
+    Botao,
+    Dialogo,
+    FormularioDeEvento,
+    Marca,
+    VisaoDeHoras,
+    VisaoDeMes,
+  ],
   templateUrl: './calendario.html',
   styleUrl: './calendario.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -72,31 +98,49 @@ export class Calendario {
     return { ano, mes, dia };
   });
 
+  protected readonly visao = signal<Visao>('MONTH');
+
+  protected readonly visoes: readonly { valor: Visao; rotulo: string }[] = [
+    { valor: 'MONTH', rotulo: 'Mês' },
+    { valor: 'WEEK', rotulo: 'Semana' },
+    { valor: 'DAY', rotulo: 'Dia' },
+  ];
+
   /**
-   * O mês aberto.
+   * A data de referência, comum às três visões.
    *
-   * Nasce no mês de **hoje no fuso de quem vê**, e não no fuso do navegador: nos
-   * últimos e primeiros dias do mês os dois discordam, e a tela abriria no mês
-   * errado para quem está viajando.
+   * Uma só, e não uma por visão: trocar de visão mantém a pessoa onde ela
+   * estava, que é o comportamento esperado — e dois estados concordando é a
+   * forma mais fácil de eles discordarem.
+   *
+   * Nasce em **hoje no fuso de quem vê**, e não no do navegador: nos últimos e
+   * primeiros dias do mês os dois discordam, e a tela abriria no mês errado
+   * para quem está viajando.
    */
-  private readonly mesVisivel = signal({
-    ano: this.hoje().ano,
-    mes: this.hoje().mes,
-  });
+  private readonly referencia = signal<DataCivil>(this.hoje());
 
   protected readonly grade = computed(() =>
-    gradeDeMes({ ...this.mesVisivel(), inicioDaSemana: INICIO_DA_SEMANA }),
+    gradeDeMes({
+      ano: this.referencia().ano,
+      mes: this.referencia().mes,
+      inicioDaSemana: INICIO_DA_SEMANA,
+    }),
   );
 
-  protected readonly titulo = computed(() => {
-    const { ano, mes } = this.mesVisivel();
-    const nome = new Intl.DateTimeFormat('pt-BR', {
-      month: 'long',
-      timeZone: 'UTC',
-    }).format(new Date(Date.UTC(ano, mes - 1, 1)));
+  /** Os dias das visões de hora: sete na semana, um no dia. */
+  protected readonly diasVisiveis = computed<readonly DataCivil[]>(() =>
+    this.visao() === 'WEEK'
+      ? diasDaSemanaDe(this.referencia(), INICIO_DA_SEMANA)
+      : [this.referencia()],
+  );
 
-    return `${nome[0]?.toUpperCase()}${nome.slice(1)} de ${ano}`;
-  });
+  protected readonly titulo = computed(() =>
+    tituloDe({
+      visao: this.visao(),
+      referencia: this.referencia(),
+      dias: this.diasVisiveis(),
+    }),
+  );
 
   protected readonly agendas = signal<readonly AgendaVisivel[]>([]);
   protected readonly ocultas = signal<ReadonlySet<string>>(new Set());
@@ -141,16 +185,27 @@ export class Calendario {
     this.carregar();
   }
 
-  protected mesAnterior(): void {
+  protected anterior(): void {
     this.irPara(-1);
   }
 
-  protected mesSeguinte(): void {
+  protected seguinte(): void {
     this.irPara(1);
   }
 
   protected irParaHoje(): void {
-    this.mesVisivel.set({ ano: this.hoje().ano, mes: this.hoje().mes });
+    this.referencia.set(this.hoje());
+    this.carregar();
+  }
+
+  /**
+   * Troca a visão sem mover a data.
+   *
+   * Recarrega porque o intervalo consultado muda: a semana pede sete dias, o mês
+   * pede quarenta e dois.
+   */
+  protected mudarVisao(visao: Visao): void {
+    this.visao.set(visao);
     this.carregar();
   }
 
@@ -168,6 +223,11 @@ export class Calendario {
 
   protected criarEm(dia: string): void {
     this.alvo.set({ modo: 'criar', dia });
+  }
+
+  /** Clique na grade de horas: o dia **e** a hora clicada. */
+  protected criarEmHora(quando: { dia: string; hora: string }): void {
+    this.alvo.set({ modo: 'criar', dia: quando.dia, hora: quando.hora });
   }
 
   protected editar(ocorrencia: OcorrenciaVisivel): void {
@@ -200,32 +260,92 @@ export class Calendario {
     });
   }
 
+  /**
+   * Um passo para frente ou para trás, no tamanho da visão.
+   *
+   * A aritmética é de `avancarPeriodo`, em `libs/domain` — inclusive a decisão
+   * sobre o dia 31, que não existe em todo mês.
+   */
   private irPara(passo: number): void {
-    const { ano, mes } = this.mesVisivel();
-    const zeroABase = ano * 12 + (mes - 1) + passo;
-
-    this.mesVisivel.set({
-      ano: Math.floor(zeroABase / 12),
-      mes: (zeroABase % 12) + 1,
-    });
+    this.referencia.set(avancarPeriodo(this.referencia(), this.visao(), passo));
     this.carregar();
+  }
+
+  /** O intervalo que a visão atual precisa consultar. */
+  private intervalo(): { de: Date; ate: Date } {
+    return this.visao() === 'MONTH'
+      ? intervaloDaGrade(this.grade(), this.fuso())
+      : intervaloDosDias(this.diasVisiveis(), this.fuso());
   }
 
   private carregar(): void {
     this.carregando.set(true);
     this.erro.set(null);
 
-    this.api
-      .ocorrencias(intervaloDaGrade(this.grade(), this.fuso()))
-      .subscribe({
-        next: (ocorrencias) => {
-          this.todas.set(ocorrencias);
-          this.carregando.set(false);
-        },
-        error: () => {
-          this.erro.set('Não foi possível carregar os eventos deste mês.');
-          this.carregando.set(false);
-        },
-      });
+    this.api.ocorrencias(this.intervalo()).subscribe({
+      next: (ocorrencias) => {
+        this.todas.set(ocorrencias);
+        this.carregando.set(false);
+      },
+      error: () => {
+        this.erro.set('Não foi possível carregar os eventos.');
+        this.carregando.set(false);
+      },
+    });
   }
+}
+
+/**
+ * O título da barra, no formato de cada visão.
+ *
+ * Fora da classe para não virar três `computed` que só diferem no formato.
+ */
+function tituloDe(entrada: {
+  readonly visao: Visao;
+  readonly referencia: DataCivil;
+  readonly dias: readonly DataCivil[];
+}): string {
+  if (entrada.visao === 'MONTH') {
+    const { ano, mes } = entrada.referencia;
+    return `${comInicialMaiuscula(nomeDoMes(ano, mes))} de ${ano}`;
+  }
+
+  const primeiro = entrada.dias[0];
+  const ultimo = entrada.dias[entrada.dias.length - 1];
+
+  if (!primeiro || !ultimo) {
+    return '';
+  }
+
+  if (entrada.visao === 'DAY') {
+    return comInicialMaiuscula(
+      new Intl.DateTimeFormat('pt-BR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        timeZone: 'UTC',
+      }).format(
+        new Date(Date.UTC(primeiro.ano, primeiro.mes - 1, primeiro.dia)),
+      ),
+    );
+  }
+
+  // Semana: "14 – 20 de junho", com os dois meses quando ela os atravessa.
+  const mesmoMes = primeiro.mes === ultimo.mes && primeiro.ano === ultimo.ano;
+  const inicio = mesmoMes
+    ? `${primeiro.dia}`
+    : `${primeiro.dia} de ${nomeDoMes(primeiro.ano, primeiro.mes)}`;
+
+  return `${inicio} – ${ultimo.dia} de ${nomeDoMes(ultimo.ano, ultimo.mes)}`;
+}
+
+function nomeDoMes(ano: number, mes: number): string {
+  return new Intl.DateTimeFormat('pt-BR', {
+    month: 'long',
+    timeZone: 'UTC',
+  }).format(new Date(Date.UTC(ano, mes - 1, 1)));
+}
+
+function comInicialMaiuscula(texto: string): string {
+  return `${texto[0]?.toUpperCase() ?? ''}${texto.slice(1)}`;
 }
