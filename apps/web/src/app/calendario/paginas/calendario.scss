@@ -1,0 +1,199 @@
+/**
+ * A casca do calendário.
+ *
+ * Só camada semântica, como o resto. O fundo orbital não entra aqui de
+ * propósito: ele é da moldura de entrada, onde há espaço vazio para ele
+ * respirar. Atrás de uma grade de dados ele vira ruído — ver docs/04.
+ */
+
+.tela {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--space-unit) * 4);
+  padding: calc(var(--space-unit) * 3) calc(var(--space-unit) * 4);
+  border-block-end: 1px solid var(--border-subtle);
+}
+
+.navegacao {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 2);
+}
+
+.titulo {
+  margin: 0;
+  /* Largura mínima para o título não empurrar as setas ao trocar de mês —
+     "Maio de 2026" e "Setembro de 2026" têm larguras bem diferentes. */
+  min-width: 11rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+
+.conta {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 2);
+}
+
+.handle {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+.corpo {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.lateral {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 3);
+  width: 15rem;
+  flex-shrink: 0;
+  padding: calc(var(--space-unit) * 4);
+  border-inline-end: 1px solid var(--border-subtle);
+  overflow-y: auto;
+}
+
+.lateral-titulo {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.agendas {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agenda {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 2);
+  padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
+  border-radius: calc(var(--space-unit) * 2);
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-raised);
+  }
+
+  /* O foco fica no rótulo inteiro porque é ele que a pessoa vê — a caixa
+     sozinha é pequena demais para o anel de foco significar algo. */
+  &:has(.agenda-caixa:focus-visible) {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+.agenda-caixa {
+  width: calc(var(--space-unit) * 4);
+  height: calc(var(--space-unit) * 4);
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.agenda-cor {
+  width: calc(var(--space-unit) * 2.5);
+  height: calc(var(--space-unit) * 2.5);
+  flex-shrink: 0;
+  border-radius: 999px;
+}
+
+.agenda-nome {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Agenda escondida continua legível: ela não saiu da lista, só da grade. */
+.agenda-caixa:not(:checked) ~ .agenda-nome,
+.agenda-caixa:not(:checked) ~ .agenda-cor {
+  opacity: 0.45;
+}
+
+.agenda-marca {
+  color: var(--text-muted);
+  font-size: 0.6875rem;
+}
+
+.lateral-vazio,
+.lateral-nota {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.lateral-nota {
+  margin-block-start: auto;
+}
+
+.principal {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 2);
+  min-width: 0;
+  padding: calc(var(--space-unit) * 4);
+}
+
+.erro {
+  margin: 0;
+  padding: calc(var(--space-unit) * 3);
+  border: 1px solid var(--state-danger);
+  border-radius: calc(var(--space-unit) * 3);
+  background: color-mix(in oklab, var(--state-danger) 12%, transparent);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.vazio {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* No celular a barra lateral vira uma faixa acima da grade. A visão de dia,
+   que o roadmap marca como padrão no celular, é a próxima entrega. */
+@media (max-width: 48rem) {
+  .corpo {
+    flex-direction: column;
+  }
+
+  .lateral {
+    width: auto;
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--border-subtle);
+  }
+
+  .agendas {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .lateral-nota {
+    display: none;
+  }
+}

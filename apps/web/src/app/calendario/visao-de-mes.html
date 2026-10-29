@@ -1,0 +1,49 @@
+<div class="grade">
+  <div class="cabecalho">
+    @for (nome of diasDaSemana(); track nome) {
+    <div class="nome-do-dia">{{ nome }}</div>
+    }
+  </div>
+
+  @for (semana of semanas(); track $index) {
+  <div class="semana">
+    <!--
+        O fundo de cada dia ocupa a linha inteira da semana, e as faixas são
+        colocadas por cima nas trilhas. Um grid só, em vez de camadas
+        sobrepostas: assim a altura da linha é a soma real do que ela contém.
+      -->
+    @for (celula of semana.celulas; track celula.ano * 10000 + celula.mes * 100
+    + celula.dia) {
+    <div
+      class="fundo"
+      [class.fundo--fora]="!celula.noMes"
+      [class.fundo--hoje]="ehHoje(celula)"
+      [style.grid-column]="$index + 1"
+    ></div>
+
+    <div class="numero-area" [style.grid-column]="$index + 1">
+      <span class="numero" [class.numero--hoje]="ehHoje(celula)">
+        {{ celula.dia }}
+      </span>
+    </div>
+    } @for (barra of semana.barras; track barra.chave) {
+    <button
+      class="barra"
+      type="button"
+      [style.grid-column]="barra.coluna + ' / span ' + barra.colunas"
+      [style.grid-row]="barra.trilha + 2"
+      [style.background-color]="barra.fundo"
+      [style.border-inline-start-color]="barra.borda"
+      (click)="selecionada.emit(barra.ocorrencia)"
+    >
+      @if (barra.horario) {
+      <span class="barra-hora">{{ barra.horario }}</span>
+      }
+      <span class="barra-titulo">{{ barra.ocorrencia.title }}</span>
+    </button>
+    } @for (quantas of semana.escondidas; track $index) { @if (quantas > 0) {
+    <span class="mais" [style.grid-column]="$index + 1"> +{{ quantas }} </span>
+    } }
+  </div>
+  }
+</div>
