@@ -12,7 +12,7 @@
 import {
   PAPEIS,
   podeNaAgenda,
-  podeNoEvento,
+  podeNoItem,
   type AcaoDeAgenda,
   type Papel,
 } from './permissoes';
@@ -26,12 +26,25 @@ describe('podeNaAgenda', () => {
     }
   });
 
-  describe('criar evento', () => {
+  describe('criar conteúdo', () => {
     it('é o que distingue o VIEWER de todos os outros', () => {
-      expect(podeNaAgenda('OWNER', 'criar-evento')).toBe(true);
-      expect(podeNaAgenda('EDITOR', 'criar-evento')).toBe(true);
-      expect(podeNaAgenda('CONTRIBUTOR', 'criar-evento')).toBe(true);
-      expect(podeNaAgenda('VIEWER', 'criar-evento')).toBe(false);
+      for (const acao of ['criar-evento', 'criar-tarefa'] as const) {
+        expect(podeNaAgenda('OWNER', acao)).toBe(true);
+        expect(podeNaAgenda('EDITOR', acao)).toBe(true);
+        expect(podeNaAgenda('CONTRIBUTOR', acao)).toBe(true);
+        expect(podeNaAgenda('VIEWER', acao)).toBe(false);
+      }
+    });
+
+    it('evento e tarefa andam juntos', () => {
+      // Hoje a regra é a mesma para os dois, e este teste é o que garante que
+      // acrescentar uma entidade nova não deixe uma linha da matriz pela
+      // metade — o papel ganharia a permissão por omissão.
+      for (const papel of PAPEIS) {
+        expect(podeNaAgenda(papel, 'criar-tarefa')).toBe(
+          podeNaAgenda(papel, 'criar-evento'),
+        );
+      }
     });
   });
 
@@ -55,7 +68,7 @@ describe('podeNaAgenda', () => {
       // A distinção que dá sentido ao papel: ele edita qualquer evento, mas não
       // renomeia a agenda da família nem convida ninguém.
       expect(
-        podeNoEvento({
+        podeNoItem({
           papel: 'EDITOR',
           acao: 'editar-evento',
           ehAutor: false,
@@ -67,14 +80,14 @@ describe('podeNaAgenda', () => {
   });
 });
 
-describe('podeNoEvento', () => {
+describe('podeNoItem', () => {
   it('OWNER e EDITOR mexem em evento de qualquer um', () => {
     for (const papel of ['OWNER', 'EDITOR'] as const) {
+      expect(podeNoItem({ papel, acao: 'editar-evento', ehAutor: false })).toBe(
+        true,
+      );
       expect(
-        podeNoEvento({ papel, acao: 'editar-evento', ehAutor: false }),
-      ).toBe(true);
-      expect(
-        podeNoEvento({ papel, acao: 'excluir-evento', ehAutor: false }),
+        podeNoItem({ papel, acao: 'excluir-evento', ehAutor: false }),
       ).toBe(true);
     }
   });
@@ -82,14 +95,14 @@ describe('podeNoEvento', () => {
   describe('CONTRIBUTOR', () => {
     it('mexe no que ele criou', () => {
       expect(
-        podeNoEvento({
+        podeNoItem({
           papel: 'CONTRIBUTOR',
           acao: 'editar-evento',
           ehAutor: true,
         }),
       ).toBe(true);
       expect(
-        podeNoEvento({
+        podeNoItem({
           papel: 'CONTRIBUTOR',
           acao: 'excluir-evento',
           ehAutor: true,
@@ -101,14 +114,14 @@ describe('podeNoEvento', () => {
       // É a razão de o papel existir. Numa agenda de time, todo mundo precisa
       // lançar seus compromissos sem poder apagar os dos outros.
       expect(
-        podeNoEvento({
+        podeNoItem({
           papel: 'CONTRIBUTOR',
           acao: 'editar-evento',
           ehAutor: false,
         }),
       ).toBe(false);
       expect(
-        podeNoEvento({
+        podeNoItem({
           papel: 'CONTRIBUTOR',
           acao: 'excluir-evento',
           ehAutor: false,
@@ -120,14 +133,14 @@ describe('podeNoEvento', () => {
   describe('VIEWER', () => {
     it('não mexe em nada', () => {
       expect(
-        podeNoEvento({
+        podeNoItem({
           papel: 'VIEWER',
           acao: 'editar-evento',
           ehAutor: false,
         }),
       ).toBe(false);
       expect(
-        podeNoEvento({
+        podeNoItem({
           papel: 'VIEWER',
           acao: 'excluir-evento',
           ehAutor: false,
@@ -141,10 +154,10 @@ describe('podeNoEvento', () => {
       // que quem rebaixa está pedindo — do contrário o rebaixamento não
       // significaria nada para quem já havia criado eventos.
       expect(
-        podeNoEvento({ papel: 'VIEWER', acao: 'editar-evento', ehAutor: true }),
+        podeNoItem({ papel: 'VIEWER', acao: 'editar-evento', ehAutor: true }),
       ).toBe(false);
       expect(
-        podeNoEvento({
+        podeNoItem({
           papel: 'VIEWER',
           acao: 'excluir-evento',
           ehAutor: true,
@@ -176,7 +189,7 @@ describe('a matriz em si', () => {
     expect(podeNaAgenda(invalido, 'ver')).toBe(false);
     expect(podeNaAgenda(invalido, 'criar-evento')).toBe(false);
     expect(
-      podeNoEvento({ papel: invalido, acao: 'editar-evento', ehAutor: true }),
+      podeNoItem({ papel: invalido, acao: 'editar-evento', ehAutor: true }),
     ).toBe(false);
   });
 });

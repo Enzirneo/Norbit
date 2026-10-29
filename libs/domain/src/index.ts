@@ -13,3 +13,5 @@ export * from './lib/recorrencia/expandir';
 export * from './lib/agendas/permissoes';
 
 export * from './lib/agendas/dia-inteiro';
+
+export * from './lib/tarefas/ordenacao';

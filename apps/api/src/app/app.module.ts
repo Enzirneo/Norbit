@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AgendasModule } from './agendas/agendas.module';
 import { AuthModule } from './auth/auth.module';
 import { EventosModule } from './eventos/eventos.module';
+import { TarefasModule } from './tarefas/tarefas.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EventosModule } from './eventos/eventos.module';
     AuthModule,
     AgendasModule,
     EventosModule,
+    TarefasModule,
   ],
   controllers: [AppController],
   providers: [AppService],

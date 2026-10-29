@@ -235,6 +235,9 @@ Já encontrou três coisas que o passo vermelho não tinha encontrado:
    [09](09-agendas-e-eventos.md).
 3. Uma afirmação que estava num comentário e em lugar nenhum mais ("o dono não se tranca
    fora da própria agenda"), descoberta porque a mutação que a violava passava verde.
+4. Um teste de ordenação de tarefas que não distinguia "primeira" de "última" da lista,
+   porque usava só dois itens — com dois, as duas implementações dão a mesma resposta. Ver
+   [10](10-tarefas.md).
 
 > **Confirme que a mutação foi aplicada.** Duas das mutações feitas no PR das agendas
 > "passaram" só porque o `perl` não casou o padrão — o arquivo nunca mudou. Verde de

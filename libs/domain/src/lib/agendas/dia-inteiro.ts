@@ -35,22 +35,45 @@ export function normalizarDiaInteiro(entrada: DiaInteiro): {
 }
 
 /**
- * O dia que serve de limite exclusivo.
+ * O instante que fecha o dia de `quando`, no modo exclusivo.
  *
- * Quando o fim já chega exatamente na meia-noite local, ele **é** o limite
- * exclusivo e não ganha um dia. É o que torna a função idempotente, e a
+ * É a forma canônica de um prazo de dia inteiro (`Task.dueAt` com
+ * `isDueAllDay`). Guardar o fim exclusivo é o que torna a comparação de atraso
+ * exata — `dueAt <= now()` é "o dia passou", sem ajuste que alguém esqueça de
+ * repetir numa query. A mesma regra dos eventos: todo intervalo de dia inteiro
+ * termina de forma exclusiva.
+ *
+ * Para renderizar a data, a interface usa o dia local de `dueAt - 1ms`.
+ */
+export function fimExclusivoDoDia(quando: Date, fuso: string): Date {
+  return meiaNoiteDe(diaQueFecha(quando, fuso), fuso);
+}
+
+/**
+ * O dia que serve de limite exclusivo para um instante.
+ *
+ * Quando o instante já chega exatamente na meia-noite local, ele **é** o limite
+ * exclusivo e não ganha um dia. É o que torna a normalização idempotente, e a
  * idempotência é o que resolve a ambiguidade do que chega: sem ela, um PATCH que
- * não mexe nas datas empurraria o evento um dia para frente a cada salvamento.
+ * não mexe nas datas empurraria o prazo um dia para frente a cada salvamento.
+ */
+function diaQueFecha(quando: Date, fuso: string): DataCivil {
+  const dia = diaCivilDe(quando, fuso);
+  const chegouNaMeiaNoite =
+    quando.getTime() === meiaNoiteDe(dia, fuso).getTime();
+
+  return chegouNaMeiaNoite ? dia : somarDias(dia, 1);
+}
+
+/**
+ * O dia exclusivo de um evento, com piso de um dia.
  *
- * O piso de um dia cobre o caso que a própria idempotência cria: fim na
- * meia-noite do dia de início daria um evento de nenhum dia.
+ * O piso cobre o caso que a própria idempotência cria: fim na meia-noite do dia
+ * de início daria um evento de nenhum dia. Um prazo de tarefa não precisa dele,
+ * porque não tem duração — por isso as duas funções são separadas.
  */
 function diaExclusivo(entrada: DiaInteiro, diaDoInicio: DataCivil): DataCivil {
-  const diaDoFim = diaCivilDe(entrada.fim, entrada.fuso);
-  const chegouNaMeiaNoite =
-    entrada.fim.getTime() === meiaNoiteDe(diaDoFim, entrada.fuso).getTime();
-
-  const candidato = chegouNaMeiaNoite ? diaDoFim : somarDias(diaDoFim, 1);
+  const candidato = diaQueFecha(entrada.fim, entrada.fuso);
   const minimo = somarDias(diaDoInicio, 1);
 
   return ordinal(candidato) > ordinal(minimo) ? candidato : minimo;

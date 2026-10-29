@@ -91,7 +91,8 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
       horário de verão e "excluir só este" — ver [08](08-recorrencia.md). O motor e a
       **escrita** das exceções estão prontos: "editar só este" cria a linha filha, e a
       expansão da série-mãe suprime a instância substituída
-- [ ] CRUD de tarefas: prazo, prioridade, concluir, subtarefas, reordenar
+- [x] CRUD de tarefas: prazo, prioridade, concluir, subtarefas, reordenar — ver
+      [10](10-tarefas.md)
 - [ ] Visão de mês (grade), semana e dia (grade de horas), e lista de próximos
 - [ ] Navegação de datas, "hoje", linha de agora
 - [ ] Criar evento clicando/arrastando na grade

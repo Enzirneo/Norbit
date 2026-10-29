@@ -16,17 +16,20 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [07 — Autenticação](07-autenticacao.md)           | Tokens, rotação, detecção de reúso, senhas e o que foi verificado |
 | [08 — Recorrência](08-recorrencia.md)             | Fuso horário, RRULE, expansão e as políticas de cada caso difícil |
 | [09 — Agendas e Eventos](09-agendas-e-eventos.md) | Matriz de permissões, dia inteiro, consulta por intervalo, rotas  |
+| [10 — Tarefas](10-tarefas.md)                     | Ordenação fracionária, subtarefas de um nível, prazo e conclusão  |
 
 ## Estado atual
 
 **Fase 2 em andamento.** Monorepo de pé, banco criado, autenticação funcionando de ponta
-a ponta (com visual), o **motor de recorrência** pronto e testado, e agora a **API do
-núcleo da agenda**: agendas, membros, eventos, consulta por intervalo e as três operações
-de uma série recorrente. Faltam da Fase 1 o perfil e a recuperação de senha; da Fase 2, as
-tarefas e **tudo o que é tela**.
+a ponta (com visual), o **motor de recorrência** pronto e testado, e a **API inteira do
+núcleo**: agendas, membros, eventos com recorrência e tarefas com ordenação manual.
+
+Com isso a Fase 2 fecha tudo o que **não** é interface. O que falta dela é só tela: as
+visões de mês, semana, dia e lista. Da Fase 1 faltam o perfil e a recuperação de senha.
 
 Ver o [roadmap](05-roadmap.md), a [autenticação](07-autenticacao.md), a
-[recorrência](08-recorrencia.md) e as [agendas e eventos](09-agendas-e-eventos.md).
+[recorrência](08-recorrencia.md), as [agendas e eventos](09-agendas-e-eventos.md) e as
+[tarefas](10-tarefas.md).
 
 ```bash
 docker compose up -d
