@@ -5,21 +5,22 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 
 ## Índice
 
-| Documento                                               | Conteúdo                                                          |
-| ------------------------------------------------------- | ----------------------------------------------------------------- |
-| [01 — Visão e Escopo](01-visao-e-escopo.md)             | O que o Norbit é, para quem, o que entra no MVP e o que fica fora |
-| [02 — Arquitetura](02-arquitetura.md)                   | Stack, monorepo, camadas, Docker, autenticação, tempo real        |
-| [03 — Modelo de Dados](03-modelo-de-dados.md)           | Entidades, relações, decisões de modelagem, índices               |
-| [04 — Design System](04-design-system.md)               | Tema orbital, tokens, customização por usuário, motion            |
-| [05 — Roadmap](05-roadmap.md)                           | Fases de execução, ordem de implementação, critérios de pronto    |
-| [06 — Fluxo de Trabalho](06-fluxo-de-trabalho.md)       | Branches, commits, PRs, CI, TDD e Clean Code                      |
-| [07 — Autenticação](07-autenticacao.md)                 | Tokens, rotação, detecção de reúso, senhas e o que foi verificado |
-| [08 — Recorrência](08-recorrencia.md)                   | Fuso horário, RRULE, expansão e as políticas de cada caso difícil |
-| [09 — Agendas e Eventos](09-agendas-e-eventos.md)       | Matriz de permissões, dia inteiro, consulta por intervalo, rotas  |
-| [10 — Tarefas](10-tarefas.md)                           | Ordenação fracionária, subtarefas de um nível, prazo e conclusão  |
-| [11 — Visão de mês](11-visao-de-mes.md)                 | A grade, as barras de vários dias, e o e2e que passou a existir   |
-| [12 — Formulário de evento](12-formulario-de-evento.md) | Criar e editar pela tela, e os seis defeitos que o e2e achou      |
-| [13 — Semana e dia](13-visao-de-semana-e-dia.md)        | Grade de horas, linha de agora, eventos simultâneos lado a lado   |
+| Documento                                               | Conteúdo                                                                 |
+| ------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [01 — Visão e Escopo](01-visao-e-escopo.md)             | O que o Norbit é, para quem, o que entra no MVP e o que fica fora        |
+| [02 — Arquitetura](02-arquitetura.md)                   | Stack, monorepo, camadas, Docker, autenticação, tempo real               |
+| [03 — Modelo de Dados](03-modelo-de-dados.md)           | Entidades, relações, decisões de modelagem, índices                      |
+| [04 — Design System](04-design-system.md)               | Tema orbital, tokens, customização por usuário, motion                   |
+| [05 — Roadmap](05-roadmap.md)                           | Fases de execução, ordem de implementação, critérios de pronto           |
+| [06 — Fluxo de Trabalho](06-fluxo-de-trabalho.md)       | Branches, commits, PRs, CI, TDD e Clean Code                             |
+| [07 — Autenticação](07-autenticacao.md)                 | Tokens, rotação, detecção de reúso, senhas e o que foi verificado        |
+| [08 — Recorrência](08-recorrencia.md)                   | Fuso horário, RRULE, expansão e as políticas de cada caso difícil        |
+| [09 — Agendas e Eventos](09-agendas-e-eventos.md)       | Matriz de permissões, dia inteiro, consulta por intervalo, rotas         |
+| [10 — Tarefas](10-tarefas.md)                           | Ordenação fracionária, subtarefas de um nível, prazo e conclusão         |
+| [11 — Visão de mês](11-visao-de-mes.md)                 | A grade, as barras de vários dias, e o e2e que passou a existir          |
+| [12 — Formulário de evento](12-formulario-de-evento.md) | Criar e editar pela tela, e os seis defeitos que o e2e achou             |
+| [13 — Semana e dia](13-visao-de-semana-e-dia.md)        | Grade de horas, linha de agora, eventos simultâneos lado a lado          |
+| [14 — Preferências](14-preferencias.md)                 | Acento derivado por contraste, densidade, visão padrão, agenda escondida |
 
 ## Estado atual
 
@@ -29,7 +30,9 @@ recorrência, tarefas com ordenação manual) e a **primeira tela com dado de ve
 visão de mês.
 
 **Dá para usar**: três visões (mês, semana e dia), com linha de agora, e criar, editar e
-excluir evento pela tela — inclusive as três operações de uma série recorrente. Falta da
+excluir evento pela tela — inclusive as três operações de uma série recorrente — e
+**preferências por conta** (cor de destaque, densidade, visão padrão, início da semana).
+Falta da
 Fase 2 a lista de próximos, o arrastar e a paleta de comandos. Da Fase 1, o perfil e a
 recuperação de senha.
 
@@ -37,7 +40,8 @@ Ver o [roadmap](05-roadmap.md), a [autenticação](07-autenticacao.md), a
 [recorrência](08-recorrencia.md), as [agendas e eventos](09-agendas-e-eventos.md), as
 [tarefas](10-tarefas.md), a [visão de mês](11-visao-de-mes.md), o
 [formulário de evento](12-formulario-de-evento.md) e as
-[visões de semana e dia](13-visao-de-semana-e-dia.md).
+[visões de semana e dia](13-visao-de-semana-e-dia.md) e as
+[preferências](14-preferencias.md).
 
 Para abrir a aplicação com dados: `docker compose up -d && npm run db:seed`, depois
 `npx nx run-many -t serve` e entrar com `enzo@norbit.dev` / `norbit123`.

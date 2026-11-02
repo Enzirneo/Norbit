@@ -7,3 +7,5 @@ export * from './lib/agendas/agenda';
 export * from './lib/agendas/evento';
 
 export * from './lib/tarefas/tarefa';
+
+export * from './lib/preferencias/preferencias';

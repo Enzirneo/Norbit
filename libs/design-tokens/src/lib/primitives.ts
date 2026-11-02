@@ -2,6 +2,12 @@
  * Primitivos: a paleta base do Norbit. Não são usados diretamente pelos
  * componentes — a camada semântica (Fase 4) os referencia, e é ela que os
  * componentes consomem. Ver docs/04-design-system.md.
+ *
+ * **Hexadecimal sempre minúsculo.** A cor é comparada como texto no banco — há
+ * CHECK constraint exigindo isso desde `20261029024149_cores_em_minusculo` — e
+ * o contrato `corHex` normaliza a entrada. Com os primitivos em maiúsculas, a
+ * paleta de acentos nunca casava com a cor normalizada que chegava do
+ * formulário, e a validação recusava uma cor que ela mesma oferecia.
  */
 
 import type { TokenSet } from './css-variables';
@@ -9,28 +15,28 @@ import type { TokenSet } from './css-variables';
 /** Espaço profundo: fundos e superfícies dos temas escuros. */
 export const space = {
   space900: '#070812',
-  space800: '#0B0D17',
-  space700: '#13162A',
-  space600: '#1C2038',
-  space500: '#2A2F4A',
+  space800: '#0b0d17',
+  space700: '#13162a',
+  space600: '#1c2038',
+  space500: '#2a2f4a',
 } as const satisfies TokenSet;
 
 /** Poeira estelar: neutros frios, para texto e bordas. */
 export const dust = {
-  dust400: '#4A5070',
-  dust300: '#6E7595',
-  dust200: '#9AA0BC',
-  dust100: '#C9CDE0',
-  dust000: '#F4F5FA',
+  dust400: '#4a5070',
+  dust300: '#6e7595',
+  dust200: '#9aa0bc',
+  dust100: '#c9cde0',
+  dust000: '#f4f5fa',
 } as const satisfies TokenSet;
 
 /** Acentos orbitais. `nebula` é o padrão; o usuário pode escolher o seu. */
 export const accent = {
-  nebula: '#6D7CFF',
-  aurora: '#4ADEBB',
-  solar: '#FFB357',
-  pulsar: '#FF6B8A',
-  cosmos: '#A97BFF',
+  nebula: '#6d7cff',
+  aurora: '#4adebb',
+  solar: '#ffb357',
+  pulsar: '#ff6b8a',
+  cosmos: '#a97bff',
 } as const satisfies TokenSet;
 
 /**

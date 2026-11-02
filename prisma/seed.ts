@@ -93,7 +93,16 @@ async function main(): Promise<void> {
       passwordHash,
       timeZone: FUSO,
       emailVerifiedAt: new Date(),
-      settings: { create: { themePreset: 'nebula', accentColor: '#6d7cff' } },
+      settings: {
+        create: {
+          themePreset: 'nebula',
+          accentColor: '#6d7cff',
+          // Explícita, e não o padrão do banco (`WEEK`): esta conta é a fixture
+          // dos testes de ponta a ponta, que exercitam a grade de mês. Dependiam
+          // do padrão sem saber — até a tela passar a respeitar a preferência.
+          defaultView: 'MONTH',
+        },
+      },
       ownedCalendars: {
         create: {
           id: uuidv7(),

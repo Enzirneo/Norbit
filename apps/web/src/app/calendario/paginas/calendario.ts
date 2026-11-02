@@ -32,7 +32,9 @@ import {
 import { AuthService } from '../../auth/auth.service';
 import { Botao } from '../../ui/botao';
 import { Dialogo } from '../../ui/dialogo';
+import { RouterLink } from '@angular/router';
 import { Marca } from '../../ui/marca';
+import { PreferenciasService } from '../../preferencias/preferencias.service';
 import { CalendarioService } from '../calendario.service';
 import {
   FormularioDeEvento,
@@ -40,15 +42,6 @@ import {
 } from '../formulario-de-evento';
 import { VisaoDeHoras } from '../visao-de-horas';
 import { VisaoDeMes } from '../visao-de-mes';
-
-/**
- * Domingo, como o padrão de `UserSettings.weekStartsOn` no banco.
- *
- * A preferência existe no modelo mas a API ainda não a expõe — `GET /auth/eu`
- * devolve o usuário, não as preferências. Quando expuser, isto vira uma leitura
- * e nada mais muda: `gradeDeMes` já recebe o valor como parâmetro.
- */
-const INICIO_DA_SEMANA = 0;
 
 /**
  * As visões que o produto tem hoje.
@@ -64,6 +57,7 @@ export type Visao = Periodo;
   imports: [
     Botao,
     Dialogo,
+    RouterLink,
     FormularioDeEvento,
     Marca,
     VisaoDeHoras,
@@ -75,6 +69,7 @@ export type Visao = Periodo;
 })
 export class Calendario {
   private readonly api = inject(CalendarioService);
+  private readonly prefs = inject(PreferenciasService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -100,6 +95,20 @@ export class Calendario {
 
   protected readonly visao = signal<Visao>('MONTH');
 
+  /**
+   * O início da semana, da preferência da conta.
+   *
+   * `gradeDeMes` e `diasDaSemanaDe` já recebiam o valor como parâmetro; faltava
+   * alguém com a resposta. Era a razão de a semana começar sempre no domingo.
+   */
+  private readonly inicioDaSemana = computed(
+    () => this.prefs.preferencias().weekStartsOn,
+  );
+
+  protected readonly vinteEQuatroHoras = computed(
+    () => this.prefs.preferencias().use24Hour,
+  );
+
   protected readonly visoes: readonly { valor: Visao; rotulo: string }[] = [
     { valor: 'MONTH', rotulo: 'Mês' },
     { valor: 'WEEK', rotulo: 'Semana' },
@@ -123,14 +132,14 @@ export class Calendario {
     gradeDeMes({
       ano: this.referencia().ano,
       mes: this.referencia().mes,
-      inicioDaSemana: INICIO_DA_SEMANA,
+      inicioDaSemana: this.inicioDaSemana(),
     }),
   );
 
   /** Os dias das visões de hora: sete na semana, um no dia. */
   protected readonly diasVisiveis = computed<readonly DataCivil[]>(() =>
     this.visao() === 'WEEK'
-      ? diasDaSemanaDe(this.referencia(), INICIO_DA_SEMANA)
+      ? diasDaSemanaDe(this.referencia(), this.inicioDaSemana())
       : [this.referencia()],
   );
 
@@ -143,7 +152,6 @@ export class Calendario {
   );
 
   protected readonly agendas = signal<readonly AgendaVisivel[]>([]);
-  protected readonly ocultas = signal<ReadonlySet<string>>(new Set());
   protected readonly carregando = signal(false);
   protected readonly erro = signal<string | null>(null);
 
@@ -156,6 +164,21 @@ export class Calendario {
    * consulta: a API devolveu tudo o que a pessoa vê, e ir ao servidor para
    * esconder algo que já chegou seria uma espera sem informação nova.
    */
+  /**
+   * As agendas escondidas, vindas do servidor.
+   *
+   * Antes era um `Set` só de sessão, com um aviso na tela dizendo que a escolha
+   * não era guardada. Agora é `CalendarMember.isHidden`, que o modelo já tinha.
+   */
+  private readonly ocultas = computed(
+    () =>
+      new Set(
+        this.agendas()
+          .filter((a) => a.escondida)
+          .map((a) => a.id),
+      ),
+  );
+
   protected readonly visiveis = computed(() =>
     this.todas().filter((o) => !this.ocultas().has(o.calendarId)),
   );
@@ -182,7 +205,24 @@ export class Calendario {
       error: () => this.erro.set('Não foi possível carregar suas agendas.'),
     });
 
-    this.carregar();
+    /*
+     * As preferências vêm **antes** da consulta de eventos.
+     *
+     * Elas decidem a visão inicial e o início da semana, e os dois mudam o
+     * intervalo a consultar. Carregar em paralelo faria a primeira consulta sair
+     * com o mês e, logo depois, uma segunda com o que a pessoa escolheu — duas
+     * idas ao servidor e uma piscada na tela.
+     */
+    this.prefs.carregar().subscribe({
+      next: () => {
+        this.visao.set(this.prefs.visaoInicial());
+        this.carregar();
+      },
+      error: () => {
+        // Sem as preferências, a tela abre nos padrões em vez de ficar vazia.
+        this.carregar();
+      },
+    });
   }
 
   protected anterior(): void {
@@ -209,12 +249,29 @@ export class Calendario {
     this.carregar();
   }
 
+  /**
+   * Esconde ou mostra uma agenda, e **guarda** a escolha.
+   *
+   * A lista local é atualizada antes da resposta: esconder uma agenda é uma
+   * ação cujo resultado a pessoa está olhando, e esperar a ida e volta faria a
+   * caixa de seleção parecer travada. Se a gravação falhar, o estado volta.
+   */
   protected alternarAgenda(id: string): void {
-    const ocultas = new Set(this.ocultas());
-    if (!ocultas.delete(id)) {
-      ocultas.add(id);
-    }
-    this.ocultas.set(ocultas);
+    const anterior = this.agendas();
+    const escondida = !this.estaOculta(id);
+
+    this.agendas.set(
+      anterior.map((a) => (a.id === id ? { ...a, escondida } : a)),
+    );
+
+    this.api
+      .definirPreferenciasDaAgenda(id, { isHidden: escondida })
+      .subscribe({
+        error: () => {
+          this.agendas.set(anterior);
+          this.erro.set('Não foi possível guardar a escolha.');
+        },
+      });
   }
 
   protected estaOculta(id: string): boolean {

@@ -8,18 +8,7 @@
  * e que a linha de agora aparece só hoje.
  */
 import { test, expect, type Page } from '@playwright/test';
-import { restaurarBanco } from './apoio';
-
-const EMAIL = 'enzo@norbit.dev';
-const SENHA = 'norbit123';
-
-async function entrar(page: Page): Promise<void> {
-  await page.goto('/entrar');
-  await page.getByLabel('E-mail').fill(EMAIL);
-  await page.getByLabel('Senha').fill(SENHA);
-  await page.getByRole('button', { name: 'Entrar' }).click();
-  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-}
+import { entrar, restaurarBanco } from './apoio';
 
 type Caixa = {
   readonly x: number;

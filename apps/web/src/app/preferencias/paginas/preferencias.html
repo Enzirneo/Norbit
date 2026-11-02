@@ -1,0 +1,109 @@
+@let p = atuais();
+
+<div class="tela">
+  <header class="topo">
+    <nb-marca />
+    <button nb-botao aparencia="texto" type="button" (click)="voltar()">
+      Voltar ao calendário
+    </button>
+  </header>
+
+  <main class="conteudo">
+    <h1 class="titulo">Preferências</h1>
+
+    @if (erro(); as mensagem) {
+    <p class="aviso" role="alert">{{ mensagem }}</p>
+    }
+
+    <!--
+      `aria-live` na confirmação: a tela salva a cada alteração, sem botão, e
+      quem não vê a mudança de cor precisa ouvir que ela foi gravada.
+    -->
+    <p class="estado" aria-live="polite">@if (salvando()) { Salvando… }</p>
+
+    <section class="secao">
+      <h2 class="secao-titulo">Aparência</h2>
+
+      <nb-campo rotulo="Cor de destaque" [dica]="rotuloDoAcento()">
+        <div class="acentos" role="radiogroup" aria-label="Cor de destaque">
+          @for (opcao of acentos; track opcao.nome) {
+          <button
+            class="acento"
+            type="button"
+            role="radio"
+            [class.acento--ativo]="p.accentColor === opcao.cor"
+            [attr.aria-checked]="p.accentColor === opcao.cor"
+            [attr.aria-label]="rotuloDe(opcao.nome)"
+            [style.background-color]="opcao.cor"
+            (click)="alterar({ accentColor: opcao.cor })"
+          ></button>
+          }
+        </div>
+      </nb-campo>
+
+      <nb-campo rotulo="Densidade" dica="O espaçamento de toda a interface.">
+        <select
+          class="entrada"
+          [value]="p.density"
+          (change)="alterarDensidade($any($event.target).value)"
+        >
+          @for (opcao of densidades; track opcao.valor) {
+          <option [value]="opcao.valor">{{ opcao.rotulo }}</option>
+          }
+        </select>
+      </nb-campo>
+
+      <label class="marcacao">
+        <input
+          type="checkbox"
+          [checked]="p.reducedMotion"
+          (change)="alterar({ reducedMotion: !p.reducedMotion })"
+        />
+        <span>
+          Reduzir movimento
+          <small class="nota">
+            Sem transições nem animações. Soma à preferência do sistema, não a
+            substitui.
+          </small>
+        </span>
+      </label>
+    </section>
+
+    <section class="secao">
+      <h2 class="secao-titulo">Calendário</h2>
+
+      <nb-campo rotulo="Visão ao abrir">
+        <select
+          class="entrada"
+          [value]="p.defaultView"
+          (change)="alterar({ defaultView: $any($event.target).value })"
+        >
+          @for (opcao of visoes; track opcao.valor) {
+          <option [value]="opcao.valor">{{ opcao.rotulo }}</option>
+          }
+        </select>
+      </nb-campo>
+
+      <nb-campo rotulo="A semana começa em">
+        <select
+          class="entrada"
+          [value]="p.weekStartsOn"
+          (change)="alterarInicioDaSemana($any($event.target).value)"
+        >
+          @for (opcao of diasDaSemana; track opcao.valor) {
+          <option [value]="opcao.valor">{{ opcao.rotulo }}</option>
+          }
+        </select>
+      </nb-campo>
+
+      <label class="marcacao">
+        <input
+          type="checkbox"
+          [checked]="p.use24Hour"
+          (change)="alterar({ use24Hour: !p.use24Hour })"
+        />
+        <span>Relógio de 24 horas</span>
+      </label>
+    </section>
+  </main>
+</div>

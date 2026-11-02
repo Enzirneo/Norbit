@@ -10,6 +10,7 @@ import { Injectable, inject } from '@angular/core';
 import type {
   AgendaVisivel,
   AtualizarEvento,
+  PreferenciasDaAgenda,
   CriarEvento,
   EventoVisivel,
   OcorrenciaVisivel,
@@ -22,6 +23,22 @@ export class CalendarioService {
 
   agendas(): Observable<AgendaVisivel[]> {
     return this.http.get<AgendaVisivel[]>('/api/agendas');
+  }
+
+  /**
+   * As minhas preferências sobre uma agenda — esconder, cor própria.
+   *
+   * Rota separada da alteração da agenda porque aquela é do dono: esconder uma
+   * agenda das próprias visões não exige ser dono dela.
+   */
+  definirPreferenciasDaAgenda(
+    id: string,
+    dados: PreferenciasDaAgenda,
+  ): Observable<void> {
+    return this.http.patch<void>(
+      `/api/agendas/${id}/minhas-preferencias`,
+      dados,
+    );
   }
 
   /**

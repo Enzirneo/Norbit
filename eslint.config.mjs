@@ -47,9 +47,21 @@ export default [
               ],
             },
             // Contratos são só tipos e schemas Zod.
+            //
+            // Podem depender de `scope:design-tokens` por um motivo estreito: o
+            // contrato de preferências valida a cor de destaque contra a paleta
+            // que o produto **oferece**, e essa lista é de design-tokens. Sem
+            // isso a lista existiria em duas cópias, e acrescentar um acento
+            // deixaria o contrato recusando a cor nova.
+            //
+            // A dependência é segura porque design-tokens é folha: ele não
+            // depende de nada, nem de Angular, nem de Nest, nem do Prisma.
             {
               sourceTag: 'scope:contracts',
-              onlyDependOnLibsWithTags: ['scope:contracts'],
+              onlyDependOnLibsWithTags: [
+                'scope:contracts',
+                'scope:design-tokens',
+              ],
               bannedExternalImports: [
                 '@prisma/*',
                 '@angular/*',

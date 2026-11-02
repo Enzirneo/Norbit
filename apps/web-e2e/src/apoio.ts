@@ -27,3 +27,31 @@ export function restaurarBanco(): void {
     shell: true,
   });
 }
+
+/**
+ * Entra pela interface e **espera o login terminar**.
+ *
+ * A espera é pela saída da página de entrada, e não por um `<h1>`: a própria
+ * página de login tem um `<h1>Entrar</h1>`, então esperar "um título de nível 1"
+ * passa na hora, antes de o login terminar. O teste seguinte que navegasse logo
+ * depois abortava a requisição em voo — sem cookie, sem sessão, e a página
+ * voltava para `/entrar`.
+ *
+ * Esteve duplicado em cada spec, cada cópia com o mesmo defeito, e só apareceu
+ * quando o primeiro teste que recarrega a página foi escrito.
+ */
+export async function entrar(
+  page: import('@playwright/test').Page,
+  credenciais: { email: string; senha: string } = {
+    email: 'enzo@norbit.dev',
+    senha: 'norbit123',
+  },
+): Promise<void> {
+  await page.goto('/entrar');
+  await page.getByLabel('E-mail').fill(credenciais.email);
+  await page.getByLabel('Senha').fill(credenciais.senha);
+  await page.getByRole('button', { name: 'Entrar' }).click();
+
+  await page.waitForURL((url) => !url.pathname.startsWith('/entrar'));
+  await page.getByRole('heading', { level: 1 }).waitFor();
+}
