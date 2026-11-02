@@ -20,6 +20,7 @@ import {
   throwError,
 } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { esquecerAparencia } from '../preferencias/aparencia';
 
 export const ROTAS_DA_API = {
   cadastro: '/api/auth/cadastro',
@@ -140,6 +141,9 @@ export class AuthService {
   }
 
   limpar(): void {
+    // A aparência é informação sobre quem usava este navegador; a próxima
+    // pessoa não deve ver, nem por um instante, a cor da anterior.
+    esquecerAparencia();
     this.token = null;
     this._usuario.set(null);
   }

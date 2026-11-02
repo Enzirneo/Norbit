@@ -132,6 +132,37 @@ de acesso; só faltava propagá-la.
 A caixa muda **antes** de a resposta chegar e volta se a gravação falhar: esconder é uma ação
 cujo resultado a pessoa está olhando, e esperar a ida e volta faria a caixa parecer travada.
 
+## Antes do primeiro paint
+
+As preferências chegam da API depois do carregamento, então, sozinhas, a tela nasceria com
+o acento padrão e trocaria de cor diante de quem olha. Um script **inline e síncrono** no
+`index.html` aplica o que foi guardado na abertura anterior, antes de o Angular existir.
+
+O cache guarda os **valores resolvidos** (`--accent: #ff6b8a`, ...), e não as preferências.
+Guardar as preferências obrigaria o script a repetir a derivação de cores — uma segunda
+implementação de `derivarAcento`, escrita à mão num HTML, onde ninguém a testa.
+
+O script é **cego**: recebe um mapa genérico de propriedades e as aplica sem saber o nome
+de nenhuma. A lista mora em `aparencia.ts` e em lugar nenhum mais. A única duplicação é a
+chave do `localStorage`, que o script não pode importar — por isso um teste fixa o valor.
+
+Quatro decisões:
+
+- **Conteúdo corrompido vira "nada guardado".** O armazenamento é do navegador, e qualquer
+  extensão mexe nele. Quebrar o carregamento por isso trocaria um flash de cor por uma tela
+  branca. O script inteiro está num `try`.
+- **Falhar ao guardar não falha a preferência.** Janela privada e dados bloqueados fazem o
+  acessor lançar; o cache é uma otimização, e a preferência já está no servidor.
+- **Sair apaga o cache.** A aparência é informação sobre quem usava o navegador; a próxima
+  pessoa não deve ver, nem por um instante, a cor da anterior.
+- **Não vale na primeira abertura num navegador.** Sem cache, o acento padrão aparece até a
+  API responder. Eliminar isso exigiria renderização no servidor ou um cookie lido pela
+  própria resposta do HTML, e nenhum dos dois existe aqui.
+
+O teste que prova o ponto **bloqueia a API de preferências na recarga** — ela nunca responde
+— e confere que o acento está lá mesmo assim, lido logo após o `commit` da navegação.
+Verificado por mutação: removido o script, a variável chega vazia.
+
 ## Preferências carregam antes dos eventos
 
 A visão inicial e o início da semana mudam o intervalo a consultar. Carregar em paralelo faria

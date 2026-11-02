@@ -1,11 +1,36 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <title>web</title>
+    <title>Norbit</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!--
+      Aplica a aparência guardada ANTES do primeiro paint.
+
+      Inline e síncrono de propósito: um módulo carregaria depois da pintura, e
+      aí a tela nasceria com o acento padrão e trocaria de cor diante de quem
+      olha. O script é cego — aplica um mapa genérico de propriedades sem
+      conhecer o nome de nenhuma; quem sabe os nomes é aparencia.ts, que
+      escreve o cache. A chave abaixo é a mesma de CHAVE_DA_APARENCIA, e um
+      teste fixa o valor.
+
+      Dentro de try: localStorage pode lançar (janela privada, dados
+      bloqueados), e uma exceção aqui não pode custar a página.
+    -->
+    <script>
+      try {
+        var cache = JSON.parse(localStorage.getItem('norbit:aparencia'));
+        if (cache && cache.propriedades) {
+          var raiz = document.documentElement;
+          for (var nome in cache.propriedades) {
+            raiz.style.setProperty(nome, cache.propriedades[nome]);
+          }
+          if (cache.semMovimento) raiz.setAttribute('data-sem-movimento', '');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <nb-root></nb-root>
