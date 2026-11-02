@@ -67,6 +67,47 @@ test.describe('preferências', () => {
     await expect.poll(() => variavel(page, '--accent')).toBe('#ff6b8a');
   });
 
+  test('a aparência vale antes de o Angular carregar e antes da API responder', async ({
+    page,
+  }) => {
+    // O ponto do cache: sem ele a tela nasce com o acento padrão e troca de cor
+    // diante de quem olha. Para provar que o valor vem do cache e **não** do
+    // servidor, a API de preferências é bloqueada na recarga — ela nunca
+    // responde, e o acento tem de estar lá do mesmo jeito.
+    await entrar(page);
+    await page.goto('/preferencias');
+    await page.getByRole('radio', { name: 'Pulsar' }).click();
+    await expect.poll(() => variavel(page, '--accent')).toBe('#ff6b8a');
+
+    await page.route('**/api/preferencias', (rota) => rota.abort());
+
+    // `commit`: devolve assim que a navegação começa a responder, bem antes de
+    // o Angular existir. Ler a variável aqui só passa se o script do
+    // `index.html` já rodou.
+    await page.goto('/preferencias', { waitUntil: 'commit' });
+    await page.waitForFunction(() => document.readyState !== 'loading');
+
+    expect(await variavel(page, '--accent')).toBe('#ff6b8a');
+  });
+
+  test('sair apaga a aparência guardada', async ({ page }) => {
+    // A aparência é informação sobre quem usava o navegador: a próxima pessoa
+    // não deve ver, nem por um instante, a cor da anterior.
+    await entrar(page);
+    await page.goto('/preferencias');
+    await page.getByRole('radio', { name: 'Solar' }).click();
+    await expect.poll(() => variavel(page, '--accent')).toBe('#ffb357');
+
+    await page.getByRole('button', { name: 'Voltar ao calendário' }).click();
+    await page.getByRole('button', { name: 'Sair' }).click();
+    await page.waitForURL(/\/entrar/);
+
+    const guardado = await page.evaluate(() =>
+      localStorage.getItem('norbit:aparencia'),
+    );
+    expect(guardado).toBeNull();
+  });
+
   test('a densidade muda a unidade de espaçamento', async ({ page }) => {
     await entrar(page);
     await page.goto('/preferencias');

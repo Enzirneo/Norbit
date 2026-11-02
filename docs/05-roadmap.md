@@ -158,9 +158,10 @@ a outra o vê aparecer sem recarregar.
   existe ainda
 - [~] Preferências: densidade, formato de hora, início da semana e visão padrão estão
   prontas. **Faltam** início/fim do dia e mostrar fins de semana, que o banco tem
-- [~] Preferências persistidas no servidor — pronto. **Aplicadas antes do primeiro paint
-  — não**: elas chegam depois do carregamento, então há um instante com o acento
-  padrão. Resolver exige gravá-las no `index.html` ou num cookie lido cedo
+- [x] Preferências persistidas no servidor e aplicadas antes do primeiro paint — um
+      script inline no `index.html` lê o cache. **Vale a partir da segunda abertura num
+      navegador**: na primeira não há cache, e o acento padrão aparece por um instante.
+      Ver [14](14-preferencias.md)
 - [~] Cor e ícone por agenda, mais o override pessoal por membro — a API e o modelo
   têm o override (`corPropria`); a interface ainda só esconde a agenda
 - [ ] Fundo orbital, linha de agora animada, esqueletos de carregamento
