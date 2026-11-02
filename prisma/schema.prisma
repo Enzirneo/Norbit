@@ -140,6 +140,7 @@ model User {
 
   settings          UserSettings?
   sessions          Session[]
+  passwordResets    PasswordReset[]
   oauthAccounts     OAuthAccount[]
   pushSubscriptions PushSubscription[]
 
@@ -217,6 +218,24 @@ model Session {
   @@index([familyId])
   @@index([expiresAt])
   @@map("sessions")
+}
+
+// Pedido de redefinição de senha. Só o hash do token é persistido; o valor cru
+// viaja apenas no link enviado por e-mail. Cada pedido vale uma vez.
+model PasswordReset {
+  id String @id @db.Uuid
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz
+  usedAt    DateTime? @db.Timestamptz
+  createdAt DateTime  @default(now()) @db.Timestamptz
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_resets")
 }
 
 // Previsto para login com Google/Apple. Vazio no MVP; existe para não exigir

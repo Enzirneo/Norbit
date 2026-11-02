@@ -17,7 +17,7 @@ import { z } from 'zod';
  */
 const TAMANHO_MINIMO_DE_SENHA = 12;
 
-const senhaNova = z
+export const senhaNova = z
   .string()
   .min(
     TAMANHO_MINIMO_DE_SENHA,
@@ -29,7 +29,7 @@ const senhaNova = z
 
 // `.pipe()` em vez de `.email()` direto no string: o `.email()` encadeado está
 // deprecado no Zod 4. A ordem importa — normaliza, depois valida.
-const email = z
+export const email = z
   .string()
   .trim()
   .toLowerCase()

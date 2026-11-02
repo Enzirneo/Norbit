@@ -24,3 +24,5 @@ export * from './lib/formulario/repeticao';
 export * from './lib/calendario/grade-de-horas';
 export * from './lib/calendario/colunas';
 export * from './lib/calendario/navegacao';
+
+export * from './lib/auth/redefinicao-de-senha';

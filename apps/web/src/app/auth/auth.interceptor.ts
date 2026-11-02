@@ -22,6 +22,8 @@ const ROTAS_SEM_TOKEN: readonly string[] = [
   ROTAS_DA_API.login,
   ROTAS_DA_API.refresh,
   ROTAS_DA_API.logout,
+  ROTAS_DA_API.esqueciSenha,
+  ROTAS_DA_API.redefinirSenha,
 ];
 
 export const authInterceptor: HttpInterceptorFn = (requisicao, proximo) => {

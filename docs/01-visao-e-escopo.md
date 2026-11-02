@@ -7,7 +7,7 @@ agendas e escolhe quais compartilhar, com quem e em que nível. O ponto central 
 produto não é "marcar reunião" — é **saber o que está acontecendo na vida de quem
 importa para você**, sem precisar perguntar.
 
-O nome vem de *orbit*: pessoas que orbitam em volta umas das outras, cada uma no seu
+O nome vem de _orbit_: pessoas que orbitam em volta umas das outras, cada uma no seu
 próprio ciclo, visíveis entre si.
 
 ## Para quem
@@ -19,7 +19,7 @@ consequências concretas de design:
 - Convites por link/e-mail direto, sem diretório de organização
 - Nenhum conceito de "sala", "recurso" ou "disponibilidade de equipe"
 - Privacidade granular importa mais que gestão: eu quero compartilhar minha agenda
-  *e ainda assim* ter eventos que ninguém vê
+  _e ainda assim_ ter eventos que ninguém vê
 
 ## Princípios de produto
 
@@ -40,6 +40,7 @@ Todos os quatro blocos foram confirmados como parte da primeira versão utilizá
 A ordem de execução está no [roadmap](05-roadmap.md).
 
 ### A. Núcleo da agenda
+
 - Conta própria com e-mail e senha, sessão persistente
 - Agendas pessoais (criar, renomear, cor, arquivar)
 - Eventos: título, descrição, local, início/fim, dia inteiro, recorrência
@@ -47,6 +48,7 @@ A ordem de execução está no [roadmap](05-roadmap.md).
 - Visões de mês, semana, dia e uma lista de "próximos"
 
 ### B. Compartilhamento
+
 - Convidar pessoas para uma agenda por e-mail ou link
 - Papéis: dono, editor, colaborador, leitor
 - Sobreposição das agendas de várias pessoas, cada uma com sua cor
@@ -54,12 +56,14 @@ A ordem de execução está no [roadmap](05-roadmap.md).
 - Feed de atividade: quem criou ou mudou o quê
 
 ### C. Customização e tema
+
 - Temas (claro, escuro e variantes orbitais) com cor de acento escolhida
 - Cor e ícone por agenda, mais um override pessoal de cor por membro
 - Densidade da visão, formato de hora, primeiro dia da semana, visão padrão
 - Respeito a `prefers-reduced-motion` e opção manual de reduzir animações
 
 ### D. Notificações e lembretes
+
 - Lembretes por evento, com múltiplos deslocamentos (10 min antes, 1 dia antes…)
 - Web Push, com service worker
 - Notificações in-app para convites, mudanças e atribuições

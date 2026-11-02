@@ -1,0 +1,51 @@
+@let e = erros();
+
+<nb-moldura titulo="Nova senha" subtitulo="Escolha uma senha para a sua conta.">
+  @if (concluido()) {
+  <div corpo role="status" class="flex flex-col gap-3 text-sm">
+    <p>Senha alterada. Você já pode entrar com a nova.</p>
+    <p class="text-muted">
+      Por segurança, as outras sessões abertas da sua conta foram encerradas.
+    </p>
+  </div>
+  } @else if (token === '') {
+  <p corpo role="alert" class="text-sm text-danger">
+    O link está incompleto. Use o link do e-mail, ou peça um novo.
+  </p>
+  } @else {
+  <form
+    corpo
+    [formGroup]="formulario"
+    (ngSubmit)="enviar()"
+    class="flex flex-col gap-5"
+  >
+    <nb-campo rotulo="Nova senha" [erro]="e['password']">
+      <input
+        type="password"
+        formControlName="password"
+        autocomplete="new-password"
+        class="nb-entrada"
+        [attr.aria-invalid]="e['password'] ? 'true' : null"
+      />
+    </nb-campo>
+
+    @if (e['formulario']) {
+    <p role="alert" class="text-sm text-danger">{{ e['formulario'] }}</p>
+    }
+
+    <button nb-botao type="submit" [ocupado]="enviando()">
+      {{ enviando() ? 'Salvando' : 'Salvar a nova senha' }}
+    </button>
+  </form>
+  }
+
+  <span rodape>
+    @if (concluido()) {
+    <a routerLink="/entrar" class="text-accent hover:underline">Entrar</a>
+    } @else {
+    <a routerLink="/esqueci-senha" class="text-accent hover:underline">
+      Pedir um novo link
+    </a>
+    }
+  </span>
+</nb-moldura>
