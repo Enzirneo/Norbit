@@ -10,11 +10,8 @@
  * Depende do `prisma db seed`: as contas e os eventos são os de
  * `prisma/seed.ts`.
  */
-import { test, expect, type Page } from '@playwright/test';
-import { restaurarBanco } from './apoio';
-
-const EMAIL = 'enzo@norbit.dev';
-const SENHA = 'norbit123';
+import { test, expect } from '@playwright/test';
+import { entrar, restaurarBanco } from './apoio';
 
 /**
  * O mês em que o seed coloca os eventos.
@@ -28,13 +25,6 @@ function mesAtual(): string {
     new Date(),
   );
   return `${nome[0]?.toUpperCase()}${nome.slice(1)}`;
-}
-
-async function entrar(page: Page): Promise<void> {
-  await page.goto('/entrar');
-  await page.getByLabel('E-mail').fill(EMAIL);
-  await page.getByLabel('Senha').fill(SENHA);
-  await page.getByRole('button', { name: 'Entrar' }).click();
 }
 
 test.describe('calendário', () => {

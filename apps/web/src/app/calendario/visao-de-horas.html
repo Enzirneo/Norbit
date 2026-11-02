@@ -49,7 +49,7 @@
     <div class="eixo">
       @for (marca of eixo(); track marca.hora) {
       <span class="eixo-hora" [style.top.%]="marca.posicao * 100">
-        {{ marca.hora }}h
+        {{ marca.texto }}
       </span>
       }
     </div>

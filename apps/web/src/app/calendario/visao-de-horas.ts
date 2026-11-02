@@ -87,6 +87,8 @@ export class VisaoDeHoras {
   readonly agendas = input.required<readonly AgendaVisivel[]>();
   readonly fuso = input.required<string>();
   readonly hoje = input.required<DataCivil>();
+  /** Relógio de 24 horas, da preferência da conta. */
+  readonly vinteEQuatroHoras = input.required<boolean>();
 
   readonly selecionada = output<OcorrenciaVisivel>();
   /** O dia e a hora clicados no espaço vazio da grade. */
@@ -104,7 +106,12 @@ export class VisaoDeHoras {
   /** As horas visíveis, para o eixo da esquerda. Vêm do primeiro dia. */
   protected readonly eixo = computed(() => {
     const primeiro = this.dias()[0];
-    return primeiro ? horasDoDia(primeiro, this.fuso()) : [];
+    const marcas = primeiro ? horasDoDia(primeiro, this.fuso()) : [];
+
+    return marcas.map((marca) => ({
+      ...marca,
+      texto: rotuloDeHora(marca.hora, this.vinteEQuatroHoras()),
+    }));
   });
 
   protected readonly colunas = computed<readonly Coluna[]>(() => {
@@ -181,6 +188,33 @@ export class VisaoDeHoras {
     comHora: readonly OcorrenciaVisivel[],
     cores: ReadonlyMap<string, string>,
   ): Coluna {
+    return {
+      dia,
+      rotuloCurto: rotuloCurtoDe(dia),
+      numero: dia.dia,
+      ehHoje: mesmoDia(dia, this.hoje()),
+      horas: celulasDeHora(
+        dia,
+        horasDoDia(dia, this.fuso()),
+        this.vinteEQuatroHoras(),
+      ),
+      faixas: this.faixasDoDia(dia, comHora, cores),
+      agora: this.posicaoDeAgora(dia),
+    };
+  }
+
+  /**
+   * As faixas de um dia, já com a coluna que cada uma ocupa.
+   *
+   * Separado de `montarColuna` quando a preferência de 24 horas entrou e o
+   * método passou do limite de linhas: são duas responsabilidades — montar a
+   * coluna e posicionar o que há dentro dela.
+   */
+  private faixasDoDia(
+    dia: DataCivil,
+    comHora: readonly OcorrenciaVisivel[],
+    cores: ReadonlyMap<string, string>,
+  ): readonly FaixaComHora[] {
     const posicoes = comHora.flatMap((ocorrencia) => {
       const faixa = faixaNoDia({
         dia,
@@ -199,33 +233,25 @@ export class VisaoDeHoras {
       posicoes.map(({ id, topo, altura }) => ({ id, topo, altura })),
     );
 
-    return {
-      dia,
-      rotuloCurto: rotuloCurtoDe(dia),
-      numero: dia.dia,
-      ehHoje: mesmoDia(dia, this.hoje()),
-      horas: celulasDeHora(dia, horasDoDia(dia, this.fuso())),
-      faixas: distribuidas.flatMap((c) => {
-        const ocorrencia = porChave.get(c.id);
-        if (!ocorrencia) {
-          return [];
-        }
+    return distribuidas.flatMap((c) => {
+      const ocorrencia = porChave.get(c.id);
+      if (!ocorrencia) {
+        return [];
+      }
 
-        return [
-          {
-            chave: c.id,
-            ocorrencia,
-            ...pinturaDe(cores.get(ocorrencia.calendarId)),
-            topo: c.topo * 100,
-            altura: c.altura * 100,
-            esquerda: (c.coluna / c.colunas) * 100,
-            largura: (1 / c.colunas) * 100,
-            horario: horarioDe(ocorrencia, this.fuso()),
-          },
-        ];
-      }),
-      agora: this.posicaoDeAgora(dia),
-    };
+      return [
+        {
+          chave: c.id,
+          ocorrencia,
+          ...pinturaDe(cores.get(ocorrencia.calendarId)),
+          topo: c.topo * 100,
+          altura: c.altura * 100,
+          esquerda: (c.coluna / c.colunas) * 100,
+          largura: (1 / c.colunas) * 100,
+          horario: horarioDe(ocorrencia, this.fuso(), this.vinteEQuatroHoras()),
+        },
+      ];
+    });
   }
 
   /**
@@ -266,10 +292,15 @@ function pinturaDe(cor: string | undefined): { fundo: string; borda: string } {
   };
 }
 
-function horarioDe(ocorrencia: OcorrenciaVisivel, fuso: string): string {
+function horarioDe(
+  ocorrencia: OcorrenciaVisivel,
+  fuso: string,
+  vinteEQuatro: boolean,
+): string {
   return new Intl.DateTimeFormat('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
+    hour12: !vinteEQuatro,
     timeZone: fuso,
   }).format(new Date(ocorrencia.inicio));
 }
@@ -311,6 +342,7 @@ function dois(valor: number): string {
 function celulasDeHora(
   dia: DataCivil,
   marcas: readonly MarcaDeHora[],
+  vinteEQuatro: boolean,
 ): readonly CelulaDeHora[] {
   return marcas.map((marca, i) => {
     const proxima = marcas[i + 1]?.posicao ?? 1;
@@ -319,8 +351,10 @@ function celulasDeHora(
       hora: marca.hora,
       topo: marca.posicao * 100,
       altura: (proxima - marca.posicao) * 100,
+      // O valor do campo de hora é sempre 24h: é o formato que o
+      // `<input type="time">` exige, independente de como a pessoa lê o relógio.
       texto: `${dois(marca.hora)}:00`,
-      rotulo: `Criar evento às ${marca.hora}h de ${rotuloLongoDe(dia)}`,
+      rotulo: `Criar evento às ${rotuloDeHora(marca.hora, vinteEQuatro)} de ${rotuloLongoDe(dia)}`,
     };
   });
 }
@@ -332,4 +366,22 @@ function rotuloLongoDe(dia: DataCivil): string {
     month: 'long',
     timeZone: 'UTC',
   }).format(new Date(Date.UTC(dia.ano, dia.mes - 1, dia.dia)));
+}
+
+/**
+ * A hora como a pessoa lê: "14h" ou "2 PM".
+ *
+ * Só para **mostrar**. O valor que vai para o formulário continua em 24 horas,
+ * porque é o formato que o `<input type="time">` exige — misturar os dois faria
+ * o campo nascer vazio para quem escolheu 12 horas.
+ */
+function rotuloDeHora(hora: number, vinteEQuatro: boolean): string {
+  if (vinteEQuatro) {
+    return `${hora}h`;
+  }
+
+  const periodo = hora < 12 ? 'AM' : 'PM';
+  const doze = hora % 12 === 0 ? 12 : hora % 12;
+
+  return `${doze} ${periodo}`;
 }

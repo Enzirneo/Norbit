@@ -9,6 +9,12 @@ export const appRoutes: Route[] = [
       import('./calendario/paginas/calendario').then((m) => m.Calendario),
   },
   {
+    path: 'preferencias',
+    canActivate: [exigeSessao],
+    loadComponent: () =>
+      import('./preferencias/paginas/preferencias').then((m) => m.Preferencias),
+  },
+  {
     path: 'entrar',
     canActivate: [exigeVisitante],
     loadComponent: () => import('./auth/paginas/entrar').then((m) => m.Entrar),

@@ -95,6 +95,16 @@ export type AgendaVisivel = {
   /** O papel de quem pediu — é com ele que a interface decide o que mostrar. */
   readonly papel: PapelNaAgenda;
   readonly ownerId: string;
+  /**
+   * Escondida das **minhas** visões.
+   *
+   * Vem junto da agenda, e não de uma chamada separada: a barra lateral precisa
+   * do estado para desenhar as caixas de seleção, e uma segunda requisição faria
+   * a lista aparecer toda marcada por um instante antes de corrigir.
+   */
+  readonly escondida: boolean;
+  /** A cor com que **eu** vejo esta agenda, ou `null` para a cor dela. */
+  readonly corPropria: string | null;
 };
 
 /** Um membro como a lista da agenda o mostra. */

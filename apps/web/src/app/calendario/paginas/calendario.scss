@@ -137,16 +137,11 @@
   font-size: 0.6875rem;
 }
 
-.lateral-vazio,
-.lateral-nota {
+.lateral-vazio {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.75rem;
   line-height: 1.5;
-}
-
-.lateral-nota {
-  margin-block-start: auto;
 }
 
 .principal {
@@ -192,10 +187,6 @@
     flex-direction: row;
     flex-wrap: wrap;
   }
-
-  .lateral-nota {
-    display: none;
-  }
 }
 
 /* Alternador de visão: três segmentos, um ativo. */
@@ -231,4 +222,24 @@
   background: var(--surface-raised);
   color: var(--text-primary);
   font-weight: 500;
+}
+
+/* O atalho para as preferências, no pé da barra lateral. */
+.lateral-link {
+  margin-block-start: auto;
+  padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
+  border-radius: calc(var(--space-unit) * 2);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  text-decoration: none;
+
+  &:hover {
+    background: var(--surface-raised);
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
 }

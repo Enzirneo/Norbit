@@ -16,6 +16,7 @@ import type {
   AtualizarAgenda,
   CriarAgenda,
   MembroVisivel,
+  PreferenciasDaAgenda,
 } from '@norbit/contracts';
 import type { Papel } from '@norbit/domain';
 import { PrismaService } from '@norbit/db';
@@ -72,7 +73,7 @@ export class AgendasService {
       }),
     ]);
 
-    return visivel({ agenda, papel: 'OWNER' });
+    return visivel({ agenda, papel: 'OWNER', membro: null });
   }
 
   async atualizar(entrada: {
@@ -80,7 +81,7 @@ export class AgendasService {
     readonly calendarId: string;
     readonly dados: AtualizarAgenda;
   }): Promise<AgendaVisivel> {
-    const { agenda, papel } = await this.acesso.abrir({
+    const { agenda, papel, membro } = await this.acesso.abrir({
       calendarId: entrada.calendarId,
       userId: entrada.userId,
       acao: 'editar-agenda',
@@ -100,7 +101,7 @@ export class AgendasService {
       },
     });
 
-    return visivel({ agenda: atualizada, papel });
+    return visivel({ agenda: atualizada, papel, membro });
   }
 
   /**
@@ -211,6 +212,42 @@ export class AgendasService {
   }
 
   /**
+   * As preferências de **um membro** sobre **uma agenda**.
+   *
+   * Exige apenas `ver`, e não `editar-agenda`: esconder uma agenda das próprias
+   * visões ou escolher com que cor **eu** a vejo não altera nada para os outros,
+   * e exigir ser dono prenderia o membro a ver tudo o que entrou na lista dele.
+   *
+   * `upsert` e não `update`: o dono tem acesso por `ownerId` e pode não ter
+   * linha de membro (ver `AcessoService`). Sem o upsert, a preferência dele
+   * seria gravada em nenhuma linha e sumiria sem erro.
+   */
+  async definirPreferencias(entrada: {
+    readonly userId: string;
+    readonly calendarId: string;
+    readonly dados: PreferenciasDaAgenda;
+  }): Promise<void> {
+    const { agenda } = await this.acesso.abrir({
+      calendarId: entrada.calendarId,
+      userId: entrada.userId,
+      acao: 'ver',
+    });
+
+    await this.prisma.calendarMember.upsert({
+      where: {
+        calendarId_userId: { calendarId: agenda.id, userId: entrada.userId },
+      },
+      update: entrada.dados,
+      create: {
+        calendarId: agenda.id,
+        userId: entrada.userId,
+        role: agenda.ownerId === entrada.userId ? 'OWNER' : 'VIEWER',
+        ...entrada.dados,
+      },
+    });
+  }
+
+  /**
    * Sair da agenda exige apenas vê-la.
    *
    * Separado de `removerMembro` de propósito: sair é direito de quem entrou, e
@@ -251,7 +288,11 @@ function exigirQueExistisse(count: number): void {
   }
 }
 
-export function visivel({ agenda, papel }: AcessoAAgenda): AgendaVisivel {
+export function visivel({
+  agenda,
+  papel,
+  membro,
+}: AcessoAAgenda): AgendaVisivel {
   return {
     id: agenda.id,
     name: agenda.name,
@@ -264,5 +305,9 @@ export function visivel({ agenda, papel }: AcessoAAgenda): AgendaVisivel {
     arquivada: agenda.archivedAt !== null,
     papel,
     ownerId: agenda.ownerId,
+    // Sem linha de membro, nada está escondido: é o estado de quem acabou de
+    // criar a agenda, e o padrão do campo no banco é o mesmo.
+    escondida: membro?.isHidden ?? false,
+    corPropria: membro?.colorOverride ?? null,
   };
 }

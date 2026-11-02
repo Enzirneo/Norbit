@@ -1,0 +1,133 @@
+/* A tela de preferências. Só camada semântica, como o resto. */
+
+.tela {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--space-unit) * 4);
+  padding: calc(var(--space-unit) * 3) calc(var(--space-unit) * 4);
+  border-block-end: 1px solid var(--border-subtle);
+}
+
+.conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 6);
+  width: 100%;
+  max-width: 34rem;
+  margin: 0 auto;
+  padding: calc(var(--space-unit) * 8) calc(var(--space-unit) * 4);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.secao {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 4);
+  padding: calc(var(--space-unit) * 5);
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--space-unit) * 4);
+  background: var(--surface-raised);
+}
+
+.secao-titulo {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.entrada {
+  width: 100%;
+  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 3);
+  border: 1px solid var(--border-default);
+  border-radius: calc(var(--space-unit) * 2);
+  background: var(--surface-sunken);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9375rem;
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+.acentos {
+  display: flex;
+  gap: calc(var(--space-unit) * 2);
+}
+
+.acento {
+  width: calc(var(--space-unit) * 8);
+  height: calc(var(--space-unit) * 8);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+
+  /* O selecionado ganha um anel **externo**, com um vão: um anel na própria
+     borda mudaria o tamanho aparente do círculo e a cor pareceria outra. */
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 3px;
+  }
+}
+
+.acento--ativo {
+  border-color: var(--surface-raised);
+  box-shadow: 0 0 0 2px var(--text-primary);
+}
+
+.marcacao {
+  display: flex;
+  align-items: start;
+  gap: calc(var(--space-unit) * 2);
+  font-size: 0.9375rem;
+  cursor: pointer;
+
+  input {
+    margin-block-start: 2px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+}
+
+.nota {
+  display: block;
+  margin-block-start: calc(var(--space-unit) * 1);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.aviso {
+  margin: 0;
+  padding: calc(var(--space-unit) * 3);
+  border: 1px solid var(--state-danger);
+  border-radius: calc(var(--space-unit) * 2);
+  background: color-mix(in oklab, var(--state-danger) 12%, transparent);
+  font-size: 0.875rem;
+}
+
+/* Reserva a linha: sem altura mínima, o "Salvando…" empurra o conteúdo a cada
+   alteração. */
+.estado {
+  min-height: 1.25rem;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}

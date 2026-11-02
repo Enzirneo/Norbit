@@ -9,3 +9,21 @@
 
 /* Onde o Tailwind procura as classes usadas. */
 @source './**/*.{html,ts}';
+
+/* A redução de movimento escolhida nas preferências.
+ *
+ * Um atributo na raiz, escrito pelo PreferenciasService, e uma regra global:
+ * ela SOMA à consulta de mídia do sistema em vez de substituí-la — quem já pediu
+ * menos movimento no sistema operacional continua sendo atendido mesmo com a
+ * preferência do Norbit desligada.
+ *
+ * `0.01ms` e não `0`: uma transição de duração zero não dispara `transitionend`,
+ * e qualquer código que espere o evento ficaria parado. */
+[data-sem-movimento] *,
+[data-sem-movimento] *::before,
+[data-sem-movimento] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}

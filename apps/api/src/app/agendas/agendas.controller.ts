@@ -27,11 +27,13 @@ import {
   atualizarAgendaSchema,
   criarAgendaSchema,
   definirPapelSchema,
+  preferenciasDaAgendaSchema,
   type AgendaVisivel,
   type AtualizarAgenda,
   type CriarAgenda,
   type DefinirPapel,
   type MembroVisivel,
+  type PreferenciasDaAgenda,
 } from '@norbit/contracts';
 import { AuthGuard } from '../auth/auth.guard';
 import type { Requisitante } from '../auth/auth.guard';
@@ -80,6 +82,27 @@ export class AgendasController {
     @Param('id', uuidNaRota) calendarId: string,
   ): Promise<void> {
     await this.agendas.remover(quem.id, calendarId);
+  }
+
+  /**
+   * As minhas preferências sobre esta agenda.
+   *
+   * `minhas-preferencias` e não `preferencias`: o nome deixa claro que a rota
+   * não é das preferências **da agenda** — aquelas são o `PATCH :id`, do dono.
+   */
+  @Patch(':id/minhas-preferencias')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async definirPreferencias(
+    @UsuarioAtual() quem: Requisitante,
+    @Param('id', uuidNaRota) calendarId: string,
+    @Body(new ZodValidationPipe(preferenciasDaAgendaSchema))
+    dados: PreferenciasDaAgenda,
+  ): Promise<void> {
+    await this.agendas.definirPreferencias({
+      userId: quem.id,
+      calendarId,
+      dados,
+    });
   }
 
   @Get(':id/membros')

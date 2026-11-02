@@ -85,10 +85,10 @@ export const nebula: TemaSemantico = {
   accent: accent.nebula,
   // Clareado à mão por enquanto. A derivação em OKLCH, que mantém o contraste
   // correto para qualquer acento que o usuário escolher, é a Fase 4.
-  accentHover: '#8793FF',
+  accentHover: '#8793ff',
   // Fundo de estado selecionado: escuro o suficiente para texto primário ficar
   // em cima, então não entra nos pares de contraste como frente.
-  accentMuted: '#1F2547',
+  accentMuted: '#1f2547',
 
   stateSuccess: accent.aurora,
   stateWarning: accent.solar,

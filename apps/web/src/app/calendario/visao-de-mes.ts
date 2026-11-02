@@ -70,6 +70,8 @@ export class VisaoDeMes {
   readonly agendas = input.required<readonly AgendaVisivel[]>();
   /** O fuso de quem está vendo — é ele que decide em que dia cada hora cai. */
   readonly fuso = input.required<string>();
+  /** Relógio de 24 horas, da preferência da conta. */
+  readonly vinteEQuatroHoras = input.required<boolean>();
   /** O dia de hoje, em data civil e já no fuso de quem vê. */
   readonly hoje = input.required<{ ano: number; mes: number; dia: number }>();
 
@@ -155,7 +157,7 @@ export class VisaoDeMes {
           coluna: faixa.de + 1,
           colunas: faixa.ate - faixa.de + 1,
           trilha: faixa.trilha,
-          horario: horarioDe(ocorrencia, this.fuso()),
+          horario: horarioDe(ocorrencia, this.fuso(), this.vinteEQuatroHoras()),
         },
       ];
     });
@@ -175,7 +177,11 @@ function chaveDa(ocorrencia: OcorrenciaVisivel): string {
  * Mostrar "00:00" num evento de dia inteiro seria ruído: a informação dele é o
  * título, não o horário.
  */
-function horarioDe(ocorrencia: OcorrenciaVisivel, fuso: string): string | null {
+function horarioDe(
+  ocorrencia: OcorrenciaVisivel,
+  fuso: string,
+  vinteEQuatro: boolean,
+): string | null {
   if (ocorrencia.isAllDay) {
     return null;
   }
@@ -183,6 +189,7 @@ function horarioDe(ocorrencia: OcorrenciaVisivel, fuso: string): string | null {
   return new Intl.DateTimeFormat('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
+    hour12: !vinteEQuatro,
     timeZone: fuso,
   }).format(new Date(ocorrencia.inicio));
 }

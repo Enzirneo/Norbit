@@ -37,6 +37,20 @@ const NAO_ENCONTRADA = 'Agenda não encontrada.';
 export type AcessoAAgenda = {
   readonly agenda: Calendar;
   readonly papel: Papel;
+  /**
+   * A linha de membro de quem pediu, quando existe.
+   *
+   * O dono tem acesso por `ownerId` e pode não ter linha. Ela viaja junto porque
+   * a consulta já a trouxe, e buscá-la de novo para ler `isHidden` seria uma
+   * segunda ida ao banco pelo que estava na mão.
+   */
+  readonly membro: PreferenciasDoMembro | null;
+};
+
+/** O que a tela precisa da linha de membro. */
+export type PreferenciasDoMembro = {
+  readonly isHidden: boolean;
+  readonly colorOverride: string | null;
 };
 
 @Injectable()
@@ -68,7 +82,7 @@ export class AcessoService {
       throw new ForbiddenException(recusa(entrada.acao));
     }
 
-    return { agenda, papel };
+    return { agenda, papel, membro: agenda.members[0] ?? null };
   }
 
   /**
@@ -101,7 +115,10 @@ export class AcessoService {
 
     return agendas.flatMap((agenda) => {
       const papel = papelNa(agenda, userId);
-      return papel === null ? [] : [{ agenda, papel }];
+
+      return papel === null
+        ? []
+        : [{ agenda, papel, membro: agenda.members[0] ?? null }];
     });
   }
 

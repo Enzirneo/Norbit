@@ -153,15 +153,20 @@ a outra o vê aparecer sem recarregar.
 ## Fase 4 — Customização e tema · ~1 semana
 
 - [ ] Os quatro presets implementados e com contraste verificado
-- [ ] Seletor de cor de acento, com derivação OKLCH
-- [ ] Preferências: densidade, formato de hora, início da semana, visão padrão,
-      início/fim do dia, mostrar fins de semana
-- [ ] Preferências persistidas no servidor e aplicadas antes do primeiro paint
-      (sem piscar branco ao carregar no tema escuro)
-- [ ] Cor e ícone por agenda, mais o override pessoal por membro
+- [~] Seletor de cor de acento — **paleta curada de cinco**, com derivação por contraste
+  (ver [14](14-preferencias.md)). O seletor livre exige a derivação em OKLCH e não
+  existe ainda
+- [~] Preferências: densidade, formato de hora, início da semana e visão padrão estão
+  prontas. **Faltam** início/fim do dia e mostrar fins de semana, que o banco tem
+- [~] Preferências persistidas no servidor — pronto. **Aplicadas antes do primeiro paint
+  — não**: elas chegam depois do carregamento, então há um instante com o acento
+  padrão. Resolver exige gravá-las no `index.html` ou num cookie lido cedo
+- [~] Cor e ícone por agenda, mais o override pessoal por membro — a API e o modelo
+  têm o override (`corPropria`); a interface ainda só esconde a agenda
 - [ ] Fundo orbital, linha de agora animada, esqueletos de carregamento
 - [ ] Motion: transições de visão, abertura de detalhe, criação e conclusão
-- [ ] `prefers-reduced-motion` e a opção manual, as duas funcionando
+- [x] `prefers-reduced-motion` e a opção manual, as duas funcionando — a manual **soma**
+      à do sistema, não a substitui
 
 **Pronto quando:** trocar preset, acento e densidade muda a aplicação inteira
 coerentemente, e nada fica ilegível em nenhuma combinação.
