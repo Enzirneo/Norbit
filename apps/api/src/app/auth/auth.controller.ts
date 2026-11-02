@@ -22,9 +22,13 @@ import {
 import { ConfigService } from '@nestjs/config';
 import {
   cadastroSchema,
+  esqueciSenhaSchema,
   loginSchema,
+  redefinirSenhaSchema,
   type Cadastro,
+  type EsqueciSenha,
   type Login,
+  type RedefinirSenha,
   type UsuarioAutenticado,
 } from '@norbit/contracts';
 import type { CookieOptions, Request, Response } from 'express';
@@ -35,6 +39,7 @@ import {
   type Autenticacao,
   type ContextoDaSessao,
 } from './auth.service';
+import { RedefinicaoDeSenhaService } from './redefinicao-de-senha.service';
 import { UsuarioAtual } from './usuario-atual.decorator';
 import type { Requisitante } from './auth.guard';
 
@@ -55,6 +60,7 @@ type RespostaDeSessao = {
 export class AuthController {
   constructor(
     private readonly auth: AuthService,
+    private readonly redefinicao: RedefinicaoDeSenhaService,
     private readonly config: ConfigService,
   ) {}
 
@@ -113,6 +119,23 @@ export class AuthController {
     // Limpar o cookie precisa das mesmas opções com que ele foi criado, ou o
     // navegador não encontra qual apagar e a sessão "volta" no próximo refresh.
     resposta.clearCookie(COOKIE_DE_REFRESH, this.opcoesDoCookie());
+  }
+
+  /**
+   * 204 para qualquer e-mail, tenha conta ou não: ver `pedir` no serviço.
+   */
+  @Post('esqueci-senha')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UsePipes(new ZodValidationPipe(esqueciSenhaSchema))
+  async esqueciSenha(@Body() dados: EsqueciSenha): Promise<void> {
+    await this.redefinicao.pedir(dados.email);
+  }
+
+  @Post('redefinir-senha')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UsePipes(new ZodValidationPipe(redefinirSenhaSchema))
+  async redefinirSenha(@Body() dados: RedefinirSenha): Promise<void> {
+    await this.redefinicao.redefinir(dados.token, dados.password);
   }
 
   @Get('eu')

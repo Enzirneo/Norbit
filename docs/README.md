@@ -21,6 +21,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [12 — Formulário de evento](12-formulario-de-evento.md) | Criar e editar pela tela, e os seis defeitos que o e2e achou             |
 | [13 — Semana e dia](13-visao-de-semana-e-dia.md)        | Grade de horas, linha de agora, eventos simultâneos lado a lado          |
 | [14 — Preferências](14-preferencias.md)                 | Acento derivado por contraste, densidade, visão padrão, agenda escondida |
+| [15 — Recuperação de senha](15-recuperacao-de-senha.md) | Link de uso único por e-mail, hash no banco, sessões encerradas          |
 
 ## Estado atual
 
@@ -40,8 +41,9 @@ Ver o [roadmap](05-roadmap.md), a [autenticação](07-autenticacao.md), a
 [recorrência](08-recorrencia.md), as [agendas e eventos](09-agendas-e-eventos.md), as
 [tarefas](10-tarefas.md), a [visão de mês](11-visao-de-mes.md), o
 [formulário de evento](12-formulario-de-evento.md) e as
-[visões de semana e dia](13-visao-de-semana-e-dia.md) e as
-[preferências](14-preferencias.md).
+[visões de semana e dia](13-visao-de-semana-e-dia.md) as
+[preferências](14-preferencias.md) e a
+[recuperação de senha](15-recuperacao-de-senha.md).
 
 Para abrir a aplicação com dados: `docker compose up -d && npm run db:seed`, depois
 `npx nx run-many -t serve` e entrar com `enzo@norbit.dev` / `norbit123`.

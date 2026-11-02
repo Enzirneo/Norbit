@@ -1,0 +1,53 @@
+@let e = erros();
+
+<nb-moldura
+  titulo="Esqueci a senha"
+  subtitulo="Enviamos um link para você escolher uma nova."
+>
+  @if (enviado()) {
+  <!--
+      A mesma mensagem haja conta ou não: dizer "não encontramos esse e-mail"
+      revelaria quem tem conta no Norbit.
+    -->
+  <div corpo role="status" class="flex flex-col gap-3 text-sm">
+    <p>
+      Se existe uma conta com esse e-mail, o link já está a caminho. Ele vale
+      por 30 minutos.
+    </p>
+    <p class="text-muted">
+      Não chegou? Veja a caixa de spam, ou peça de novo em alguns instantes.
+    </p>
+  </div>
+  } @else {
+  <form
+    corpo
+    [formGroup]="formulario"
+    (ngSubmit)="enviar()"
+    class="flex flex-col gap-5"
+  >
+    <nb-campo rotulo="E-mail da conta" [erro]="e['email']">
+      <input
+        type="email"
+        formControlName="email"
+        autocomplete="email"
+        class="nb-entrada"
+        [attr.aria-invalid]="e['email'] ? 'true' : null"
+      />
+    </nb-campo>
+
+    @if (e['formulario']) {
+    <p role="alert" class="text-sm text-danger">{{ e['formulario'] }}</p>
+    }
+
+    <button nb-botao type="submit" [ocupado]="enviando()">
+      {{ enviando() ? 'Enviando' : 'Enviar o link' }}
+    </button>
+  </form>
+  }
+
+  <span rodape>
+    <a routerLink="/entrar" class="text-accent hover:underline">
+      Voltar para entrar
+    </a>
+  </span>
+</nb-moldura>

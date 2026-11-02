@@ -4,6 +4,8 @@ import { JwtModule, type JwtModuleOptions } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { EmailService } from '../comum/email.service';
+import { RedefinicaoDeSenhaService } from './redefinicao-de-senha.service';
 import { SenhasService } from './senhas.service';
 import { TokensService } from './tokens.service';
 
@@ -33,7 +35,14 @@ const FORMATO_DE_TTL = /^\d+(ms|s|m|h|d|w|y)$/;
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, SenhasService, TokensService, AuthGuard],
+  providers: [
+    AuthService,
+    RedefinicaoDeSenhaService,
+    EmailService,
+    SenhasService,
+    TokensService,
+    AuthGuard,
+  ],
   exports: [AuthService, AuthGuard, TokensService],
 })
 export class AuthModule {}

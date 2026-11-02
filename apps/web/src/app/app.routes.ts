@@ -25,6 +25,20 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./auth/paginas/criar-conta').then((m) => m.CriarConta),
   },
+  {
+    path: 'esqueci-senha',
+    canActivate: [exigeVisitante],
+    loadComponent: () =>
+      import('./auth/paginas/esqueci-senha').then((m) => m.EsqueciSenha),
+  },
+  // Sem `exigeVisitante`: quem segue o link do e-mail pode estar com outra
+  // conta aberta neste navegador, e ser mandado de volta ao calendário
+  // esconderia a tela que veio buscar.
+  {
+    path: 'redefinir-senha',
+    loadComponent: () =>
+      import('./auth/paginas/redefinir-senha').then((m) => m.RedefinirSenha),
+  },
   // Qualquer outro caminho cai na raiz, e o guard decide se é login ou início.
   { path: '**', redirectTo: '' },
 ];

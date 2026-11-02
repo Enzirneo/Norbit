@@ -49,8 +49,18 @@ export class TokensService {
   }
 
   gerarRefreshToken(): RefreshEmitido {
+    return this.gerarTokenOpaco();
+  }
+
+  /**
+   * Um valor aleatório de 256 bits e o hash que vai para o banco.
+   *
+   * Serve a qualquer credencial apresentada por inteiro — refresh, link de
+   * redefinição de senha — que é guardada só pelo hash.
+   */
+  gerarTokenOpaco(): RefreshEmitido {
     const valor = randomBytes(BYTES_DE_REFRESH).toString('base64url');
-    return { valor, hash: this.hashDeRefresh(valor) };
+    return { valor, hash: this.hashDoToken(valor) };
   }
 
   /**
@@ -65,8 +75,12 @@ export class TokensService {
    * dicionário que o alcance, e o custo de memória seria desperdício de CPU em
    * cada renovação.
    */
-  hashDeRefresh(valor: string): string {
+  hashDoToken(valor: string): string {
     return createHash('sha256').update(valor).digest('hex');
+  }
+
+  hashDeRefresh(valor: string): string {
+    return this.hashDoToken(valor);
   }
 
   /** Quando o refresh emitido agora deixa de valer. */

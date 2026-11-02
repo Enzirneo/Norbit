@@ -55,3 +55,52 @@ export async function entrar(
   await page.waitForURL((url) => !url.pathname.startsWith('/entrar'));
   await page.getByRole('heading', { level: 1 }).waitFor();
 }
+
+const MAILPIT = `http://localhost:${process.env['MAILPIT_UI_PORT'] ?? '8025'}`;
+
+type ResumoDeEmail = { ID: string; To: { Address: string }[] };
+
+/** Esvazia a caixa do Mailpit, para o teste só ver o que ele mesmo provocou. */
+export async function esvaziarCaixa(): Promise<void> {
+  await fetch(`${MAILPIT}/api/v1/messages`, { method: 'DELETE' });
+}
+
+/**
+ * O texto do e-mail que chegou para o endereço, esperando se preciso.
+ *
+ * O envio não é aguardado pela API (de propósito), então o e-mail chega
+ * depois da resposta. Espera por polling, e devolve `null` se nada chegou no
+ * prazo — o que é a asserção, para o teste de "não chega nada".
+ */
+export async function esperarEmail(
+  para: string,
+  prazoEmMs = 5_000,
+): Promise<string | null> {
+  const limite = Date.now() + prazoEmMs;
+
+  while (Date.now() < limite) {
+    const resposta = await fetch(`${MAILPIT}/api/v1/messages`);
+    const corpo = (await resposta.json()) as { messages: ResumoDeEmail[] };
+    const achado = corpo.messages.find((m) =>
+      m.To.some((destino) => destino.Address === para),
+    );
+
+    if (achado) {
+      const completo = await fetch(`${MAILPIT}/api/v1/message/${achado.ID}`);
+      return ((await completo.json()) as { Text: string }).Text;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+
+  return null;
+}
+
+/** O link de redefinição que está no texto do e-mail. */
+export function linkDoEmail(texto: string): string {
+  const achado = /https?:\/\/\S+\/redefinir-senha\?token=\S+/.exec(texto);
+  if (!achado) {
+    throw new Error('O e-mail não traz o link de redefinição.');
+  }
+  return achado[0];
+}
