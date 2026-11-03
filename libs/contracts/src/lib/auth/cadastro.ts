@@ -40,7 +40,7 @@ export const email = z
  * ponto e espaço quebrariam a rota, e maiúsculas criariam dois caminhos para a
  * mesma pessoa.
  */
-const handle = z
+export const handle = z
   .string()
   .trim()
   .toLowerCase()
@@ -51,15 +51,17 @@ const handle = z
     'O handle aceita apenas letras, números e sublinhado.',
   );
 
+export const nomeDeExibicao = z
+  .string()
+  .trim()
+  .min(1, 'Diga como você quer ser chamado.')
+  .max(80);
+
 export const cadastroSchema = z
   .object({
     email,
     handle,
-    displayName: z
-      .string()
-      .trim()
-      .min(1, 'Diga como você quer ser chamado.')
-      .max(80),
+    displayName: nomeDeExibicao,
     password: senhaNova,
   })
   // `strip` é o padrão do Zod, mas explícito aqui porque é uma decisão de

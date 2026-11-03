@@ -70,7 +70,8 @@ mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde. ✅
 - [x] `UserSettings` criado automaticamente junto com a conta
 - [x] Interceptor Angular que renova o access token de forma transparente
 - [x] Rotas protegidas por guard, redirecionamento após login
-- [ ] Perfil: nome de exibição, handle, avatar, fuso horário
+- [~] Perfil: nome de exibição, handle e fuso feitos — ver [16](16-perfil.md); avatar de imagem pendente (sem armazenamento de arquivos)
+- [ ] Trocar a senha logado, listar e revogar sessões
 - [x] Recuperação de senha por e-mail (Mailpit no Docker para testar sem enviar nada) — ver [15](15-recuperacao-de-senha.md)
 - [ ] Limitar a frequência dos pedidos de recuperação e do login (hoje não há limite)
 

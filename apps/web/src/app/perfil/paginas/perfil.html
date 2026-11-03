@@ -1,0 +1,82 @@
+@let e = erros();
+
+<div class="tela">
+  <header class="topo">
+    <nb-marca />
+    <button nb-botao aparencia="texto" type="button" (click)="voltar()">
+      Voltar ao calendário
+    </button>
+  </header>
+
+  <main class="conteudo">
+    <h1 class="titulo">Perfil</h1>
+
+    <p class="estado" aria-live="polite">
+      @if (salvando()) { Salvando… } @else if (salvo()) { Perfil salvo. }
+    </p>
+
+    <section class="secao">
+      <h2 class="secao-titulo">Você</h2>
+
+      <!--
+        Iniciais no lugar de uma imagem: ainda não há onde guardar arquivos.
+      -->
+      <span class="avatar" aria-hidden="true">{{ iniciais() }}</span>
+
+      <form
+        [formGroup]="formulario"
+        (ngSubmit)="salvar()"
+        class="flex flex-col gap-5"
+      >
+        <nb-campo rotulo="Nome de exibição" [erro]="e['displayName']">
+          <input
+            type="text"
+            formControlName="displayName"
+            autocomplete="name"
+            class="entrada"
+            [attr.aria-invalid]="e['displayName'] ? 'true' : null"
+          />
+        </nb-campo>
+
+        <nb-campo
+          rotulo="Handle"
+          dica="Seu endereço curto. Trocar quebra links antigos que apontem para ele."
+          [erro]="e['handle']"
+        >
+          <input
+            type="text"
+            formControlName="handle"
+            autocomplete="username"
+            class="entrada"
+            [attr.aria-invalid]="e['handle'] ? 'true' : null"
+          />
+        </nb-campo>
+
+        <nb-campo
+          rotulo="Fuso horário"
+          dica="Define a hora dos seus eventos e lembretes."
+          [erro]="e['timeZone']"
+        >
+          <input
+            type="text"
+            formControlName="timeZone"
+            list="fusos"
+            class="entrada"
+            [attr.aria-invalid]="e['timeZone'] ? 'true' : null"
+          />
+          <datalist id="fusos">
+            @for (fuso of fusos; track fuso) {
+            <option [value]="fuso"></option>
+            }
+          </datalist>
+        </nb-campo>
+
+        @if (e['formulario']) {
+        <p role="alert" class="aviso">{{ e['formulario'] }}</p>
+        }
+
+        <button nb-botao type="submit" [ocupado]="salvando()">Salvar</button>
+      </form>
+    </section>
+  </main>
+</div>

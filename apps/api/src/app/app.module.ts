@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { AgendasModule } from './agendas/agendas.module';
 import { AuthModule } from './auth/auth.module';
 import { EventosModule } from './eventos/eventos.module';
+import { PerfilModule } from './perfil/perfil.module';
 import { PreferenciasModule } from './preferencias/preferencias.module';
 import { TarefasModule } from './tarefas/tarefas.module';
 
@@ -20,6 +21,7 @@ import { TarefasModule } from './tarefas/tarefas.module';
     EventosModule,
     TarefasModule,
     PreferenciasModule,
+    PerfilModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -22,6 +22,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [13 — Semana e dia](13-visao-de-semana-e-dia.md)        | Grade de horas, linha de agora, eventos simultâneos lado a lado          |
 | [14 — Preferências](14-preferencias.md)                 | Acento derivado por contraste, densidade, visão padrão, agenda escondida |
 | [15 — Recuperação de senha](15-recuperacao-de-senha.md) | Link de uso único por e-mail, hash no banco, sessões encerradas          |
+| [16 — Perfil](16-perfil.md)                             | Nome, handle e fuso; avatar de iniciais; o que ficou de fora e por quê   |
 
 ## Estado atual
 
@@ -42,8 +43,9 @@ Ver o [roadmap](05-roadmap.md), a [autenticação](07-autenticacao.md), a
 [tarefas](10-tarefas.md), a [visão de mês](11-visao-de-mes.md), o
 [formulário de evento](12-formulario-de-evento.md) e as
 [visões de semana e dia](13-visao-de-semana-e-dia.md) as
-[preferências](14-preferencias.md) e a
-[recuperação de senha](15-recuperacao-de-senha.md).
+[preferências](14-preferencias.md) a
+[recuperação de senha](15-recuperacao-de-senha.md) e o
+[perfil](16-perfil.md).
 
 Para abrir a aplicação com dados: `docker compose up -d && npm run db:seed`, depois
 `npx nx run-many -t serve` e entrar com `enzo@norbit.dev` / `norbit123`.

@@ -142,6 +142,11 @@ export class AuthService {
       );
   }
 
+  /** Troca o usuário em memória, depois de uma edição de perfil. */
+  atualizarUsuario(usuario: UsuarioAutenticado): void {
+    this._usuario.set(usuario);
+  }
+
   limpar(): void {
     // A aparência é informação sobre quem usava este navegador; a próxima
     // pessoa não deve ver, nem por um instante, a cor da anterior.
