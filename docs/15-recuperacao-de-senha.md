@@ -83,9 +83,8 @@ uma conta que não existe e nunca poderia falhar; hoje compara a contagem antes 
 
 ## O que ainda não existe
 
-- **Limite de frequência.** Nada impede alguém de pedir o link mil vezes para o e-mail de uma
-  vítima (spam) ou de martelar o login. É a próxima pendência de segurança, e precisa de Redis
-  ou de um contador no banco.
+- **Limite de frequência**: existe desde o [17](17-limite-de-frequencia.md) — 3 pedidos por hora por
+  e-mail e 10 por IP.
 - **Aviso por e-mail quando a senha muda.** Quem tem a conta invadida precisaria saber.
 - **E-mail em HTML.** O texto puro basta para o fluxo e não depende de cliente de e-mail.
 - **Verificação de e-mail no cadastro** (`emailVerifiedAt` existe e não é usado).

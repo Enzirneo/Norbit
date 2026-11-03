@@ -32,6 +32,8 @@ import {
   type UsuarioAutenticado,
 } from '@norbit/contracts';
 import type { CookieOptions, Request, Response } from 'express';
+import { Limitar } from '../comum/limite/limite.decorator';
+import { LimiteGuard } from '../comum/limite/limite.guard';
 import { ZodValidationPipe } from '../comum/zod-validation.pipe';
 import { AuthGuard } from './auth.guard';
 import {
@@ -44,6 +46,39 @@ import { UsuarioAtual } from './usuario-atual.decorator';
 import type { Requisitante } from './auth.guard';
 
 const COOKIE_DE_REFRESH = 'norbit_refresh';
+
+const UM_MINUTO = 60_000;
+const QUINZE_MINUTOS = 15 * UM_MINUTO;
+const UMA_HORA = 60 * UM_MINUTO;
+
+/**
+ * Os limites de cada rota pública, e por que esses números.
+ *
+ * - **login**: por e-mail, 10 em 15 minutos — freia a adivinhação de senha mesmo
+ *   vinda de muitos IPs. O preço: quem sabe o e-mail de outra pessoa consegue
+ *   travar o login dela por até 15 minutos. É o trade-off clássico, e aqui o
+ *   lado certo é proteger a conta. Por IP, 20 por minuto cobre quem varre muitos
+ *   e-mails de um lugar só.
+ * - **cadastro**: 10 por hora por IP; criar contas em massa é o abuso.
+ * - **esqueci-senha**: por e-mail, 3 por hora — é o que impede inundar a caixa
+ *   de entrada de alguém. A resposta continua sendo 204 até o limite, e depois
+ *   429 para qualquer e-mail, tenha conta ou não, então o limite não revela
+ *   quem tem conta.
+ * - **redefinir-senha**: o token tem 256 bits e não é adivinhável; o limite só
+ *   contém abuso.
+ */
+const LIMITES = {
+  login: {
+    ip: { maximo: 20, janelaMs: UM_MINUTO },
+    email: { maximo: 10, janelaMs: QUINZE_MINUTOS },
+  },
+  cadastro: { ip: { maximo: 10, janelaMs: UMA_HORA } },
+  esqueciSenha: {
+    ip: { maximo: 10, janelaMs: UMA_HORA },
+    email: { maximo: 3, janelaMs: UMA_HORA },
+  },
+  redefinirSenha: { ip: { maximo: 20, janelaMs: UMA_HORA } },
+} as const;
 
 /**
  * O caminho restringe onde o cookie é enviado: ele não acompanha toda
@@ -65,6 +100,8 @@ export class AuthController {
   ) {}
 
   @Post('cadastro')
+  @UseGuards(LimiteGuard)
+  @Limitar(LIMITES.cadastro)
   @UsePipes(new ZodValidationPipe(cadastroSchema))
   async cadastrar(
     @Body() dados: Cadastro,
@@ -79,6 +116,8 @@ export class AuthController {
   }
 
   @Post('login')
+  @UseGuards(LimiteGuard)
+  @Limitar(LIMITES.login)
   @HttpCode(HttpStatus.OK)
   @UsePipes(new ZodValidationPipe(loginSchema))
   async entrar(
@@ -125,6 +164,8 @@ export class AuthController {
    * 204 para qualquer e-mail, tenha conta ou não: ver `pedir` no serviço.
    */
   @Post('esqueci-senha')
+  @UseGuards(LimiteGuard)
+  @Limitar(LIMITES.esqueciSenha)
   @HttpCode(HttpStatus.NO_CONTENT)
   @UsePipes(new ZodValidationPipe(esqueciSenhaSchema))
   async esqueciSenha(@Body() dados: EsqueciSenha): Promise<void> {
@@ -132,6 +173,8 @@ export class AuthController {
   }
 
   @Post('redefinir-senha')
+  @UseGuards(LimiteGuard)
+  @Limitar(LIMITES.redefinirSenha)
   @HttpCode(HttpStatus.NO_CONTENT)
   @UsePipes(new ZodValidationPipe(redefinirSenhaSchema))
   async redefinirSenha(@Body() dados: RedefinirSenha): Promise<void> {

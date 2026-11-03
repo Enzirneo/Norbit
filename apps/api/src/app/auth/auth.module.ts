@@ -4,6 +4,7 @@ import { JwtModule, type JwtModuleOptions } from '@nestjs/jwt';
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { LimiteModule } from '../comum/limite/limite.module';
 import { EmailService } from '../comum/email.service';
 import { RedefinicaoDeSenhaService } from './redefinicao-de-senha.service';
 import { SenhasService } from './senhas.service';
@@ -25,6 +26,7 @@ const FORMATO_DE_TTL = /^\d+(ms|s|m|h|d|w|y)$/;
 
 @Module({
   imports: [
+    LimiteModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

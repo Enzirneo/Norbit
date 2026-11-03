@@ -70,6 +70,10 @@ export default defineConfig({
       reuseExistingServer: true,
       cwd: workspaceRoot,
       timeout: 120_000,
+      // Os testes entram dezenas de vezes seguidas com a mesma conta e da mesma
+      // origem: com o limite ligado eles se bloqueariam. O limite tem testes
+      // próprios, contra as rotas reais, em `apps/api`.
+      env: { LIMITE_DE_FREQUENCIA: 'desligado' },
     },
     {
       command: isCI ? 'npx nx run web:serve-static' : 'npx nx run web:serve',

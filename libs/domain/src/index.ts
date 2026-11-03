@@ -26,3 +26,4 @@ export * from './lib/calendario/colunas';
 export * from './lib/calendario/navegacao';
 
 export * from './lib/auth/redefinicao-de-senha';
+export * from './lib/auth/limite-de-frequencia';
