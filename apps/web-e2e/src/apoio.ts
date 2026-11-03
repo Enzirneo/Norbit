@@ -104,3 +104,12 @@ export function linkDoEmail(texto: string): string {
   }
   return achado[0];
 }
+
+/** O link de convite que está no texto do e-mail. */
+export function linkDoConviteNoEmail(texto: string): string {
+  const achado = /https?:\/\/\S+\/convite\?token=\S+/.exec(texto);
+  if (!achado) {
+    throw new Error('O e-mail não traz o link do convite.');
+  }
+  return achado[0];
+}

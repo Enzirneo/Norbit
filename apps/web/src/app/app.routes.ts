@@ -45,6 +45,13 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./auth/paginas/redefinir-senha').then((m) => m.RedefinirSenha),
   },
+  // Sem guard: o convite tem de abrir para quem não tem conta, e para quem tem
+  // outra conta aberta. A tela decide o que oferecer em cada caso.
+  {
+    path: 'convite',
+    loadComponent: () =>
+      import('./convites/paginas/convite').then((m) => m.Convite),
+  },
   // Qualquer outro caminho cai na raiz, e o guard decide se é login ou início.
   { path: '**', redirectTo: '' },
 ];

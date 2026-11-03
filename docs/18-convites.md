@@ -1,9 +1,8 @@
 # 18 — Convites
 
-Uma agenda compartilhada precisa de uma forma de entrar nela. Este bloco é o **servidor** dos
-convites: o dono convida por e-mail ou por link, e quem recebe vê, aceita ou recusa. A
-interface (a tela de aceitar e o painel do dono) é o próximo PR; até lá, o link do e-mail
-aponta para uma rota do Angular que ainda não existe.
+Uma agenda compartilhada precisa de uma forma de entrar nela: o dono convida por e-mail ou por
+link, e quem recebe vê, aceita ou recusa. O servidor e a interface estão prontos; a interface
+está descrita [mais abaixo](#a-interface).
 
 ```
 libs/domain/src/lib/agendas/
@@ -113,10 +112,73 @@ um cadastra duas contas e o limite de cadastro (10 por hora por IP, do
 e um `{ id: '' }` que escrevi como "não revoga nada" nos convites por link era um UUID inválido
 e o Postgres recusaria.
 
+## A interface
+
+```
+apps/web/src/app/
+├─ auth/destino.ts                       para onde voltar depois de entrar (e o que recusar)
+├─ convites/
+│  ├─ convites.service.ts                HTTP: criar, listar, revogar, previsão, aceitar, recusar
+│  ├─ papel.ts                           os papéis como a tela os chama (nunca o dono)
+│  ├─ validar-convite.ts                 formulário → contrato, com o mesmo schema da API
+│  ├─ painel-de-convites.{ts,html,scss}  o painel do dono, dentro de um diálogo
+│  └─ paginas/convite.{ts,html}          a tela que o link do e-mail abre
+└─ calendario/                           o botão "Compartilhar" na barra lateral
+```
+
+**A tela `/convite` não tem guard.** Ela precisa abrir para quem não tem conta e para quem tem
+outra conta aberta no navegador. A previsão é pública, então aparece nos três casos; o que muda
+é o que se oferece: sem sessão, **Entrar** e **Criar conta**; com sessão, **Aceitar** e
+**Recusar** (só no convite por e-mail, que é o único recusável).
+
+**Entrar e criar conta voltam para o convite.** O destino viaja em `voltarPara`, e os links
+entre as duas telas o repassam: quem vai de "Entrar" para "Criar conta" no meio do caminho não
+o perde. Antes o cadastro mandava sempre para o início, e quem veio de um convite chegava ao
+calendário sem entender o que acontecera com ele.
+
+**`destinoSeguro` recusa mais do que endereço absoluto.** `//outro-site.com` e `/\outro-site.com`
+começam com barra e o navegador os trata como outro host; conferir só o primeiro caractere (o
+que o login fazia) deixava passar. O Angular não os trataria como redirecionamento externo, mas
+o helper vale por não depender disso.
+
+**Quem abriu o link com a conta errada pode trocar de conta.** O convite por e-mail só vale para o
+endereço a que foi enviado; a resposta `403` explica isso, e **Usar outra conta** encerra a
+sessão e leva ao login com o `voltarPara` do convite.
+
+**O painel é do dono.** O botão **Compartilhar** só aparece nas agendas em que a pessoa é dona:
+convidar é `gerenciar-membros`, e a API recusaria qualquer outro. A tela não decide permissão —
+só evita oferecer o que vai falhar.
+
+**O papel padrão do painel é Leitor.** O menor privilégio como ponto de partida: quem convida
+escolhe dar mais, e não precisa lembrar de dar menos. O dono não está na lista.
+
+**O link recém-criado fica à vista, com o aviso.** Como a API guarda só o hash, o link existe
+na resposta da criação e em nenhum outro lugar. O painel o mostra num campo que se seleciona ao
+receber o foco, com **Copiar**, e o esquece ao fechar. Se a área de transferência não estiver
+disponível, o campo continua selecionável.
+
+**O formulário não tem regra própria.** `validarConvite` roda o `criarConviteSchema` da API. E
+descarta o teto de usos quando há e-mail, porque o convite por e-mail é de um uso só.
+
+### Como foi verificado
+
+- 5 testes de `destinoSeguro`, 6 do serviço, 4 dos papéis e 8 de `validarConvite`.
+- **5 e2e** com o Mailpit: convidar por e-mail quem não tem conta (cria a conta, volta ao convite
+  e entra na agenda), o convite de outra conta recusado, o link mostrado uma vez e revogado, o
+  link sem token e o botão só para o dono.
+- Mutação nos e2e: tirar a condição "só o dono" e fazer o cadastro ignorar o `voltarPara` — cada
+  uma derruba exatamente o teste que a protege. Uma primeira tentativa não compilava (import sem
+  uso) e foi refeita.
+
+O e2e do convite por e-mail **cria uma conta**, e isso quase o tornou um teste de uma execução só:
+na segunda, o e-mail já existia. O `restaurarBanco` passou a varrer, além das contas do seed, as
+de domínio `@e2e.norbit.dev` — e o teste usa esse domínio. A suíte inteira foi rodada duas vezes
+seguidas para provar que a segunda não depende da primeira.
+
 ## O que ainda não existe
 
-- **A interface**: a tela `/convite?token=…` que o e-mail abre, e o painel do dono para
-  convidar, listar e revogar. É o próximo PR.
+- **Gerenciar os membros pela tela**: listar quem está na agenda, mudar papel, remover. A API
+  das agendas já tem as rotas; falta o painel.
 - **Avisar o dono** quando alguém aceita ou recusa.
 - **Reenviar** o e-mail de um convite pendente (hoje: revoga e cria outro).
 - **Convidar várias pessoas de uma vez.**

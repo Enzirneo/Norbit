@@ -1,0 +1,92 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 6);
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 4);
+}
+
+.par {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: calc(var(--space-unit) * 3);
+}
+
+/* O campo do link ocupa o que sobra; o botão, só o que precisa. */
+.par--link {
+  grid-template-columns: 1fr auto;
+  align-items: start;
+}
+
+.subtitulo {
+  margin: 0 0 calc(var(--space-unit) * 2);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 2);
+  padding: calc(var(--space-unit) * 4);
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--space-unit) * 3);
+  background: var(--surface-raised);
+}
+
+.aviso {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.erro {
+  margin: 0;
+  color: var(--state-danger);
+  font-size: 0.875rem;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--space-unit) * 3);
+  padding: calc(var(--space-unit) * 3);
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--space-unit) * 3);
+}
+
+.item-texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.item-quem {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 30rem) {
+  .par {
+    grid-template-columns: 1fr;
+  }
+}

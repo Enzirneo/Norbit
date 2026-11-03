@@ -44,6 +44,8 @@ const FUSO = 'America/Sao_Paulo';
 
 const EMAIL_ENZO = 'enzo@norbit.dev';
 const EMAIL_MARIA = 'maria@norbit.dev';
+/** Contas com este domínio são descartáveis: o seed as apaga a cada execução. */
+const DOMINIO_DOS_TESTES = '@e2e.norbit.dev';
 
 /** Data local em São Paulo, para os eventos caírem em horários plausíveis. */
 function em(diasAFrente: number, hora: number, minuto = 0): Date {
@@ -65,7 +67,15 @@ async function main(): Promise<void> {
   // Sem isto o seed só funciona em banco vazio: na segunda execução ele morre
   // com P2003 em `calendars_ownerId_fkey`.
   const existentes = await prisma.user.findMany({
-    where: { email: { in: [EMAIL_ENZO, EMAIL_MARIA] } },
+    where: {
+      OR: [
+        { email: { in: [EMAIL_ENZO, EMAIL_MARIA] } },
+        // As contas que os testes de ponta a ponta criam pela interface (o
+        // convite a quem ainda não tem conta). Sem varrê-las, o teste só passa
+        // na primeira execução: na segunda o e-mail já existe.
+        { email: { endsWith: DOMINIO_DOS_TESTES } },
+      ],
+    },
     select: { id: true },
   });
   const idsExistentes = existentes.map((u) => u.id);

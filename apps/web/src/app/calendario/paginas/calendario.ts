@@ -34,6 +34,7 @@ import { Botao } from '../../ui/botao';
 import { Dialogo } from '../../ui/dialogo';
 import { RouterLink } from '@angular/router';
 import { Marca } from '../../ui/marca';
+import { PainelDeConvites } from '../../convites/painel-de-convites';
 import { PreferenciasService } from '../../preferencias/preferencias.service';
 import { CalendarioService } from '../calendario.service';
 import {
@@ -60,6 +61,7 @@ export type Visao = Periodo;
     RouterLink,
     FormularioDeEvento,
     Marca,
+    PainelDeConvites,
     VisaoDeHoras,
     VisaoDeMes,
   ],
@@ -195,6 +197,9 @@ export class Calendario {
    */
   protected readonly alvo = signal<AlvoDoFormulario | null>(null);
 
+  /** A agenda cujo painel de convites está aberto, ou `null` com ele fechado. */
+  protected readonly compartilhando = signal<AgendaVisivel | null>(null);
+
   protected readonly tituloDoDialogo = computed(() =>
     this.alvo()?.modo === 'editar' ? 'Editar evento' : 'Novo evento',
   );
@@ -296,6 +301,14 @@ export class Calendario {
       inicioOriginal: ocorrencia.inicioOriginal,
       ehRecorrente: ocorrencia.ehRecorrente,
     });
+  }
+
+  protected compartilhar(agenda: AgendaVisivel): void {
+    this.compartilhando.set(agenda);
+  }
+
+  protected fecharCompartilhamento(): void {
+    this.compartilhando.set(null);
   }
 
   protected fecharDialogo(): void {

@@ -132,8 +132,8 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
 
 ## Fase 3 — Compartilhamento · ~1 semana e meia
 
-- [~] Convites por e-mail e por link, com token de uso único e expiração — servidor pronto, ver [18](18-convites.md); falta a interface
-- [~] Aceitar/recusar convite, entrada na agenda — servidor pronto; falta a tela
+- [x] Convites por e-mail e por link, com token de uso único e expiração — ver [18](18-convites.md)
+- [x] Aceitar/recusar convite, entrada na agenda — a tela `/convite`, com login ou cadastro e volta ao convite
 - [x] Gestão de membros: alterar papel, remover, sair da agenda — entregue na Fase 2
 - [x] A matriz de papéis aplicada em toda rota. Virou o `AcessoService` e não um guard: a
       autorização de um evento depende de **quem o criou**, e um guard do Nest decide

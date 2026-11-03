@@ -67,6 +67,11 @@
 
   <span rodape>
     Já tem conta?
-    <a routerLink="/entrar" class="text-accent hover:underline">Entrar</a>
+    <a
+      routerLink="/entrar"
+      [queryParams]="voltarPara ? { voltarPara } : null"
+      class="text-accent hover:underline"
+      >Entrar</a
+    >
   </span>
 </nb-moldura>

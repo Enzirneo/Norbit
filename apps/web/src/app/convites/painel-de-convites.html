@@ -1,0 +1,134 @@
+@let e = erros();
+
+<form class="formulario" [formGroup]="formulario" (ngSubmit)="criar()">
+  <nb-campo
+    rotulo="E-mail (opcional)"
+    dica="Com e-mail, só essa conta aceita, uma vez. Sem e-mail, vira um link que qualquer conta pode usar."
+    [erro]="e['email']"
+  >
+    <input
+      class="nb-entrada"
+      type="email"
+      formControlName="email"
+      autocomplete="off"
+      [attr.aria-invalid]="e['email'] ? 'true' : null"
+    />
+  </nb-campo>
+
+  <nb-campo rotulo="Papel" [erro]="e['papel']">
+    <select class="nb-entrada" formControlName="papel">
+      @for (papel of papeis; track papel.valor) {
+      <option [value]="papel.valor">
+        {{ papel.rotulo }} — {{ papel.descricao }}
+      </option>
+      }
+    </select>
+  </nb-campo>
+
+  <div class="par">
+    <nb-campo rotulo="Vale por (dias)" [erro]="e['validadeDias']">
+      <input
+        class="nb-entrada"
+        type="number"
+        min="1"
+        max="30"
+        step="1"
+        formControlName="validadeDias"
+      />
+    </nb-campo>
+
+    @if (porLink()) {
+    <nb-campo
+      rotulo="Máximo de usos"
+      dica="Em branco: 10."
+      [erro]="e['usosMaximos']"
+    >
+      <input
+        class="nb-entrada"
+        type="number"
+        min="1"
+        max="100"
+        step="1"
+        formControlName="usosMaximos"
+      />
+    </nb-campo>
+    }
+  </div>
+
+  @if (e['formulario']) {
+  <p class="erro" role="alert">{{ e['formulario'] }}</p>
+  }
+
+  <button nb-botao type="submit" [ocupado]="enviando()">
+    {{ porLink() ? 'Criar link' : 'Enviar convite' }}
+  </button>
+</form>
+
+@if (criado(); as resultado) {
+<section class="link" aria-labelledby="titulo-do-link">
+  <h3 id="titulo-do-link" class="subtitulo">
+    @if (resultado.convite.email) { Convite enviado para {{
+    resultado.convite.email }} } @else { Link criado }
+  </h3>
+
+  <p class="aviso">
+    Este link aparece só agora: não dá para recuperá-lo depois. Se o convite se
+    perder, revogue e crie outro.
+  </p>
+
+  <div class="par par--link">
+    <input
+      class="nb-entrada"
+      type="text"
+      readonly
+      aria-label="Link do convite"
+      [value]="resultado.link"
+      (focus)="selecionar($event)"
+    />
+    <button
+      nb-botao
+      aparencia="contorno"
+      type="button"
+      (click)="copiar(resultado.link)"
+    >
+      Copiar
+    </button>
+  </div>
+
+  <p class="aviso" aria-live="polite">@if (copiado()) { Copiado. }</p>
+</section>
+}
+
+<section aria-labelledby="titulo-dos-pendentes">
+  <h3 id="titulo-dos-pendentes" class="subtitulo">Pendentes</h3>
+
+  @if (carregando()) {
+  <p class="aviso" role="status">Carregando…</p>
+  } @else if (pendentes().length === 0) {
+  <p class="aviso">Nenhum convite pendente.</p>
+  } @else {
+  <ul class="lista">
+    @for (convite of pendentes(); track convite.id) {
+    <li class="item">
+      <div class="item-texto">
+        <strong class="item-quem">{{ convite.email ?? 'Link' }}</strong>
+        <span class="aviso">
+          {{ rotuloDoPapel(convite.papel) }} · vale até {{ convite.expiraEm |
+          date: 'dd/MM/yyyy' }} @if (convite.usosMaximos !== null) { · {{
+          convite.usos }}/{{ convite.usosMaximos }} usos }
+        </span>
+      </div>
+      <button
+        nb-botao
+        aparencia="texto"
+        type="button"
+        [attr.aria-label]="'Revogar convite ' + (convite.email ?? 'por link')"
+        (click)="revogar(convite)"
+      >
+        Revogar
+      </button>
+    </li>
+    }
+  </ul>
+  }
+</section>
