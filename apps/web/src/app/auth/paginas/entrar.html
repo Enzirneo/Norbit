@@ -42,7 +42,11 @@
 
   <span rodape>
     Não tem conta?
-    <a routerLink="/criar-conta" class="text-accent hover:underline">
+    <a
+      routerLink="/criar-conta"
+      [queryParams]="voltarPara ? { voltarPara } : null"
+      class="text-accent hover:underline"
+    >
       Criar uma
     </a>
   </span>

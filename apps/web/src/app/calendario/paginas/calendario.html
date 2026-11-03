@@ -98,6 +98,22 @@
             <span class="agenda-marca" title="Agenda padrão">padrão</span>
             }
           </label>
+          <!--
+            Só o dono: convidar é `gerenciar-membros`, e a API recusaria
+            qualquer outro. Mostrar o botão a quem não pode é uma promessa que
+            a tela não cumpre.
+          -->
+          @if (agenda.papel === 'OWNER') {
+          <button
+            nb-botao
+            aparencia="texto"
+            type="button"
+            [attr.aria-label]="'Compartilhar ' + agenda.name"
+            (click)="compartilhar(agenda)"
+          >
+            Compartilhar
+          </button>
+          }
         </li>
         } @empty {
         <li class="lateral-vazio">Nenhuma agenda ainda.</li>
@@ -164,5 +180,13 @@
     (salvo)="aoSalvar()"
     (cancelado)="fecharDialogo()"
   />
+</nb-dialogo>
+} @if (compartilhando(); as agendaAberta) {
+<nb-dialogo
+  [titulo]="'Compartilhar ' + agendaAberta.name"
+  [aberto]="true"
+  (fechado)="fecharCompartilhamento()"
+>
+  <nb-painel-de-convites [calendarId]="agendaAberta.id" />
 </nb-dialogo>
 }

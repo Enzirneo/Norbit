@@ -84,6 +84,19 @@
   list-style: none;
 }
 
+/* A linha da agenda: a caixa de seleção ocupa o que sobra, e o botão de
+   compartilhar, só o que precisa. */
+.agendas > li {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 1);
+
+  .agenda {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 .agenda {
   display: flex;
   align-items: center;

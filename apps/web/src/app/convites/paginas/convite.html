@@ -1,0 +1,77 @@
+<nb-moldura titulo="Convite" [subtitulo]="subtitulo()">
+  @if (carregando()) {
+  <p corpo role="status" class="text-sm text-muted">Procurando o convite…</p>
+  } @else if (recusado()) {
+  <p corpo role="status" class="text-sm">
+    Convite recusado. Nada mudou na agenda.
+  </p>
+  } @else if (previsao(); as p) {
+  <div corpo class="flex flex-col gap-5">
+    <div class="flex items-center gap-3">
+      <span
+        class="inline-block size-3 shrink-0 rounded-full"
+        [style.background-color]="p.agenda.cor"
+        aria-hidden="true"
+      ></span>
+      <strong class="text-lg">{{ p.agenda.nome }}</strong>
+    </div>
+
+    <p class="text-sm">Você entra como <strong>{{ papel() }}</strong>.</p>
+
+    @if (p.paraEmail) {
+    <p class="text-sm text-muted">Este convite é para {{ p.paraEmail }}.</p>
+    } @if (erro()) {
+    <p role="alert" class="text-sm text-danger">{{ erro() }}</p>
+    } @if (usuario(); as u) {
+    <div class="flex flex-col gap-3">
+      <button nb-botao type="button" [ocupado]="agindo()" (click)="aceitar()">
+        Aceitar convite
+      </button>
+      @if (p.paraEmail) {
+      <button
+        nb-botao
+        aparencia="contorno"
+        type="button"
+        [desabilitado]="agindo()"
+        (click)="recusar()"
+      >
+        Recusar
+      </button>
+      }
+    </div>
+
+    <p class="text-sm text-muted">
+      Você está como &#64;{{ u.handle }}.
+      <button
+        type="button"
+        class="text-accent hover:underline"
+        (click)="trocarDeConta()"
+      >
+        Usar outra conta
+      </button>
+    </p>
+    } @else {
+    <p class="text-sm text-muted">
+      Entre ou crie uma conta para aceitar. Você volta para cá em seguida.
+    </p>
+    <div class="flex flex-col gap-3">
+      <button nb-botao type="button" (click)="entrar()">Entrar</button>
+      <button
+        nb-botao
+        aparencia="contorno"
+        type="button"
+        (click)="criarConta()"
+      >
+        Criar conta
+      </button>
+    </div>
+    }
+  </div>
+  } @else {
+  <p corpo role="alert" class="text-sm text-danger">{{ erro() }}</p>
+  }
+
+  <span rodape>
+    <a routerLink="/" class="text-accent hover:underline">Ir para o início</a>
+  </span>
+</nb-moldura>

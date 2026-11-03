@@ -5,12 +5,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { loginSchema } from '@norbit/contracts';
 import { Botao } from '../../ui/botao';
 import { Campo } from '../../ui/campo';
 import { Moldura } from './moldura';
 import { AuthService } from '../auth.service';
+import { destinoSeguro } from '../destino';
 import {
   errosDaApi,
   errosDoZod,
@@ -27,6 +28,10 @@ export class Entrar {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+
+  /** De onde a pessoa veio, para voltar e para repassar ao cadastro. */
+  protected readonly voltarPara =
+    inject(ActivatedRoute).snapshot.queryParamMap.get('voltarPara');
 
   protected readonly formulario = this.fb.nonNullable.group({
     email: '',
@@ -63,11 +68,6 @@ export class Entrar {
 
   /** Para onde ir depois de entrar: o que o guard guardou, ou a raiz. */
   private destino(): string {
-    const parametros = new URLSearchParams(window.location.search);
-    const voltarPara = parametros.get('voltarPara');
-
-    // Só caminho relativo: um `voltarPara=https://outro-site` viraria redirect
-    // aberto, e o login do Norbit passaria a servir de trampolim.
-    return voltarPara?.startsWith('/') ? voltarPara : '/';
+    return destinoSeguro(this.voltarPara);
   }
 }

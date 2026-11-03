@@ -5,12 +5,13 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { cadastroSchema } from '@norbit/contracts';
 import { Botao } from '../../ui/botao';
 import { Campo } from '../../ui/campo';
 import { Moldura } from './moldura';
 import { AuthService } from '../auth.service';
+import { destinoSeguro } from '../destino';
 import {
   errosDaApi,
   errosDoZod,
@@ -27,6 +28,10 @@ export class CriarConta {
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly fb = inject(FormBuilder);
+
+  /** De onde a pessoa veio, para voltar e para repassar ao login. */
+  protected readonly voltarPara =
+    inject(ActivatedRoute).snapshot.queryParamMap.get('voltarPara');
 
   protected readonly formulario = this.fb.nonNullable.group({
     displayName: '',
@@ -52,8 +57,9 @@ export class CriarConta {
     this.auth.cadastrar(validado.data).subscribe({
       next: () => {
         // Já entra: pedir para fazer login depois de criar a conta é um passo
-        // sem propósito, e o servidor já devolveu a sessão.
-        void this.router.navigateByUrl('/');
+        // sem propósito, e o servidor já devolveu a sessão. Volta para onde a
+        // pessoa estava — quem veio de um convite precisa terminar nele.
+        void this.router.navigateByUrl(destinoSeguro(this.voltarPara));
       },
       error: (erro: unknown) => {
         this.enviando.set(false);
