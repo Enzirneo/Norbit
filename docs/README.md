@@ -24,6 +24,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [15 — Recuperação de senha](15-recuperacao-de-senha.md) | Link de uso único por e-mail, hash no banco, sessões encerradas             |
 | [16 — Perfil](16-perfil.md)                             | Nome, handle e fuso; avatar de iniciais; o que ficou de fora e por quê      |
 | [17 — Limite de frequência](17-limite-de-frequencia.md) | Janela deslizante por IP e por e-mail, 429 com Retry-After, teto de memória |
+| [18 — Convites](18-convites.md)                         | Por e-mail ou link, hash no banco, aceite idempotente, corrida no banco     |
 
 ## Estado atual
 
@@ -46,8 +47,9 @@ Ver o [roadmap](05-roadmap.md), a [autenticação](07-autenticacao.md), a
 [visões de semana e dia](13-visao-de-semana-e-dia.md) as
 [preferências](14-preferencias.md) a
 [recuperação de senha](15-recuperacao-de-senha.md) o
-[perfil](16-perfil.md) e o
-[limite de frequência](17-limite-de-frequencia.md).
+[perfil](16-perfil.md) o
+[limite de frequência](17-limite-de-frequencia.md) e os
+[convites](18-convites.md).
 
 Para abrir a aplicação com dados: `docker compose up -d && npm run db:seed`, depois
 `npx nx run-many -t serve` e entrar com `enzo@norbit.dev` / `norbit123`.

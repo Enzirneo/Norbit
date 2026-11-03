@@ -21,6 +21,16 @@ export type PedidoDeRedefinicao = {
   readonly token: string;
 };
 
+export type PedidoDeConvite = {
+  readonly para: string;
+  readonly convidadoPor: string;
+  readonly agenda: string;
+  /** O papel já em português, como a pessoa vai ler. */
+  readonly papel: string;
+  readonly link: string;
+  readonly expiraEm: Date;
+};
+
 @Injectable()
 export class EmailService {
   private readonly transporte: Transporter;
@@ -67,6 +77,29 @@ export class EmailService {
         `${this.origemDaWeb}/redefinir-senha?token=${pedido.token}`,
         '',
         'Se não foi você, ignore esta mensagem: a sua senha continua a mesma.',
+      ].join('\n'),
+    });
+  }
+
+  /** O endereço da tela que aceita o convite, com o token na query. */
+  linkDoConvite(token: string): string {
+    return `${this.origemDaWeb}/convite?token=${token}`;
+  }
+
+  async enviarConvite(pedido: PedidoDeConvite): Promise<void> {
+    const prazo = pedido.expiraEm.toLocaleDateString('pt-BR');
+
+    await this.enviar({
+      para: pedido.para,
+      assunto: `${pedido.convidadoPor} convidou você para uma agenda no Norbit`,
+      texto: [
+        `${pedido.convidadoPor} convidou você para a agenda "${pedido.agenda}" no Norbit, como ${pedido.papel}.`,
+        '',
+        `Para aceitar (ou recusar), abra o link abaixo. O convite vale até ${prazo}:`,
+        '',
+        pedido.link,
+        '',
+        'Se você não conhece essa pessoa, ignore esta mensagem.',
       ].join('\n'),
     });
   }

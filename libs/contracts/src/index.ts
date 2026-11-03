@@ -7,6 +7,7 @@ export * from './lib/auth/perfil';
 export * from './lib/agendas/comum';
 export * from './lib/agendas/agenda';
 export * from './lib/agendas/evento';
+export * from './lib/agendas/convite';
 
 export * from './lib/tarefas/tarefa';
 
