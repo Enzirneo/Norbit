@@ -1,0 +1,69 @@
+<section aria-labelledby="titulo-dos-membros">
+  <h3 id="titulo-dos-membros" class="subtitulo">Membros</h3>
+
+  @if (erro(); as mensagem) {
+  <p class="erro" role="alert">{{ mensagem }}</p>
+  } @if (carregando()) {
+  <p class="aviso" role="status">Carregando…</p>
+  } @else {
+  <ul class="lista">
+    @for (membro of membros(); track membro.userId) {
+    <li class="item">
+      <span class="avatar" aria-hidden="true"
+        >{{ iniciaisDe(membro.displayName) }}</span
+      >
+
+      <div class="texto">
+        <strong class="nome">{{ membro.displayName }}</strong>
+        <span class="aviso">&#64;{{ membro.handle }}</span>
+      </div>
+
+      @if (membro.papel === 'OWNER') {
+      <span class="papel-fixo">Dono</span>
+      } @else if (confirmando() === membro.userId) {
+      <div class="acoes">
+        <button
+          nb-botao
+          aparencia="contorno"
+          type="button"
+          (click)="remover(membro)"
+        >
+          Confirmar remoção
+        </button>
+        <button nb-botao aparencia="texto" type="button" (click)="cancelar()">
+          Cancelar
+        </button>
+      </div>
+      } @else {
+      <div class="acoes">
+        <select
+          class="nb-entrada seletor"
+          [attr.aria-label]="'Papel de ' + membro.displayName"
+          [value]="membro.papel"
+          (change)="mudarPapel(membro, $event)"
+        >
+          @for (papel of papeis; track papel.valor) {
+          <option
+            [value]="papel.valor"
+            [selected]="papel.valor === membro.papel"
+          >
+            {{ papel.rotulo }}
+          </option>
+          }
+        </select>
+        <button
+          nb-botao
+          aparencia="texto"
+          type="button"
+          [attr.aria-label]="'Remover ' + membro.displayName"
+          (click)="pedirConfirmacao(membro)"
+        >
+          Remover
+        </button>
+      </div>
+      }
+    </li>
+    }
+  </ul>
+  }
+</section>

@@ -175,10 +175,30 @@ na segunda, o e-mail já existia. O `restaurarBanco` passou a varrer, além das 
 de domínio `@e2e.norbit.dev` — e o teste usa esse domínio. A suíte inteira foi rodada duas vezes
 seguidas para provar que a segunda não depende da primeira.
 
+## Os membros na interface
+
+O diálogo **Compartilhar** ganhou, acima dos convites pendentes, a lista de **membros**
+(`apps/web/src/app/membros/`). É o outro lado do convite: quem entrou pode ter o papel mudado ou
+ser removido, usando as rotas de membros que a API das agendas já tinha.
+
+- **O dono aparece, mas fixo.** Posse se transfere, não se rebaixa; os outros têm um seletor de
+  papel (sem a opção Dono) e **Remover**.
+- **Remover pede confirmação na própria linha** (Confirmar remoção / Cancelar): é a única ação do
+  painel que a pessoa removida não desfaz sozinha.
+- **Mudar o papel recarrega a lista** depois da resposta, e também em caso de erro: o seletor já
+  mostrou o valor novo, e recarregar o devolve ao que o servidor realmente tem.
+- **Quem não é dono vê "Sair"** na barra lateral, com um diálogo de confirmação ("para voltar, será
+  preciso um novo convite"). Usa `DELETE /membros/eu`, rota própria para que sair não exija
+  `gerenciar-membros`. O dono não vê o botão: a API recusa, e ele deveria transferir a posse antes.
+
+4 testes do serviço HTTP e 5 e2e (lista com o dono fixo, papel gravado após recarregar, remoção
+com e sem confirmação, saída de quem não é dono, dono sem "Sair"). Mutação nos e2e: dono
+editável, remoção que não tira da lista e saída que não tira a agenda — cada uma derruba os
+testes que a protegem; a primeira tentativa não compilava (comparação de tipos sem sobreposição) e
+foi refeita.
+
 ## O que ainda não existe
 
-- **Gerenciar os membros pela tela**: listar quem está na agenda, mudar papel, remover. A API
-  das agendas já tem as rotas; falta o painel.
 - **Avisar o dono** quando alguém aceita ou recusa.
 - **Reenviar** o e-mail de um convite pendente (hoje: revoga e cria outro).
 - **Convidar várias pessoas de uma vez.**

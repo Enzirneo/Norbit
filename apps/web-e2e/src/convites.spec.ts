@@ -86,7 +86,7 @@ test.describe('convites', () => {
     await ana.getByRole('button', { name: 'Aceitar convite' }).click();
 
     await expect(ana).toHaveURL(/\/$/);
-    await expect(ana.getByLabel('Nós dois')).toBeVisible();
+    await expect(ana.getByRole('checkbox', { name: 'Nós dois' })).toBeVisible();
   });
 
   test('o convite por e-mail não abre para outra conta', async ({
