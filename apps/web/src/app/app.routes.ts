@@ -15,6 +15,12 @@ export const appRoutes: Route[] = [
       import('./preferencias/paginas/preferencias').then((m) => m.Preferencias),
   },
   {
+    path: 'perfil',
+    canActivate: [exigeSessao],
+    loadComponent: () =>
+      import('./perfil/paginas/perfil').then((m) => m.Perfil),
+  },
+  {
     path: 'entrar',
     canActivate: [exigeVisitante],
     loadComponent: () => import('./auth/paginas/entrar').then((m) => m.Entrar),
