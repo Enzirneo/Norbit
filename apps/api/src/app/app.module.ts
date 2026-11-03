@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AgendasModule } from './agendas/agendas.module';
 import { AuthModule } from './auth/auth.module';
+import { ConvitesModule } from './convites/convites.module';
 import { EventosModule } from './eventos/eventos.module';
 import { PerfilModule } from './perfil/perfil.module';
 import { PreferenciasModule } from './preferencias/preferencias.module';
@@ -18,6 +19,7 @@ import { TarefasModule } from './tarefas/tarefas.module';
     PrismaModule,
     AuthModule,
     AgendasModule,
+    ConvitesModule,
     EventosModule,
     TarefasModule,
     PreferenciasModule,
