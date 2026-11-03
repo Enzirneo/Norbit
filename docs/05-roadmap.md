@@ -73,7 +73,7 @@ mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde. ✅
 - [~] Perfil: nome de exibição, handle e fuso feitos — ver [16](16-perfil.md); avatar de imagem pendente (sem armazenamento de arquivos)
 - [ ] Trocar a senha logado, listar e revogar sessões
 - [x] Recuperação de senha por e-mail (Mailpit no Docker para testar sem enviar nada) — ver [15](15-recuperacao-de-senha.md)
-- [ ] Limitar a frequência dos pedidos de recuperação e do login (hoje não há limite)
+- [x] Limite de frequência no login, no cadastro e na recuperação de senha — ver [17](17-limite-de-frequencia.md)
 
 O desenho e o que foi verificado rodando estão em
 [07 — Autenticação](07-autenticacao.md).
