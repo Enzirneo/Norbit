@@ -35,6 +35,8 @@ import { Dialogo } from '../../ui/dialogo';
 import { RouterLink } from '@angular/router';
 import { Marca } from '../../ui/marca';
 import { PainelDeConvites } from '../../convites/painel-de-convites';
+import { MembrosDaAgenda } from '../../membros/membros-da-agenda';
+import { MembrosService } from '../../membros/membros.service';
 import { PreferenciasService } from '../../preferencias/preferencias.service';
 import { CalendarioService } from '../calendario.service';
 import {
@@ -61,6 +63,7 @@ export type Visao = Periodo;
     RouterLink,
     FormularioDeEvento,
     Marca,
+    MembrosDaAgenda,
     PainelDeConvites,
     VisaoDeHoras,
     VisaoDeMes,
@@ -72,6 +75,7 @@ export type Visao = Periodo;
 export class Calendario {
   private readonly api = inject(CalendarioService);
   private readonly prefs = inject(PreferenciasService);
+  private readonly membrosApi = inject(MembrosService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
@@ -300,6 +304,31 @@ export class Calendario {
       // sabe qual ocorrência substituir. Ver docs/08.
       inicioOriginal: ocorrencia.inicioOriginal,
       ehRecorrente: ocorrencia.ehRecorrente,
+    });
+  }
+
+  /** A agenda de que a pessoa pediu para sair, esperando confirmação. */
+  protected readonly saindo = signal<AgendaVisivel | null>(null);
+
+  protected pedirSaida(agenda: AgendaVisivel): void {
+    this.saindo.set(agenda);
+  }
+
+  protected cancelarSaida(): void {
+    this.saindo.set(null);
+  }
+
+  protected confirmarSaida(agenda: AgendaVisivel): void {
+    this.saindo.set(null);
+
+    this.membrosApi.sair(agenda.id).subscribe({
+      next: () => {
+        // Some da barra lateral e da grade: recarrega as duas em vez de
+        // remendar, pelo mesmo motivo de `aoSalvar`.
+        this.agendas.update((lista) => lista.filter((a) => a.id !== agenda.id));
+        this.carregar();
+      },
+      error: () => this.erro.set('Não foi possível sair da agenda.'),
     });
   }
 

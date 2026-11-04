@@ -113,6 +113,16 @@
           >
             Compartilhar
           </button>
+          } @else {
+          <button
+            nb-botao
+            aparencia="texto"
+            type="button"
+            [attr.aria-label]="'Sair de ' + agenda.name"
+            (click)="pedirSaida(agenda)"
+          >
+            Sair
+          </button>
           }
         </li>
         } @empty {
@@ -187,6 +197,24 @@
   [aberto]="true"
   (fechado)="fecharCompartilhamento()"
 >
+  <nb-membros-da-agenda [calendarId]="agendaAberta.id" />
   <nb-painel-de-convites [calendarId]="agendaAberta.id" />
+</nb-dialogo>
+} @if (saindo(); as agendaDeSaida) {
+<nb-dialogo
+  [titulo]="'Sair de ' + agendaDeSaida.name"
+  [aberto]="true"
+  (fechado)="cancelarSaida()"
+>
+  <p>
+    Você deixa de ver esta agenda e seus eventos. Para voltar, será preciso um
+    novo convite.
+  </p>
+  <button nb-botao type="button" (click)="confirmarSaida(agendaDeSaida)">
+    Sair da agenda
+  </button>
+  <button nb-botao aparencia="texto" type="button" (click)="cancelarSaida()">
+    Cancelar
+  </button>
 </nb-dialogo>
 }
