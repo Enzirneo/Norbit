@@ -48,11 +48,12 @@ describe('podeNaAgenda', () => {
     });
   });
 
-  describe('as três ações de dono', () => {
+  describe('as quatro ações de dono', () => {
     const DE_DONO: readonly AcaoDeAgenda[] = [
       'editar-agenda',
       'excluir-agenda',
       'gerenciar-membros',
+      'transferir-posse',
     ];
 
     it('só o OWNER as executa', () => {

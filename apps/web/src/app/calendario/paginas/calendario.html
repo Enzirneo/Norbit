@@ -197,7 +197,11 @@
   [aberto]="true"
   (fechado)="fecharCompartilhamento()"
 >
-  <nb-membros-da-agenda [calendarId]="agendaAberta.id" />
+  <nb-membros-da-agenda
+    [calendarId]="agendaAberta.id"
+    [podeTransferir]="!agendaAberta.isDefault"
+    (posseTransferida)="aoTransferirPosse()"
+  />
   <nb-painel-de-convites [calendarId]="agendaAberta.id" />
 </nb-dialogo>
 } @if (saindo(); as agendaDeSaida) {

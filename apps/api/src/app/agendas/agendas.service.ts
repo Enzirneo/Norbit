@@ -270,6 +270,69 @@ export class AgendasService {
     await this.apagarMembro(agenda.id, userId);
   }
 
+  /**
+   * Passa a posse da agenda para outro membro.
+   *
+   * Não é uma alteração de papel (por isso `definirPapel` recusa `OWNER`): troca
+   * `Calendar.ownerId`, que é a fonte da verdade do dono, e acerta as linhas de
+   * membro para a lista concordar. Quem entrega continua na agenda como EDITOR
+   * — sair é decisão dele, depois, pela rota de sempre.
+   *
+   * A agenda padrão fica de fora: ela é a pessoal de quem a criou, e o índice
+   * parcial admite uma padrão por dono, então passá-la adiante romperia o
+   * invariante de quem recebe.
+   */
+  async transferirPosse(entrada: {
+    readonly userId: string;
+    readonly calendarId: string;
+    readonly novoDonoId: string;
+  }): Promise<void> {
+    const { agenda } = await this.acesso.abrir({
+      calendarId: entrada.calendarId,
+      userId: entrada.userId,
+      acao: 'transferir-posse',
+    });
+
+    if (entrada.novoDonoId === entrada.userId) {
+      throw new BadRequestException('Você já é o dono desta agenda.');
+    }
+    if (agenda.isDefault) {
+      throw new ConflictException(
+        'A agenda padrão é pessoal e não pode mudar de dono.',
+      );
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      const { count: eraMembro } = await tx.calendarMember.updateMany({
+        where: { calendarId: agenda.id, userId: entrada.novoDonoId },
+        data: { role: 'OWNER' },
+      });
+      exigirQueExistisse(eraMembro);
+
+      // O `ownerId` no filtro é a trava de corrida: se duas transferências
+      // chegam juntas, só a que ainda encontra o dono antigo vale.
+      const { count: trocou } = await tx.calendar.updateMany({
+        where: { id: agenda.id, ownerId: entrada.userId },
+        data: { ownerId: entrada.novoDonoId },
+      });
+      if (trocou === 0) {
+        throw new ConflictException('A posse desta agenda já mudou de mãos.');
+      }
+
+      await tx.calendarMember.upsert({
+        where: {
+          calendarId_userId: { calendarId: agenda.id, userId: entrada.userId },
+        },
+        update: { role: 'EDITOR' },
+        create: {
+          calendarId: agenda.id,
+          userId: entrada.userId,
+          role: 'EDITOR',
+        },
+      });
+    });
+  }
+
   private async apagarMembro(
     calendarId: string,
     membroId: string,

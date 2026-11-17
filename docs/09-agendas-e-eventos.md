@@ -319,14 +319,17 @@ instante na rota, destacamento sem duplicar, e as recusas — instante malformad
 UUID malformado (400), intervalo de 500 dias (400), `BYSETPOS` (400 com a mensagem da
 regra), sem token (401).
 
+## A posse não se muda pela rota de papéis
+
+Promover alguém a `OWNER` não é alteração de papel: troca `Calendar.ownerId`. Por isso o papel
+de dono não é atribuível por `PATCH /membros/:id`; a operação é `POST /transferir-posse`,
+descrita em [18](18-convites.md).
+
 ## O que ainda não existe
 
 - **Adicionar membro.** Entrar numa agenda é por convite (`CalendarInvite`, com token e
   e-mail), e isso é o bloco de compartilhamento do [roadmap](05-roadmap.md). Alterar
   papel, remover e sair já existem porque são consequência direta da matriz.
-- **Transferir a posse.** Promover alguém a `OWNER` não é alteração de papel: troca
-  `Calendar.ownerId` e exige confirmação própria. Por isso o papel de dono não é
-  atribuível pela rota de papéis.
 - **Marcar outra agenda como padrão.** Hoje a padrão é a criada no cadastro, e ela não
   pode ser excluída.
 - **Tarefas.** `Task` está no banco e no [03](03-modelo-de-dados.md), sem rota ainda.

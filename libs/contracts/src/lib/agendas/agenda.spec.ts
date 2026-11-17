@@ -1,4 +1,8 @@
-import { atualizarAgendaSchema, criarAgendaSchema } from './agenda';
+import {
+  atualizarAgendaSchema,
+  criarAgendaSchema,
+  transferirPosseSchema,
+} from './agenda';
 
 describe('criarAgendaSchema', () => {
   it('aplica os padrões do produto', () => {
@@ -58,5 +62,25 @@ describe('atualizarAgendaSchema', () => {
     expect(atualizarAgendaSchema.parse({ description: null })).toEqual({
       description: null,
     });
+  });
+});
+
+describe('transferirPosseSchema', () => {
+  const ID = '0190a1b2-c3d4-7e5f-8a6b-7c8d9e0f1a2b';
+
+  it('aceita o identificador de quem recebe a posse', () => {
+    expect(transferirPosseSchema.parse({ membroId: ID })).toEqual({
+      membroId: ID,
+    });
+  });
+
+  it('recusa identificador que não é um UUID', () => {
+    expect(transferirPosseSchema.safeParse({ membroId: 'maria' }).success).toBe(
+      false,
+    );
+  });
+
+  it('recusa corpo sem o membro', () => {
+    expect(transferirPosseSchema.safeParse({}).success).toBe(false);
   });
 });

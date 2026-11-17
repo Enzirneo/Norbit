@@ -20,7 +20,7 @@
 
       @if (membro.papel === 'OWNER') {
       <span class="papel-fixo">Dono</span>
-      } @else if (confirmando() === membro.userId) {
+      } @else if (aguardando(membro, 'remover')) {
       <div class="acoes">
         <button
           nb-botao
@@ -33,6 +33,26 @@
         <button nb-botao aparencia="texto" type="button" (click)="cancelar()">
           Cancelar
         </button>
+      </div>
+      } @else if (aguardando(membro, 'transferir')) {
+      <div class="confirmacao">
+        <p class="aviso">
+          {{ membro.displayName }} vira dono desta agenda e você passa a Editor.
+          Só o novo dono poderá desfazer.
+        </p>
+        <div class="acoes">
+          <button
+            nb-botao
+            aparencia="contorno"
+            type="button"
+            (click)="transferir(membro)"
+          >
+            Confirmar transferência
+          </button>
+          <button nb-botao aparencia="texto" type="button" (click)="cancelar()">
+            Cancelar
+          </button>
+        </div>
       </div>
       } @else {
       <div class="acoes">
@@ -56,10 +76,21 @@
           aparencia="texto"
           type="button"
           [attr.aria-label]="'Remover ' + membro.displayName"
-          (click)="pedirConfirmacao(membro)"
+          (click)="pedirConfirmacao(membro, 'remover')"
         >
           Remover
         </button>
+        @if (podeTransferir()) {
+        <button
+          nb-botao
+          aparencia="texto"
+          type="button"
+          [attr.aria-label]="'Tornar ' + membro.displayName + ' dono'"
+          (click)="pedirConfirmacao(membro, 'transferir')"
+        >
+          Tornar dono
+        </button>
+        }
       </div>
       }
     </li>

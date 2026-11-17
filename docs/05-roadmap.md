@@ -140,7 +140,7 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
       antes de o controller buscar a linha. Ver [09](09-agendas-e-eventos.md)
 - [x] Visibilidade `PRIVATE` filtrada na query, com teste que prova que o evento privado
       de A não aparece na resposta da API para B — nem para um `EDITOR`
-- [ ] Transferir a posse da agenda (troca `ownerId`, com confirmação própria)
+- [x] Transferir a posse da agenda (troca `ownerId`, com confirmação própria). Ver [18](18-convites.md)
 - [ ] Sobreposição de agendas, com seletor na barra lateral e cor por membro
 - [ ] Participantes e RSVP nos eventos
 - [ ] Atribuir tarefa a um membro

@@ -86,4 +86,50 @@ test.describe('membros da agenda', () => {
       page.getByRole('button', { name: 'Sair de Nós dois' }),
     ).toHaveCount(0);
   });
+
+  test('cancelar a transferência não muda o dono', async ({ page }) => {
+    await entrar(page);
+    await abrirPainel(page);
+
+    await page.getByRole('button', { name: 'Tornar Maria dono' }).click();
+    await page.getByRole('button', { name: 'Cancelar' }).click();
+
+    await expect(page.getByLabel('Papel de Maria')).toBeVisible();
+    await expect(page.getByText('Só o novo dono poderá desfazer.')).toHaveCount(
+      0,
+    );
+  });
+
+  test('transferir a posse troca os papéis, e o antigo dono já pode sair', async ({
+    page,
+    browser,
+    baseURL,
+  }) => {
+    await entrar(page);
+    await abrirPainel(page);
+
+    await page.getByRole('button', { name: 'Tornar Maria dono' }).click();
+    await expect(
+      page.getByText('Só o novo dono poderá desfazer.', { exact: false }),
+    ).toBeVisible();
+    await page.getByRole('button', { name: 'Confirmar transferência' }).click();
+
+    // O diálogo de dono fecha e a barra lateral passa a oferecer "Sair".
+    await expect(
+      page.getByRole('button', { name: 'Compartilhar Nós dois' }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole('button', { name: 'Sair de Nós dois' }),
+    ).toBeVisible();
+
+    const contextoDaMaria = await browser.newContext({
+      baseURL: baseURL ?? undefined,
+    });
+    const paginaDaMaria = await contextoDaMaria.newPage();
+    await entrar(paginaDaMaria, MARIA);
+    await expect(
+      paginaDaMaria.getByRole('button', { name: 'Compartilhar Nós dois' }),
+    ).toBeVisible();
+    await contextoDaMaria.close();
+  });
 });

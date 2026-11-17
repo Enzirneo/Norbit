@@ -28,12 +28,14 @@ import {
   criarAgendaSchema,
   definirPapelSchema,
   preferenciasDaAgendaSchema,
+  transferirPosseSchema,
   type AgendaVisivel,
   type AtualizarAgenda,
   type CriarAgenda,
   type DefinirPapel,
   type MembroVisivel,
   type PreferenciasDaAgenda,
+  type TransferirPosse,
 } from '@norbit/contracts';
 import { AuthGuard } from '../auth/auth.guard';
 import type { Requisitante } from '../auth/auth.guard';
@@ -102,6 +104,24 @@ export class AgendasController {
       userId: quem.id,
       calendarId,
       dados,
+    });
+  }
+
+  /**
+   * Operação sobre a agenda, não sobre um membro: por isso um `POST` próprio, e
+   * não um `PATCH` de papel com `OWNER` — que `definirPapelSchema` recusa.
+   */
+  @Post(':id/transferir-posse')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async transferirPosse(
+    @UsuarioAtual() quem: Requisitante,
+    @Param('id', uuidNaRota) calendarId: string,
+    @Body(new ZodValidationPipe(transferirPosseSchema)) dados: TransferirPosse,
+  ): Promise<void> {
+    await this.agendas.transferirPosse({
+      userId: quem.id,
+      calendarId,
+      novoDonoId: dados.membroId,
     });
   }
 
