@@ -57,4 +57,13 @@ describe('MembrosService', () => {
     expect(req.request.method).toBe('DELETE');
     req.flush(null);
   });
+
+  it('transfere a posse pelo corpo, não pela URL do membro', () => {
+    servico.transferirPosse(AGENDA, MEMBRO).subscribe();
+
+    const req = http.expectOne(`/api/agendas/${AGENDA}/transferir-posse`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual({ membroId: MEMBRO });
+    req.flush(null);
+  });
 });

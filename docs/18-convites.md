@@ -182,14 +182,14 @@ O diálogo **Compartilhar** ganhou, acima dos convites pendentes, a lista de **m
 ser removido, usando as rotas de membros que a API das agendas já tinha.
 
 - **O dono aparece, mas fixo.** Posse se transfere, não se rebaixa; os outros têm um seletor de
-  papel (sem a opção Dono) e **Remover**.
+  papel (sem a opção Dono), **Remover** e **Tornar dono**.
 - **Remover pede confirmação na própria linha** (Confirmar remoção / Cancelar): é a única ação do
   painel que a pessoa removida não desfaz sozinha.
 - **Mudar o papel recarrega a lista** depois da resposta, e também em caso de erro: o seletor já
   mostrou o valor novo, e recarregar o devolve ao que o servidor realmente tem.
 - **Quem não é dono vê "Sair"** na barra lateral, com um diálogo de confirmação ("para voltar, será
   preciso um novo convite"). Usa `DELETE /membros/eu`, rota própria para que sair não exija
-  `gerenciar-membros`. O dono não vê o botão: a API recusa, e ele deveria transferir a posse antes.
+  `gerenciar-membros`. O dono não vê o botão: a API recusa, e ele precisa transferir a posse antes.
 
 4 testes do serviço HTTP e 5 e2e (lista com o dono fixo, papel gravado após recarregar, remoção
 com e sem confirmação, saída de quem não é dono, dono sem "Sair"). Mutação nos e2e: dono
@@ -197,9 +197,32 @@ editável, remoção que não tira da lista e saída que não tira a agenda — 
 testes que a protegem; a primeira tentativa não compilava (comparação de tipos sem sobreposição) e
 foi refeita.
 
+## Transferir a posse
+
+`POST /api/agendas/:id/transferir-posse` com `{ membroId }`, ação `transferir-posse` na matriz
+(só o dono). Não é uma alteração de papel — por isso `definirPapel` continua recusando `OWNER`.
+
+- **Troca `Calendar.ownerId`**, a fonte da verdade do dono, e acerta as linhas de membro numa
+  transação: quem recebe vira `OWNER`, quem entrega vira `EDITOR`. O antigo dono segue na agenda e
+  pode sair depois pela rota de sempre; é o que destrava o "dono não consegue sair".
+- **Só para quem já é membro** (404 se não for), nunca para si mesmo (400).
+- **A agenda padrão não se transfere** (409): ela é a pessoal de quem a criou, e o índice parcial
+  admite uma padrão por dono, então passá-la adiante romperia o invariante de quem recebe.
+- **Trava de corrida:** o `updateMany` filtra por `ownerId` do dono antigo; se duas transferências
+  chegam juntas, só a primeira vale e a outra recebe 409.
+- **Na tela:** **Tornar dono** em cada membro do diálogo Compartilhar, com confirmação na linha
+  ("… vira dono desta agenda e você passa a Editor. Só o novo dono poderá desfazer."). A tela nem
+  oferece o botão na agenda padrão. Depois de transferir, o diálogo fecha e as agendas são
+  recarregadas: "Compartilhar" dá lugar a "Sair".
+
+8 testes de integração do serviço, 3 de contrato, 1 do serviço HTTP, 2 e2e, e o teste da matriz
+passou a cobrir a nova ação.
+Mutação: o servidor que não passa o `ownerId` derruba 4 testes; a tela que não avisa o fim da
+transferência derruba o e2e.
+
 ## O que ainda não existe
 
 - **Avisar o dono** quando alguém aceita ou recusa.
 - **Reenviar** o e-mail de um convite pendente (hoje: revoga e cria outro).
 - **Convidar várias pessoas de uma vez.**
-- **Transferir a posse** da agenda.
+- **Mostrar na tela por que a agenda padrão não tem "Tornar dono"** (hoje o botão só não aparece).

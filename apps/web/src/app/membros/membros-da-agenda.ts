@@ -2,8 +2,8 @@
  * Quem está numa agenda, para o dono mudar o papel ou tirar alguém.
  *
  * O dono aparece na lista mas não é editável: posse se transfere, não se
- * rebaixa. Remover pede uma segunda confirmação na própria linha — é a única
- * ação daqui que a pessoa removida não consegue desfazer sozinha.
+ * rebaixa. Remover e transferir a posse pedem uma segunda confirmação na
+ * própria linha — são as ações daqui que a pessoa não desfaz sozinha.
  */
 import {
   ChangeDetectionStrategy,
@@ -11,6 +11,7 @@ import {
   OnInit,
   inject,
   input,
+  output,
   signal,
 } from '@angular/core';
 import type { MembroVisivel } from '@norbit/contracts';
@@ -19,6 +20,12 @@ import { PAPEIS_CONVIDAVEIS, type PapelConvidavel } from '../convites/papel';
 import { iniciaisDe } from '../perfil/iniciais';
 import { Botao } from '../ui/botao';
 import { MembrosService } from './membros.service';
+
+/** A ação que espera confirmação, e para quem. */
+type Pendente = {
+  readonly userId: string;
+  readonly acao: 'remover' | 'transferir';
+};
 
 @Component({
   selector: 'nb-membros-da-agenda',
@@ -31,6 +38,10 @@ export class MembrosDaAgenda implements OnInit {
   private readonly membrosApi = inject(MembrosService);
 
   readonly calendarId = input.required<string>();
+  /** A agenda padrão é pessoal e a API não a transfere: a tela nem oferece. */
+  readonly podeTransferir = input(false);
+  /** Avisa quem hospeda, porque o papel de quem está logado acabou de mudar. */
+  readonly posseTransferida = output<void>();
 
   protected readonly papeis = PAPEIS_CONVIDAVEIS;
   protected readonly iniciaisDe = iniciaisDe;
@@ -38,8 +49,8 @@ export class MembrosDaAgenda implements OnInit {
   protected readonly membros = signal<readonly MembroVisivel[]>([]);
   protected readonly carregando = signal(true);
   protected readonly erro = signal<string | null>(null);
-  /** O membro cuja remoção espera confirmação, ou `null`. */
-  protected readonly confirmando = signal<string | null>(null);
+  /** A ação que espera confirmação, ou `null`. */
+  protected readonly pendente = signal<Pendente | null>(null);
 
   ngOnInit(): void {
     this.recarregar();
@@ -61,17 +72,25 @@ export class MembrosDaAgenda implements OnInit {
       });
   }
 
-  protected pedirConfirmacao(membro: MembroVisivel): void {
-    this.confirmando.set(membro.userId);
+  protected pedirConfirmacao(
+    membro: MembroVisivel,
+    acao: Pendente['acao'],
+  ): void {
+    this.pendente.set({ userId: membro.userId, acao });
   }
 
   protected cancelar(): void {
-    this.confirmando.set(null);
+    this.pendente.set(null);
+  }
+
+  protected aguardando(membro: MembroVisivel, acao: Pendente['acao']): boolean {
+    const atual = this.pendente();
+    return atual?.userId === membro.userId && atual.acao === acao;
   }
 
   protected remover(membro: MembroVisivel): void {
     this.erro.set(null);
-    this.confirmando.set(null);
+    this.pendente.set(null);
 
     this.membrosApi.remover(this.calendarId(), membro.userId).subscribe({
       next: () => {
@@ -81,6 +100,18 @@ export class MembrosDaAgenda implements OnInit {
       },
       error: (e: unknown) => this.erro.set(mensagemDe(e)),
     });
+  }
+
+  protected transferir(membro: MembroVisivel): void {
+    this.erro.set(null);
+    this.pendente.set(null);
+
+    this.membrosApi
+      .transferirPosse(this.calendarId(), membro.userId)
+      .subscribe({
+        next: () => this.posseTransferida.emit(),
+        error: (e: unknown) => this.erro.set(mensagemDe(e)),
+      });
   }
 
   private recarregar(): void {

@@ -39,4 +39,11 @@ export class MembrosService {
   sair(calendarId: string): Observable<void> {
     return this.http.delete<void>(`/api/agendas/${calendarId}/membros/eu`);
   }
+
+  /** Operação sobre a agenda, não sobre um membro: `POST` próprio. */
+  transferirPosse(calendarId: string, membroId: string): Observable<void> {
+    return this.http.post<void>(`/api/agendas/${calendarId}/transferir-posse`, {
+      membroId,
+    });
+  }
 }

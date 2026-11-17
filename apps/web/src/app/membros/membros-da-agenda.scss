@@ -68,6 +68,15 @@
   gap: calc(var(--space-unit) * 2);
 }
 
+.confirmacao {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: calc(var(--space-unit) * 2);
+  max-width: 20rem;
+  text-align: right;
+}
+
 .seletor {
   width: auto;
 }
@@ -82,8 +91,10 @@
     flex-wrap: wrap;
   }
 
-  .acoes {
+  .acoes,
+  .confirmacao {
     width: 100%;
+    max-width: none;
     justify-content: flex-end;
   }
 }

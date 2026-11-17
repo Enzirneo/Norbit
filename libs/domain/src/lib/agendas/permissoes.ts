@@ -21,7 +21,8 @@ export type AcaoDeAgenda =
   | 'criar-tarefa'
   | 'editar-agenda'
   | 'excluir-agenda'
-  | 'gerenciar-membros';
+  | 'gerenciar-membros'
+  | 'transferir-posse';
 
 /**
  * Ações cujo veredito também depende de quem criou o item.
@@ -60,6 +61,7 @@ const MATRIZ: Record<Papel, Capacidades> = {
       'editar-agenda',
       'excluir-agenda',
       'gerenciar-membros',
+      'transferir-posse',
     ],
     nosItens: 'qualquer',
   },

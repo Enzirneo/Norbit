@@ -10,6 +10,7 @@
 import { ConfigModule } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   NotFoundException,
@@ -360,6 +361,133 @@ describe('AgendasService', () => {
       const id = await agendaDoEnzoCom(maria, 'VIEWER');
 
       await expect(agendas.sair(enzo, id)).rejects.toThrow(ConflictException);
+    });
+  });
+
+  describe('transferir a posse', () => {
+    it('passa o ownerId, e o dono antigo vira EDITOR', async () => {
+      const id = await agendaDoEnzoCom(maria, 'VIEWER');
+
+      await agendas.transferirPosse({
+        userId: enzo,
+        calendarId: id,
+        novoDonoId: maria,
+      });
+
+      const agenda = await prisma.calendar.findUniqueOrThrow({ where: { id } });
+      expect(agenda.ownerId).toBe(maria);
+      expect(await agendas.membros(maria, id)).toEqual([
+        expect.objectContaining({ userId: enzo, papel: 'EDITOR' }),
+        expect.objectContaining({ userId: maria, papel: 'OWNER' }),
+      ]);
+    });
+
+    it('o novo dono ganha os poderes de dono, o antigo os perde', async () => {
+      const id = await agendaDoEnzoCom(maria, 'VIEWER');
+
+      await agendas.transferirPosse({
+        userId: enzo,
+        calendarId: id,
+        novoDonoId: maria,
+      });
+
+      await expect(
+        acesso.abrir({ calendarId: id, userId: maria, acao: 'excluir-agenda' }),
+      ).resolves.toMatchObject({ papel: 'OWNER' });
+      await expect(
+        acesso.abrir({ calendarId: id, userId: enzo, acao: 'excluir-agenda' }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('quem deixou de ser dono já pode sair', async () => {
+      const id = await agendaDoEnzoCom(maria, 'EDITOR');
+
+      await agendas.transferirPosse({
+        userId: enzo,
+        calendarId: id,
+        novoDonoId: maria,
+      });
+
+      await expect(agendas.sair(enzo, id)).resolves.toBeUndefined();
+    });
+
+    it('funciona mesmo que o dono não tenha linha de membro', async () => {
+      const id = await agendaDoEnzoCom(maria, 'EDITOR');
+      await prisma.calendarMember.deleteMany({
+        where: { calendarId: id, userId: enzo },
+      });
+
+      await agendas.transferirPosse({
+        userId: enzo,
+        calendarId: id,
+        novoDonoId: maria,
+      });
+
+      const { papel } = await acesso.abrir({
+        calendarId: id,
+        userId: enzo,
+        acao: 'ver',
+      });
+      expect(papel).toBe('EDITOR');
+    });
+
+    it('quem não é dono não transfere, nem para si', async () => {
+      const id = await agendaDoEnzoCom(maria, 'EDITOR');
+
+      await expect(
+        agendas.transferirPosse({
+          userId: maria,
+          calendarId: id,
+          novoDonoId: maria,
+        }),
+      ).rejects.toThrow(ForbiddenException);
+    });
+
+    it('só passa a posse a quem já é membro', async () => {
+      const id = await agendaDoEnzoCom(maria, 'EDITOR');
+      const estranha = await criarUsuario(prisma, 'estranha');
+
+      await expect(
+        agendas.transferirPosse({
+          userId: enzo,
+          calendarId: id,
+          novoDonoId: estranha,
+        }),
+      ).rejects.toThrow(NotFoundException);
+      const agenda = await prisma.calendar.findUniqueOrThrow({ where: { id } });
+      expect(agenda.ownerId).toBe(enzo);
+    });
+
+    it('recusa transferir para si mesmo', async () => {
+      const id = await agendaDoEnzoCom(maria, 'EDITOR');
+
+      await expect(
+        agendas.transferirPosse({
+          userId: enzo,
+          calendarId: id,
+          novoDonoId: enzo,
+        }),
+      ).rejects.toThrow(BadRequestException);
+    });
+
+    it('recusa a agenda padrão, que é pessoal', async () => {
+      const padrao = await prisma.calendar.create({
+        data: {
+          id: uuidv7(),
+          ownerId: enzo,
+          name: 'Minha órbita',
+          isDefault: true,
+        },
+      });
+      await virarMembro(prisma, padrao.id, maria, 'EDITOR');
+
+      await expect(
+        agendas.transferirPosse({
+          userId: enzo,
+          calendarId: padrao.id,
+          novoDonoId: maria,
+        }),
+      ).rejects.toThrow(ConflictException);
     });
   });
 

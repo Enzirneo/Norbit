@@ -79,6 +79,17 @@ export const definirPapelSchema = z
 
 export type DefinirPapel = z.infer<typeof definirPapelSchema>;
 
+/**
+ * Quem recebe a posse. Vai no corpo, e não na URL, porque transferir não é um
+ * recurso e sim uma operação sobre a agenda — e para que o `membroId` na rota
+ * continue significando só "o membro a quem se aplica a alteração de papel".
+ */
+export const transferirPosseSchema = z
+  .object({ membroId: z.uuid('Identificador de membro inválido.') })
+  .strip();
+
+export type TransferirPosse = z.infer<typeof transferirPosseSchema>;
+
 export type PapelNaAgenda = z.infer<typeof papelSchema>;
 
 /** O que a API devolve para uma agenda. */

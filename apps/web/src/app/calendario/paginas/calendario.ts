@@ -209,10 +209,7 @@ export class Calendario {
   );
 
   constructor() {
-    this.api.agendas().subscribe({
-      next: (agendas) => this.agendas.set(agendas),
-      error: () => this.erro.set('Não foi possível carregar suas agendas.'),
-    });
+    this.carregarAgendas();
 
     /*
      * As preferências vêm **antes** da consulta de eventos.
@@ -340,6 +337,16 @@ export class Calendario {
     this.compartilhando.set(null);
   }
 
+  /**
+   * O papel de quem está logado acaba de mudar de dono para editor: fecha o
+   * diálogo de dono e recarrega as agendas, para o botão Compartilhar dar lugar
+   * ao Sair sem depender de a pessoa atualizar a página.
+   */
+  protected aoTransferirPosse(): void {
+    this.compartilhando.set(null);
+    this.carregarAgendas();
+  }
+
   protected fecharDialogo(): void {
     this.alvo.set(null);
   }
@@ -375,6 +382,13 @@ export class Calendario {
     return this.visao() === 'MONTH'
       ? intervaloDaGrade(this.grade(), this.fuso())
       : intervaloDosDias(this.diasVisiveis(), this.fuso());
+  }
+
+  private carregarAgendas(): void {
+    this.api.agendas().subscribe({
+      next: (agendas) => this.agendas.set(agendas),
+      error: () => this.erro.set('Não foi possível carregar suas agendas.'),
+    });
   }
 
   private carregar(): void {

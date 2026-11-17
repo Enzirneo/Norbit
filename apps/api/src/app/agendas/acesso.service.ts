@@ -183,6 +183,7 @@ function recusa(acao: AcaoDeAgenda | AcaoDeItem): string {
     'editar-agenda': 'Só quem é dono pode alterar esta agenda.',
     'excluir-agenda': 'Só quem é dono pode excluir esta agenda.',
     'gerenciar-membros': 'Só quem é dono pode gerenciar os membros.',
+    'transferir-posse': 'Só quem é dono pode transferir a posse.',
     'criar-tarefa': 'Seu papel nesta agenda não permite criar tarefas.',
     'editar-evento': 'Você só pode editar os eventos que você criou.',
     'excluir-evento': 'Você só pode excluir os eventos que você criou.',
