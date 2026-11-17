@@ -1,0 +1,41 @@
+@let e = erros();
+
+<form
+  [formGroup]="formulario"
+  (ngSubmit)="enviar()"
+  class="flex flex-col gap-5"
+>
+  <nb-campo rotulo="Senha atual" [erro]="e['senhaAtual']">
+    <input
+      type="password"
+      formControlName="senhaAtual"
+      autocomplete="current-password"
+      class="nb-entrada"
+      [attr.aria-invalid]="e['senhaAtual'] ? 'true' : null"
+    />
+  </nb-campo>
+
+  <nb-campo
+    rotulo="Senha nova"
+    dica="Pelo menos 12 caracteres. Uma frase curta serve."
+    [erro]="e['novaSenha']"
+  >
+    <input
+      type="password"
+      formControlName="novaSenha"
+      autocomplete="new-password"
+      class="nb-entrada"
+      [attr.aria-invalid]="e['novaSenha'] ? 'true' : null"
+    />
+  </nb-campo>
+
+  @if (e['formulario']) {
+  <p role="alert" class="text-sm text-danger">{{ e['formulario'] }}</p>
+  } @if (trocada()) {
+  <p role="status" class="text-sm text-muted">
+    Senha alterada. Os outros aparelhos foram desconectados.
+  </p>
+  }
+
+  <button nb-botao type="submit" [ocupado]="enviando()">Trocar a senha</button>
+</form>

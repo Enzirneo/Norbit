@@ -9,6 +9,7 @@ import { EmailModule } from '../comum/email.module';
 import { RedefinicaoDeSenhaService } from './redefinicao-de-senha.service';
 import { SenhasService } from './senhas.service';
 import { TokensService } from './tokens.service';
+import { TrocaDeSenhaService } from './troca-de-senha.service';
 
 /** O que o `.env.example` traz como lembrete de trocar. */
 const SEGREDO_DE_FACHADA = 'troque-isto';
@@ -43,6 +44,7 @@ const FORMATO_DE_TTL = /^\d+(ms|s|m|h|d|w|y)$/;
     RedefinicaoDeSenhaService,
     SenhasService,
     TokensService,
+    TrocaDeSenhaService,
     AuthGuard,
   ],
   exports: [AuthService, AuthGuard, TokensService],

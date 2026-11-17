@@ -25,6 +25,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [16 — Perfil](16-perfil.md)                             | Nome, handle e fuso; avatar de iniciais; o que ficou de fora e por quê      |
 | [17 — Limite de frequência](17-limite-de-frequencia.md) | Janela deslizante por IP e por e-mail, 429 com Retry-After, teto de memória |
 | [18 — Convites](18-convites.md)                         | Por e-mail ou link, hash no banco, aceite idempotente, corrida no banco     |
+| [19 — Trocar a senha](19-troca-de-senha.md)             | Senha atual como prova, outros aparelhos derrubados, limite por IP          |
 
 ## Estado atual
 

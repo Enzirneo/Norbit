@@ -1,5 +1,5 @@
 /**
- * A tela de perfil: nome, handle e fuso.
+ * A tela de perfil: nome, handle, fuso e senha.
  *
  * Ao contrário das preferências, aqui há um botão "Salvar": trocar o handle
  * muda o endereço público da pessoa, e uma alteração com esse peso não deve
@@ -25,10 +25,11 @@ import { Campo } from '../../ui/campo';
 import { Marca } from '../../ui/marca';
 import { iniciaisDe } from '../iniciais';
 import { PerfilService } from '../perfil.service';
+import { TrocaDeSenha } from '../troca-de-senha';
 
 @Component({
   selector: 'nb-perfil',
-  imports: [ReactiveFormsModule, Botao, Campo, Marca],
+  imports: [ReactiveFormsModule, Botao, Campo, Marca, TrocaDeSenha],
   templateUrl: './perfil.html',
   // As mesmas classes de layout das preferências: são duas telas de ajustes da
   // conta, e duas folhas iguais divergiriam na primeira alteração.

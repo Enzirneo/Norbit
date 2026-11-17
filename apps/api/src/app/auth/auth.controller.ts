@@ -25,10 +25,12 @@ import {
   esqueciSenhaSchema,
   loginSchema,
   redefinirSenhaSchema,
+  trocarSenhaSchema,
   type Cadastro,
   type EsqueciSenha,
   type Login,
   type RedefinirSenha,
+  type TrocarSenha,
   type UsuarioAutenticado,
 } from '@norbit/contracts';
 import type { CookieOptions, Request, Response } from 'express';
@@ -42,6 +44,7 @@ import {
   type ContextoDaSessao,
 } from './auth.service';
 import { RedefinicaoDeSenhaService } from './redefinicao-de-senha.service';
+import { TrocaDeSenhaService } from './troca-de-senha.service';
 import { UsuarioAtual } from './usuario-atual.decorator';
 import type { Requisitante } from './auth.guard';
 
@@ -66,6 +69,9 @@ const UMA_HORA = 60 * UM_MINUTO;
  *   quem tem conta.
  * - **redefinir-senha**: o token tem 256 bits e não é adivinhável; o limite só
  *   contém abuso.
+ * - **trocar-senha**: exige sessão, mas quem roubou um access token pode usar a
+ *   rota para adivinhar a senha atual. Por IP, 10 em 15 minutos: sobra para
+ *   quem erra a digitação, e é pouco para quem tenta adivinhar.
  */
 const LIMITES = {
   login: {
@@ -78,6 +84,7 @@ const LIMITES = {
     email: { maximo: 3, janelaMs: UMA_HORA },
   },
   redefinirSenha: { ip: { maximo: 20, janelaMs: UMA_HORA } },
+  trocarSenha: { ip: { maximo: 10, janelaMs: QUINZE_MINUTOS } },
 } as const;
 
 /**
@@ -96,6 +103,7 @@ export class AuthController {
   constructor(
     private readonly auth: AuthService,
     private readonly redefinicao: RedefinicaoDeSenhaService,
+    private readonly trocaDeSenha: TrocaDeSenhaService,
     private readonly config: ConfigService,
   ) {}
 
@@ -179,6 +187,28 @@ export class AuthController {
   @UsePipes(new ZodValidationPipe(redefinirSenhaSchema))
   async redefinirSenha(@Body() dados: RedefinirSenha): Promise<void> {
     await this.redefinicao.redefinir(dados.token, dados.password);
+  }
+
+  /**
+   * Pelo `AuthGuard` e não pública: a pessoa já está dentro. O refresh vem do
+   * cookie só para o serviço saber **qual** aparelho poupar ao derrubar os
+   * outros; ele não autentica nada aqui.
+   */
+  @Post('trocar-senha')
+  @UseGuards(AuthGuard, LimiteGuard)
+  @Limitar(LIMITES.trocarSenha)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async trocarSenha(
+    @UsuarioAtual() quem: Requisitante,
+    @Req() requisicao: Request,
+    @Body(new ZodValidationPipe(trocarSenhaSchema)) dados: TrocarSenha,
+  ): Promise<void> {
+    await this.trocaDeSenha.trocar({
+      userId: quem.id,
+      senhaAtual: dados.senhaAtual,
+      novaSenha: dados.novaSenha,
+      refreshToken: refreshDoCookie(requisicao),
+    });
   }
 
   @Get('eu')

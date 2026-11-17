@@ -3,6 +3,7 @@ export * from './lib/contracts';
 export * from './lib/auth/cadastro';
 export * from './lib/auth/redefinicao';
 export * from './lib/auth/perfil';
+export * from './lib/auth/troca-de-senha';
 
 export * from './lib/agendas/comum';
 export * from './lib/agendas/agenda';
