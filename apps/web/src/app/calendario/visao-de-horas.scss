@@ -220,6 +220,29 @@ $eixo: 3.5rem;
   }
 }
 
+/* Só o ponteiro arrasta; o toque rola a grade, e o teclado usa o formulário. */
+.faixa--arrastavel {
+  cursor: grab;
+  user-select: none;
+}
+
+.faixa--arrastando {
+  /* Acima das vizinhas e sem o filtro do hover: é o que a pessoa está movendo. */
+  z-index: 2;
+  box-shadow: 0 0 0 2px var(--border-focus);
+  cursor: grabbing;
+  filter: none;
+}
+
+/* A alça de redimensionar: uma faixa fina na borda de baixo. */
+.alca {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: 6px;
+  cursor: ns-resize;
+}
+
 .faixa-hora {
   color: var(--text-secondary);
   font-variant-numeric: tabular-nums;

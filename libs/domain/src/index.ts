@@ -28,3 +28,4 @@ export * from './lib/calendario/navegacao';
 export * from './lib/auth/redefinicao-de-senha';
 export * from './lib/auth/limite-de-frequencia';
 export * from './lib/agendas/convite';
+export * from './lib/calendario/arrastar';

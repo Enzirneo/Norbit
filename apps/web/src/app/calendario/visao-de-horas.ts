@@ -13,21 +13,39 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
+  ElementRef,
   computed,
+  effect,
   inject,
   input,
   output,
   signal,
+  untracked,
+  viewChild,
 } from '@angular/core';
 import type { AgendaVisivel, OcorrenciaVisivel } from '@norbit/contracts';
 import {
+  celulaDaGrade,
   distribuirColunas,
   faixaNoDia,
   faixasDaSemana,
   horasDoDia,
+  instanteNaGrade,
+  intervaloDosDias,
+  podeNoItem,
   type DataCivil,
-  type MarcaDeHora,
+  type Horario,
 } from '@norbit/domain';
+import {
+  celulasDeHora,
+  type CelulaDeHora,
+  comoTexto,
+  horarioDe,
+  mesmoDia,
+  rotuloCurtoDe,
+  rotuloDeHora,
+} from './apoio-da-grade';
+import { GestoDeArrasto, type ModoDeArrasto } from './gesto-de-arrasto';
 
 /** De quanto em quanto tempo a linha de agora se move. */
 const PASSO_DA_LINHA_DE_AGORA = 60_000;
@@ -43,15 +61,23 @@ type FaixaComHora = {
   readonly esquerda: number;
   readonly largura: number;
   readonly horario: string;
+  /** Quem vê pode mudar o horário arrastando: o papel permite editar este evento. */
+  readonly arrastavel: boolean;
+  /** Este trecho contém o fim do evento; só nele cabe a alça de redimensionar. */
+  readonly terminaNoDia: boolean;
 };
 
-/** Uma hora clicável, posicionada pela fração real daquele dia. */
-type CelulaDeHora = {
-  readonly hora: number;
-  readonly topo: number;
-  readonly altura: number;
-  readonly rotulo: string;
-  readonly texto: string;
+/** O horário provisório de uma ocorrência enquanto ela é arrastada. */
+type Arrasto = {
+  readonly chave: string;
+  readonly horario: Horario;
+};
+
+/** O que a tela pede à página quando um arrasto termina com mudança. */
+export type Reagendamento = {
+  readonly ocorrencia: OcorrenciaVisivel;
+  readonly inicio: Date;
+  readonly fim: Date;
 };
 
 type Coluna = {
@@ -89,10 +115,31 @@ export class VisaoDeHoras {
   readonly hoje = input.required<DataCivil>();
   /** Relógio de 24 horas, da preferência da conta. */
   readonly vinteEQuatroHoras = input.required<boolean>();
+  /** Quem está vendo: o papel `CONTRIBUTOR` só mexe nos eventos que criou. */
+  readonly usuarioId = input.required<string>();
 
   readonly selecionada = output<OcorrenciaVisivel>();
   /** O dia e a hora clicados no espaço vazio da grade. */
   readonly horaSelecionada = output<{ dia: string; hora: string }>();
+  /** Um arrasto ou redimensionamento terminou com um horário novo. */
+  readonly reagendada = output<Reagendamento>();
+
+  private readonly gradeRef = viewChild<ElementRef<HTMLElement>>('grade');
+
+  /**
+   * O horário provisório da ocorrência em arrasto.
+   *
+   * Continua depois de soltar, até a página recarregar as ocorrências: soltar
+   * já gravou na API, e voltar o evento ao lugar antigo por um instante antes
+   * de ele pular para o novo seria um piscar.
+   */
+  protected readonly arrasto = signal<Arrasto | null>(null);
+
+  private readonly gesto = new GestoDeArrasto((x, y) =>
+    this.instanteDoPonteiro(x, y),
+  );
+  private arrastada: OcorrenciaVisivel | null = null;
+  private houveArrasto = false;
 
   /**
    * O instante de agora, atualizado de minuto em minuto.
@@ -116,7 +163,7 @@ export class VisaoDeHoras {
 
   protected readonly colunas = computed<readonly Coluna[]>(() => {
     const cores = new Map(this.agendas().map((a) => [a.id, a.color]));
-    const comHora = this.ocorrencias().filter((o) => !o.isAllDay);
+    const comHora = this.comArrastoAplicado().filter((o) => !o.isAllDay);
 
     return this.dias().map((dia) => this.montarColuna(dia, comHora, cores));
   });
@@ -175,12 +222,152 @@ export class VisaoDeHoras {
       PASSO_DA_LINHA_DE_AGORA,
     );
 
-    inject(DestroyRef).onDestroy(() => clearInterval(relogio));
+    // Chegaram ocorrências novas (a página recarregou depois de gravar, ou
+    // falhou e recarregou para desfazer): o horário provisório já cumpriu o papel.
+    effect(() => {
+      this.ocorrencias();
+      untracked(() => this.arrasto.set(null));
+    });
+
+    inject(DestroyRef).onDestroy(() => {
+      clearInterval(relogio);
+      this.encerrarEscuta();
+    });
+  }
+
+  /**
+   * Começa um arrasto (ou um clique: só passado o limiar ele vira arrasto).
+   *
+   * O botão do mouse e a caneta; o toque fica de fora porque arrastar com o
+   * dedo brigaria com a rolagem da grade. Quem não pode usar o ponteiro tem o
+   * formulário: clicar no evento abre os campos de início e fim.
+   */
+  protected iniciarArrasto(evento: PointerEvent, faixa: FaixaComHora): void {
+    if (
+      !faixa.arrastavel ||
+      evento.button !== 0 ||
+      evento.pointerType === 'touch' ||
+      !this.gradeRef()
+    ) {
+      return;
+    }
+
+    const alvo = evento.target;
+    const modo: ModoDeArrasto =
+      alvo instanceof Element && alvo.closest('.alca')
+        ? 'redimensionar'
+        : 'mover';
+
+    this.arrastada = faixa.ocorrencia;
+    this.houveArrasto = false;
+    this.gesto.iniciar({
+      x: evento.clientX,
+      y: evento.clientY,
+      modo,
+      inicio: new Date(faixa.ocorrencia.inicio),
+      fim: new Date(faixa.ocorrencia.fim),
+    });
+
+    window.addEventListener('pointermove', this.aoMoverPonteiro);
+    window.addEventListener('pointerup', this.aoSoltarPonteiro);
+    window.addEventListener('pointercancel', this.aoSoltarPonteiro);
+    window.addEventListener('keydown', this.aoTeclar);
   }
 
   /** `AAAA-MM-DD` do dia, que é o que o formulário recebe. */
   protected comoTexto(dia: DataCivil): string {
     return comoTexto(dia);
+  }
+
+  private readonly aoMoverPonteiro = (evento: PointerEvent): void => {
+    const horario = this.gesto.mover(evento.clientX, evento.clientY);
+
+    if (horario && this.arrastada) {
+      this.houveArrasto = true;
+      this.arrasto.set({ chave: chaveDa(this.arrastada), horario });
+    }
+  };
+
+  private readonly aoSoltarPonteiro = (): void => {
+    const { intervalo } = this.gesto.soltar();
+    const ocorrencia = this.arrastada;
+    const arrastou = this.houveArrasto;
+    this.encerrarEscuta();
+
+    // O navegador dispara um clique ao soltar sobre o mesmo botão, e abrir o
+    // formulário no fim de um arrasto seria o oposto do que a pessoa quis.
+    if (arrastou) {
+      engolirOProximoClique();
+    }
+
+    if (ocorrencia && intervalo) {
+      this.reagendada.emit({ ocorrencia, ...intervalo });
+    } else {
+      this.arrasto.set(null);
+    }
+  };
+
+  /** Esc desiste do arrasto, mas o gesto só termina quando o botão é solto. */
+  private readonly aoTeclar = (evento: KeyboardEvent): void => {
+    if (evento.key === 'Escape') {
+      this.gesto.cancelar();
+      this.arrasto.set(null);
+    }
+  };
+
+  private encerrarEscuta(): void {
+    window.removeEventListener('pointermove', this.aoMoverPonteiro);
+    window.removeEventListener('pointerup', this.aoSoltarPonteiro);
+    window.removeEventListener('pointercancel', this.aoSoltarPonteiro);
+    window.removeEventListener('keydown', this.aoTeclar);
+  }
+
+  /** O instante sob um ponto da tela, a partir da posição da grade agora. */
+  private instanteDoPonteiro(x: number, y: number): Date {
+    const caixa = this.gradeRef()?.nativeElement.getBoundingClientRect();
+    const dias = this.dias();
+    const { coluna, fracao } = celulaDaGrade({
+      x,
+      y,
+      esquerda: caixa?.left ?? 0,
+      topo: caixa?.top ?? 0,
+      largura: caixa?.width ?? 0,
+      altura: caixa?.height ?? 0,
+      colunas: dias.length,
+    });
+
+    return instanteNaGrade({ dia: dias[coluna], fuso: this.fuso(), fracao });
+  }
+
+  /** As ocorrências, com a que está em arrasto já no horário provisório. */
+  private comArrastoAplicado(): readonly OcorrenciaVisivel[] {
+    const arrasto = this.arrasto();
+    if (!arrasto) {
+      return this.ocorrencias();
+    }
+
+    return this.ocorrencias().map((o) =>
+      chaveDa(o) === arrasto.chave
+        ? {
+            ...o,
+            inicio: arrasto.horario.inicio.toISOString(),
+            fim: arrasto.horario.fim.toISOString(),
+          }
+        : o,
+    );
+  }
+
+  private podeArrastar(ocorrencia: OcorrenciaVisivel): boolean {
+    const agenda = this.agendas().find((a) => a.id === ocorrencia.calendarId);
+
+    return (
+      agenda !== undefined &&
+      podeNoItem({
+        papel: agenda.papel,
+        acao: 'editar-evento',
+        ehAutor: ocorrencia.createdById === this.usuarioId(),
+      })
+    );
   }
 
   private montarColuna(
@@ -228,6 +415,8 @@ export class VisaoDeHoras {
         : [{ id: chaveDa(ocorrencia), ocorrencia, ...faixa }];
     });
 
+    const fechaODia = intervaloDosDias([dia], this.fuso()).ate.getTime();
+    const emArrasto = this.arrasto()?.chave;
     const porChave = new Map(posicoes.map((p) => [p.id, p.ocorrencia]));
     const distribuidas = distribuirColunas(
       posicoes.map(({ id, topo, altura }) => ({ id, topo, altura })),
@@ -248,7 +437,14 @@ export class VisaoDeHoras {
           altura: c.altura * 100,
           esquerda: (c.coluna / c.colunas) * 100,
           largura: (1 / c.colunas) * 100,
-          horario: horarioDe(ocorrencia, this.fuso(), this.vinteEQuatroHoras()),
+          horario: horarioDe(
+            ocorrencia,
+            this.fuso(),
+            this.vinteEQuatroHoras(),
+            c.id === emArrasto,
+          ),
+          arrastavel: this.podeArrastar(ocorrencia),
+          terminaNoDia: new Date(ocorrencia.fim).getTime() <= fechaODia,
         },
       ];
     });
@@ -292,96 +488,18 @@ function pinturaDe(cor: string | undefined): { fundo: string; borda: string } {
   };
 }
 
-function horarioDe(
-  ocorrencia: OcorrenciaVisivel,
-  fuso: string,
-  vinteEQuatro: boolean,
-): string {
-  return new Intl.DateTimeFormat('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: !vinteEQuatro,
-    timeZone: fuso,
-  }).format(new Date(ocorrencia.inicio));
-}
-
-/** "Qua" — formatado em UTC porque a entrada é data civil. Ver visao-de-mes.ts. */
-function rotuloCurtoDe(dia: DataCivil): string {
-  const texto = new Intl.DateTimeFormat('pt-BR', {
-    weekday: 'short',
-    timeZone: 'UTC',
-  }).format(new Date(Date.UTC(dia.ano, dia.mes - 1, dia.dia)));
-
-  return texto.replace('.', '').replace(/^./, (l) => l.toUpperCase());
-}
-
-function mesmoDia(a: DataCivil, b: DataCivil): boolean {
-  return a.ano === b.ano && a.mes === b.mes && a.dia === b.dia;
-}
-
-function comoTexto(dia: DataCivil): string {
-  return `${dia.ano}-${dois(dia.mes)}-${dois(dia.dia)}`;
-}
-
-function dois(valor: number): string {
-  return String(valor).padStart(2, '0');
-}
-
 /**
- * As horas de um dia como células clicáveis.
+ * Descarta o próximo clique, que o navegador dispara ao soltar o botão.
  *
- * Cada uma é um `button`: é o que dá acesso por teclado a criar um evento num
- * horário. A primeira versão usava um `div` com `(click)` e calculava a hora
- * pela posição vertical do cursor — mais preciso para o mouse, e **inalcançável**
- * para quem navega por teclado. O lint apontou, e estava certo.
- *
- * A altura de cada célula é a distância até a hora seguinte, e não 1/24: num dia
- * de 23 ou 25 horas as células precisam acompanhar as marcas, ou a grade mostra
- * uma linha num lugar e aceita o clique em outro.
+ * A escuta sai no turno seguinte: o clique chega no mesmo turno do `pointerup`,
+ * e sem a remoção um clique legítimo logo depois seria engolido por engano.
  */
-function celulasDeHora(
-  dia: DataCivil,
-  marcas: readonly MarcaDeHora[],
-  vinteEQuatro: boolean,
-): readonly CelulaDeHora[] {
-  return marcas.map((marca, i) => {
-    const proxima = marcas[i + 1]?.posicao ?? 1;
+function engolirOProximoClique(): void {
+  const engolir = (evento: Event): void => {
+    evento.stopPropagation();
+    evento.preventDefault();
+  };
 
-    return {
-      hora: marca.hora,
-      topo: marca.posicao * 100,
-      altura: (proxima - marca.posicao) * 100,
-      // O valor do campo de hora é sempre 24h: é o formato que o
-      // `<input type="time">` exige, independente de como a pessoa lê o relógio.
-      texto: `${dois(marca.hora)}:00`,
-      rotulo: `Criar evento às ${rotuloDeHora(marca.hora, vinteEQuatro)} de ${rotuloLongoDe(dia)}`,
-    };
-  });
-}
-
-/** "15 de junho", para o rótulo acessível do botão de hora. */
-function rotuloLongoDe(dia: DataCivil): string {
-  return new Intl.DateTimeFormat('pt-BR', {
-    day: 'numeric',
-    month: 'long',
-    timeZone: 'UTC',
-  }).format(new Date(Date.UTC(dia.ano, dia.mes - 1, dia.dia)));
-}
-
-/**
- * A hora como a pessoa lê: "14h" ou "2 PM".
- *
- * Só para **mostrar**. O valor que vai para o formulário continua em 24 horas,
- * porque é o formato que o `<input type="time">` exige — misturar os dois faria
- * o campo nascer vazio para quem escolheu 12 horas.
- */
-function rotuloDeHora(hora: number, vinteEQuatro: boolean): string {
-  if (vinteEQuatro) {
-    return `${hora}h`;
-  }
-
-  const periodo = hora < 12 ? 'AM' : 'PM';
-  const doze = hora % 12 === 0 ? 12 : hora % 12;
-
-  return `${doze} ${periodo}`;
+  window.addEventListener('click', engolir, { capture: true, once: true });
+  setTimeout(() => window.removeEventListener('click', engolir, true));
 }

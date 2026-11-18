@@ -43,7 +43,7 @@ import {
   FormularioDeEvento,
   type AlvoDoFormulario,
 } from '../formulario-de-evento';
-import { VisaoDeHoras } from '../visao-de-horas';
+import { VisaoDeHoras, type Reagendamento } from '../visao-de-horas';
 import { VisaoDeMes } from '../visao-de-mes';
 
 /**
@@ -291,6 +291,23 @@ export class Calendario {
   /** Clique na grade de horas: o dia **e** a hora clicada. */
   protected criarEmHora(quando: { dia: string; hora: string }): void {
     this.alvo.set({ modo: 'criar', dia: quando.dia, hora: quando.hora });
+  }
+
+  /**
+   * Grava o horário que um arrasto escolheu e recarrega.
+   *
+   * Recarrega nos dois desfechos: se deu certo, para mostrar o que o servidor
+   * guardou; se falhou, para a tela voltar ao que de fato existe. A mensagem
+   * vem **depois** do `carregar`, que limpa o erro ao começar.
+   */
+  protected reagendar(mudanca: Reagendamento): void {
+    this.api.reagendar(mudanca).subscribe({
+      next: () => this.carregar(),
+      error: () => {
+        this.carregar();
+        this.erro.set('Não foi possível mudar o horário do evento.');
+      },
+    });
   }
 
   protected editar(ocorrencia: OcorrenciaVisivel): void {

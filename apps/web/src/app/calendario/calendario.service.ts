@@ -15,7 +15,7 @@ import type {
   EventoVisivel,
   OcorrenciaVisivel,
 } from '@norbit/contracts';
-import type { Observable } from 'rxjs';
+import { switchMap, type Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class CalendarioService {
@@ -111,6 +111,40 @@ export class CalendarioService {
     return this.http.post<EventoVisivel>(
       `/api/eventos/${id}/ocorrencias/${encodeURIComponent(inicioOriginal)}/destacar`,
       {},
+    );
+  }
+
+  /**
+   * Muda o horário de uma ocorrência, como um arrastar na grade.
+   *
+   * Numa série vale **só esta**: é o mesmo caminho do formulário com o escopo
+   * "este evento" (destacar a ocorrência e alterar a exceção), e arrastar uma
+   * ocorrência não deve reescrever a série inteira sem a pessoa ter pedido. A
+   * exceção nasce **sem a regra**, ou viraria uma segunda série paralela.
+   */
+  reagendar(entrada: {
+    readonly ocorrencia: {
+      readonly id: string;
+      readonly ehRecorrente: boolean;
+      readonly inicioOriginal: string;
+    };
+    readonly inicio: Date;
+    readonly fim: Date;
+  }): Observable<EventoVisivel> {
+    const horario = { startsAt: entrada.inicio, endsAt: entrada.fim };
+    const { ocorrencia } = entrada;
+
+    if (!ocorrencia.ehRecorrente) {
+      return this.atualizarEvento(ocorrencia.id, horario);
+    }
+
+    return this.destacarOcorrencia(
+      ocorrencia.id,
+      ocorrencia.inicioOriginal,
+    ).pipe(
+      switchMap((filha) =>
+        this.atualizarEvento(filha.id, { ...horario, recurrenceRule: null }),
+      ),
     );
   }
 }

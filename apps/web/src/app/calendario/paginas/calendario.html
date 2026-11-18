@@ -156,8 +156,10 @@
         [fuso]="fuso()"
         [hoje]="hoje()"
         [vinteEQuatroHoras]="vinteEQuatroHoras()"
+        [usuarioId]="usuario()?.id ?? ''"
         (horaSelecionada)="criarEmHora($event)"
         (selecionada)="editar($event)"
+        (reagendada)="reagendar($event)"
       />
       } @if (vazio()) {
       <!-- O vocabulário do docs/04 para estado vazio. -->
