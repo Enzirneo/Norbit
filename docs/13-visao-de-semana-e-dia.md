@@ -163,7 +163,7 @@ Fica como entrega própria, com medição antes e depois.
 ## O que ainda não existe
 
 - **Lista de próximos**, a quarta visão do roadmap.
-- **Arrastar** para criar, mover e redimensionar.
+- **Arrastar para criar.** Mover e redimensionar existem: [23](23-arrastar-eventos.md).
 - **A visão de dia como padrão no celular** — ela existe, mas a escolha ainda é manual.
 - **`UserSettings.defaultView` e `weekStartsOn`**: o banco os tem, a API não os expõe.
   A tela abre no mês e começa a semana no domingo.

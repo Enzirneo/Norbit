@@ -55,6 +55,7 @@
     </div>
 
     <div
+      #grade
       class="grade"
       [style.grid-template-columns]="'repeat(' + colunas().length + ', minmax(0, 1fr))'"
     >
@@ -89,6 +90,8 @@
         } @for (faixa of coluna.faixas; track faixa.chave) {
         <button
           class="faixa"
+          [class.faixa--arrastavel]="faixa.arrastavel"
+          [class.faixa--arrastando]="arrasto()?.chave === faixa.chave"
           type="button"
           [style.top.%]="faixa.topo"
           [style.height.%]="faixa.altura"
@@ -96,10 +99,14 @@
           [style.width.%]="faixa.largura"
           [style.background-color]="faixa.fundo"
           [style.border-inline-start-color]="faixa.borda"
+          (pointerdown)="iniciarArrasto($event, faixa)"
           (click)="selecionada.emit(faixa.ocorrencia)"
         >
           <span class="faixa-hora">{{ faixa.horario }}</span>
           <span class="faixa-titulo">{{ faixa.ocorrencia.title }}</span>
+          @if (faixa.arrastavel && faixa.terminaNoDia) {
+          <span class="alca" aria-hidden="true"></span>
+          }
         </button>
         } @if (coluna.agora !== null) {
         <span

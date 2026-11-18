@@ -29,6 +29,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [20 — Aparelhos conectados](20-sessoes-ativas.md)       | Aparelho = família de sessões, o atual protegido, 404 para o que não é seu  |
 | [21 — Apagar a conta](21-apagar-conta.md)               | Anonimiza em vez de apagar a linha, pede a senha, barra dono de agenda      |
 | [22 — Trocar o e-mail](22-troca-de-email.md)            | Dois passos, link ao endereço novo, resposta uniforme, sessões derrubadas   |
+| [23 — Arrastar eventos](23-arrastar-eventos.md)         | Mover e redimensionar na grade, deslocamento em tempo decorrido, só esta    |
 
 ## Estado atual
 
@@ -41,7 +42,7 @@ visão de mês.
 excluir evento pela tela — inclusive as três operações de uma série recorrente — e
 **preferências por conta** (cor de destaque, densidade, visão padrão, início da semana).
 Falta da
-Fase 2 a lista de próximos, o arrastar e a paleta de comandos. Da Fase 1, o perfil e a
+Fase 2 a lista de próximos, o arrastar para criar e a paleta de comandos. Da Fase 1, o perfil e a
 recuperação de senha.
 
 Ver o [roadmap](05-roadmap.md), a [autenticação](07-autenticacao.md), a

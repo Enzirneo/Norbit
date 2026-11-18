@@ -102,7 +102,8 @@ A fase maior e a mais importante. Aqui o produto passa a existir.
       [13](13-visao-de-semana-e-dia.md)
 - [x] Criar evento **clicando** na grade, e editar clicando na faixa — ver
       [12](12-formulario-de-evento.md). Arrastar para criar ainda não
-- [ ] Arrastar para mover e redimensionar para mudar a duração
+- [x] Arrastar para **mover** e **redimensionar** — ver [23](23-arrastar-eventos.md). Criar
+      arrastando ainda não
 - [ ] Paleta de comandos (`Cmd/Ctrl+K`) e atalhos de teclado
 - [ ] Layout responsivo, com a visão de dia como padrão no celular
 
