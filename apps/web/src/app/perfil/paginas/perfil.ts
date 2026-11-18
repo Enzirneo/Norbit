@@ -27,6 +27,7 @@ import { iniciaisDe } from '../iniciais';
 import { ApagarConta } from '../apagar-conta';
 import { PerfilService } from '../perfil.service';
 import { SessoesAtivas } from '../sessoes-ativas';
+import { TrocaDeEmail } from '../troca-de-email';
 import { TrocaDeSenha } from '../troca-de-senha';
 
 @Component({
@@ -38,6 +39,7 @@ import { TrocaDeSenha } from '../troca-de-senha';
     Campo,
     Marca,
     SessoesAtivas,
+    TrocaDeEmail,
     TrocaDeSenha,
   ],
   templateUrl: './perfil.html',

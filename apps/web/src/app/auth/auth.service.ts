@@ -32,6 +32,8 @@ export const ROTAS_DA_API = {
   trocarSenha: '/api/auth/trocar-senha',
   sessoes: '/api/auth/sessoes',
   apagarConta: '/api/auth/apagar-conta',
+  trocarEmail: '/api/auth/trocar-email',
+  confirmarEmail: '/api/auth/confirmar-email',
 } as const;
 
 type RespostaDeSessao = {
