@@ -1,0 +1,45 @@
+@let e = erros();
+
+<p class="text-sm text-muted">
+  Apaga seu acesso e suas agendas. O que você criou em agendas de outras pessoas
+  continua lá, sem o seu nome. Não dá para desfazer.
+</p>
+
+@if (!confirmando()) {
+<button nb-botao aparencia="contorno" type="button" (click)="abrir()">
+  Apagar minha conta
+</button>
+} @else {
+<form
+  [formGroup]="formulario"
+  (ngSubmit)="apagar()"
+  class="flex flex-col gap-5"
+>
+  <nb-campo
+    rotulo="Senha para confirmar"
+    dica="Digite sua senha para apagar a conta."
+    [erro]="e['senha']"
+  >
+    <input
+      type="password"
+      formControlName="senha"
+      autocomplete="current-password"
+      class="nb-entrada"
+      [attr.aria-invalid]="e['senha'] ? 'true' : null"
+    />
+  </nb-campo>
+
+  @if (e['formulario']) {
+  <p role="alert" class="text-sm text-danger">{{ e['formulario'] }}</p>
+  }
+
+  <div class="flex gap-5">
+    <button nb-botao type="submit" [ocupado]="enviando()">
+      Apagar a conta para sempre
+    </button>
+    <button nb-botao aparencia="texto" type="button" (click)="cancelar()">
+      Cancelar
+    </button>
+  </div>
+</form>
+}

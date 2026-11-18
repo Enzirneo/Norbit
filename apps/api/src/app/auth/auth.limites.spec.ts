@@ -162,4 +162,42 @@ describe('limites das rotas de autenticação', () => {
       }
     }
   });
+
+  it('apagar-conta: a décima primeira tentativa do mesmo IP é barrada', async () => {
+    const senhaDaConta = ['senha', 'da', 'conta', 'de', 'teste'].join(' ');
+    const cadastro = await post(url, 'cadastro', {
+      email: 'limite-apagar@norbit.dev',
+      handle: 'limapagar',
+      displayName: 'Limite',
+      password: senhaDaConta,
+    });
+    const { accessToken } = (await cadastro.json()) as { accessToken: string };
+
+    try {
+      const estados: number[] = [];
+      for (let i = 0; i < 11; i += 1) {
+        const resposta = await fetch(`${url}/auth/apagar-conta`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ senha: SENHA_ERRADA }),
+        });
+        estados.push(resposta.status);
+      }
+
+      // Dez recusas pela senha errada (400); a décima primeira nem confere.
+      expect(estados).toEqual([...Array(10).fill(400), 429]);
+    } finally {
+      const prisma = app.get(PrismaService);
+      const conta = await prisma.user.findFirst({
+        where: { email: 'limite-apagar@norbit.dev' },
+      });
+      if (conta) {
+        await prisma.calendar.deleteMany({ where: { ownerId: conta.id } });
+        await prisma.user.delete({ where: { id: conta.id } });
+      }
+    }
+  });
 });

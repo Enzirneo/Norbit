@@ -78,4 +78,3 @@ chamada era recusada, e sem o filtro ela era recusada do mesmo jeito — pela se
 
 - **Troca de e-mail**, com confirmação por e-mail.
 - **Avatar de imagem**, que depende de decidir onde guardar arquivos.
-- **Apagar a conta.**

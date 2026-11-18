@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, type JwtModuleOptions } from '@nestjs/jwt';
+import { ApagarContaService } from './apagar-conta.service';
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { ContaController } from './conta.controller';
 import { LimiteModule } from '../comum/limite/limite.module';
 import { EmailModule } from '../comum/email.module';
 import { RedefinicaoDeSenhaService } from './redefinicao-de-senha.service';
@@ -40,8 +42,9 @@ const FORMATO_DE_TTL = /^\d+(ms|s|m|h|d|w|y)$/;
       }),
     }),
   ],
-  controllers: [AuthController, SessoesController],
+  controllers: [AuthController, ContaController, SessoesController],
   providers: [
+    ApagarContaService,
     AuthService,
     RedefinicaoDeSenhaService,
     SenhasService,
