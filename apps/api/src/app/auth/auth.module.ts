@@ -8,6 +8,8 @@ import { LimiteModule } from '../comum/limite/limite.module';
 import { EmailModule } from '../comum/email.module';
 import { RedefinicaoDeSenhaService } from './redefinicao-de-senha.service';
 import { SenhasService } from './senhas.service';
+import { SessoesController } from './sessoes.controller';
+import { SessoesService } from './sessoes.service';
 import { TokensService } from './tokens.service';
 import { TrocaDeSenhaService } from './troca-de-senha.service';
 
@@ -38,11 +40,12 @@ const FORMATO_DE_TTL = /^\d+(ms|s|m|h|d|w|y)$/;
       }),
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, SessoesController],
   providers: [
     AuthService,
     RedefinicaoDeSenhaService,
     SenhasService,
+    SessoesService,
     TokensService,
     TrocaDeSenhaService,
     AuthGuard,

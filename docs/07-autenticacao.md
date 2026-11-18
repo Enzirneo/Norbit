@@ -127,14 +127,16 @@ Duas verificações que falham ao iniciar, não na primeira requisição:
 
 ## Rotas
 
-| Método | Rota                     | Protegida       | Resposta                              |
-| ------ | ------------------------ | --------------- | ------------------------------------- |
-| `POST` | `/api/auth/cadastro`     | não             | `201` + access token + cookie         |
-| `POST` | `/api/auth/login`        | não             | `200` + access token + cookie         |
-| `POST` | `/api/auth/refresh`      | cookie          | `200` + par novo                      |
-| `POST` | `/api/auth/logout`       | cookie          | `204`                                 |
-| `GET`  | `/api/auth/eu`           | Bearer          | `200` + perfil                        |
-| `POST` | `/api/auth/trocar-senha` | Bearer + cookie | `204`, ver [19](19-troca-de-senha.md) |
+| Método   | Rota                     | Protegida       | Resposta                                          |
+| -------- | ------------------------ | --------------- | ------------------------------------------------- |
+| `POST`   | `/api/auth/cadastro`     | não             | `201` + access token + cookie                     |
+| `POST`   | `/api/auth/login`        | não             | `200` + access token + cookie                     |
+| `POST`   | `/api/auth/refresh`      | cookie          | `200` + par novo                                  |
+| `POST`   | `/api/auth/logout`       | cookie          | `204`                                             |
+| `GET`    | `/api/auth/eu`           | Bearer          | `200` + perfil                                    |
+| `POST`   | `/api/auth/trocar-senha` | Bearer + cookie | `204`, ver [19](19-troca-de-senha.md)             |
+| `GET`    | `/api/auth/sessoes`      | Bearer + cookie | `200` + aparelhos, ver [20](20-sessoes-ativas.md) |
+| `DELETE` | `/api/auth/sessoes/:id`  | Bearer + cookie | `204`, ver [20](20-sessoes-ativas.md)             |
 
 `/eu` reconsulta o banco e devolve `401` se a conta não existir mais: o access token
 vale 15 minutos sem consultar nada, então a conta pode ter sido apagada no intervalo.

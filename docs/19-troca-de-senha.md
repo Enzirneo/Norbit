@@ -42,5 +42,5 @@ lado de fora.
 
 ## O que ainda não existe
 
-- **Listar e revogar sessões** uma a uma (`userAgent` e `ipAddress` já são gravados para isso).
+- **Listar e revogar sessões** uma a uma: feito em [20](20-sessoes-ativas.md).
 - **Avisar por e-mail** que a senha foi trocada.

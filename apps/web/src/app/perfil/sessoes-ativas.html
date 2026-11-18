@@ -1,0 +1,40 @@
+<p class="text-sm text-muted">
+  Os aparelhos em que sua conta está aberta. Se algum não for seu, desconecte-o
+  e troque a senha.
+</p>
+
+@if (carregando()) {
+<p class="text-sm text-muted" aria-live="polite">Carregando…</p>
+} @else {
+<ul class="flex flex-col gap-5" aria-label="Aparelhos conectados">
+  @for (sessao of sessoes(); track sessao.id) {
+  <li class="flex flex-col gap-5" [attr.data-atual]="sessao.atual">
+    <div>
+      <strong>{{ rotulo(sessao) }}</strong>
+      @if (sessao.atual) {
+      <span class="text-sm text-muted"> · Este aparelho</span>
+      }
+      <p class="text-sm text-muted">
+        {{ sessao.ipAddress ?? 'IP desconhecido' }} · visto em {{
+        sessao.ultimoUsoEm | date: 'dd/MM/yyyy HH:mm' }}
+      </p>
+    </div>
+
+    @if (!sessao.atual) {
+    <button
+      nb-botao
+      aparencia="texto"
+      type="button"
+      [ocupado]="revogando() === sessao.id"
+      [attr.aria-label]="'Desconectar ' + rotulo(sessao)"
+      (click)="desconectar(sessao)"
+    >
+      Desconectar
+    </button>
+    }
+  </li>
+  }
+</ul>
+} @if (erro()) {
+<p role="alert" class="text-sm text-danger">{{ erro() }}</p>
+}

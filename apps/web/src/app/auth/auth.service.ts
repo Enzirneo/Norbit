@@ -30,6 +30,7 @@ export const ROTAS_DA_API = {
   esqueciSenha: '/api/auth/esqueci-senha',
   redefinirSenha: '/api/auth/redefinir-senha',
   trocarSenha: '/api/auth/trocar-senha',
+  sessoes: '/api/auth/sessoes',
 } as const;
 
 type RespostaDeSessao = {

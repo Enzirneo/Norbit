@@ -25,11 +25,19 @@ import { Campo } from '../../ui/campo';
 import { Marca } from '../../ui/marca';
 import { iniciaisDe } from '../iniciais';
 import { PerfilService } from '../perfil.service';
+import { SessoesAtivas } from '../sessoes-ativas';
 import { TrocaDeSenha } from '../troca-de-senha';
 
 @Component({
   selector: 'nb-perfil',
-  imports: [ReactiveFormsModule, Botao, Campo, Marca, TrocaDeSenha],
+  imports: [
+    ReactiveFormsModule,
+    Botao,
+    Campo,
+    Marca,
+    SessoesAtivas,
+    TrocaDeSenha,
+  ],
   templateUrl: './perfil.html',
   // As mesmas classes de layout das preferências: são duas telas de ajustes da
   // conta, e duas folhas iguais divergiriam na primeira alteração.
