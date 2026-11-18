@@ -8,6 +8,7 @@
  */
 import type { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { PrismaService } from '@norbit/db';
 import { AppModule } from '../app.module';
 
 // Montada em tempo de execução: não é segredo, mas um literal atribuído ao campo
@@ -117,5 +118,48 @@ describe('limites das rotas de autenticação', () => {
     }
 
     expect(ultimo).toBe(429);
+  });
+
+  it('trocar-senha: a décima primeira tentativa do mesmo IP é barrada', async () => {
+    // A rota exige sessão, então o teste precisa de uma conta de verdade.
+    const senhaDaConta = ['senha', 'da', 'conta', 'de', 'teste'].join(' ');
+    const cadastro = await post(url, 'cadastro', {
+      email: 'limite-troca@norbit.dev',
+      handle: 'limtroca',
+      displayName: 'Limite',
+      password: senhaDaConta,
+    });
+    const { accessToken } = (await cadastro.json()) as { accessToken: string };
+
+    try {
+      const estados: number[] = [];
+      for (let i = 0; i < 11; i += 1) {
+        const resposta = await fetch(`${url}/auth/trocar-senha`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            senhaAtual: SENHA_ERRADA,
+            novaSenha: senhaDaConta + ' nova',
+          }),
+        });
+        estados.push(resposta.status);
+      }
+
+      // Dez recusas pela senha atual errada (400), e a décima primeira já
+      // nem chega a conferir a senha.
+      expect(estados).toEqual([...Array(10).fill(400), 429]);
+    } finally {
+      const prisma = app.get(PrismaService);
+      const conta = await prisma.user.findFirst({
+        where: { email: 'limite-troca@norbit.dev' },
+      });
+      if (conta) {
+        await prisma.calendar.deleteMany({ where: { ownerId: conta.id } });
+        await prisma.user.delete({ where: { id: conta.id } });
+      }
+    }
   });
 });
