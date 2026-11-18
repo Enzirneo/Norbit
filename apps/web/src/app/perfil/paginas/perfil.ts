@@ -24,6 +24,7 @@ import { Botao } from '../../ui/botao';
 import { Campo } from '../../ui/campo';
 import { Marca } from '../../ui/marca';
 import { iniciaisDe } from '../iniciais';
+import { ApagarConta } from '../apagar-conta';
 import { PerfilService } from '../perfil.service';
 import { SessoesAtivas } from '../sessoes-ativas';
 import { TrocaDeSenha } from '../troca-de-senha';
@@ -32,6 +33,7 @@ import { TrocaDeSenha } from '../troca-de-senha';
   selector: 'nb-perfil',
   imports: [
     ReactiveFormsModule,
+    ApagarConta,
     Botao,
     Campo,
     Marca,

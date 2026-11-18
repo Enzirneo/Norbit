@@ -33,12 +33,16 @@ import {
   type TrocarSenha,
   type UsuarioAutenticado,
 } from '@norbit/contracts';
-import type { CookieOptions, Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { Limitar } from '../comum/limite/limite.decorator';
 import { LimiteGuard } from '../comum/limite/limite.guard';
 import { ZodValidationPipe } from '../comum/zod-validation.pipe';
 import { AuthGuard } from './auth.guard';
-import { COOKIE_DE_REFRESH, refreshDoCookie } from './cookie-de-refresh';
+import {
+  COOKIE_DE_REFRESH,
+  opcoesDoCookie,
+  refreshDoCookie,
+} from './cookie-de-refresh';
 import {
   AuthService,
   type Autenticacao,
@@ -85,12 +89,6 @@ const LIMITES = {
   redefinirSenha: { ip: { maximo: 20, janelaMs: UMA_HORA } },
   trocarSenha: { ip: { maximo: 10, janelaMs: QUINZE_MINUTOS } },
 } as const;
-
-/**
- * O caminho restringe onde o cookie é enviado: ele não acompanha toda
- * requisição à API, só as de autenticação. Menos exposição, de graça.
- */
-const CAMINHO_DO_COOKIE = '/api/auth';
 
 type RespostaDeSessao = {
   readonly accessToken: string;
@@ -164,7 +162,7 @@ export class AuthController {
 
     // Limpar o cookie precisa das mesmas opções com que ele foi criado, ou o
     // navegador não encontra qual apagar e a sessão "volta" no próximo refresh.
-    resposta.clearCookie(COOKIE_DE_REFRESH, this.opcoesDoCookie());
+    resposta.clearCookie(COOKIE_DE_REFRESH, opcoesDoCookie(this.config));
   }
 
   /**
@@ -231,25 +229,13 @@ export class AuthController {
     resposta: Response,
   ): RespostaDeSessao {
     resposta.cookie(COOKIE_DE_REFRESH, autenticacao.refreshToken, {
-      ...this.opcoesDoCookie(),
+      ...opcoesDoCookie(this.config),
       expires: autenticacao.expiraEm,
     });
 
     return {
       accessToken: autenticacao.accessToken,
       usuario: autenticacao.usuario,
-    };
-  }
-
-  private opcoesDoCookie(): CookieOptions {
-    return {
-      httpOnly: true,
-      // `strict` basta: web e api ficam no mesmo site (porta não conta para o
-      // SameSite, e em produção serão subdomínios do mesmo domínio). Se um dia
-      // a API mudar de domínio, isto vira `none` com `secure` obrigatório.
-      sameSite: 'strict',
-      secure: this.config.get<string>('NODE_ENV') === 'production',
-      path: CAMINHO_DO_COOKIE,
     };
   }
 }

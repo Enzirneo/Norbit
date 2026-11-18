@@ -137,6 +137,7 @@ Duas verificações que falham ao iniciar, não na primeira requisição:
 | `POST`   | `/api/auth/trocar-senha` | Bearer + cookie | `204`, ver [19](19-troca-de-senha.md)             |
 | `GET`    | `/api/auth/sessoes`      | Bearer + cookie | `200` + aparelhos, ver [20](20-sessoes-ativas.md) |
 | `DELETE` | `/api/auth/sessoes/:id`  | Bearer + cookie | `204`, ver [20](20-sessoes-ativas.md)             |
+| `POST`   | `/api/auth/apagar-conta` | Bearer + cookie | `204`, ver [21](21-apagar-conta.md)               |
 
 `/eu` reconsulta o banco e devolve `401` se a conta não existir mais: o access token
 vale 15 minutos sem consultar nada, então a conta pode ter sido apagada no intervalo.
