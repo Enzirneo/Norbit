@@ -45,6 +45,13 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./auth/paginas/redefinir-senha').then((m) => m.RedefinirSenha),
   },
+  // Sem `exigeVisitante`, pelo mesmo motivo: o link do e-mail abre em
+  // qualquer aparelho, com ou sem sessão.
+  {
+    path: 'confirmar-email',
+    loadComponent: () =>
+      import('./auth/paginas/confirmar-email').then((m) => m.ConfirmarEmail),
+  },
   // Sem guard: o convite tem de abrir para quem não tem conta, e para quem tem
   // outra conta aberta. A tela decide o que oferecer em cada caso.
   {

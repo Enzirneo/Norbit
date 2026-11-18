@@ -141,6 +141,7 @@ model User {
   settings          UserSettings?
   sessions          Session[]
   passwordResets    PasswordReset[]
+  emailChanges      EmailChange[]
   oauthAccounts     OAuthAccount[]
   pushSubscriptions PushSubscription[]
 
@@ -236,6 +237,26 @@ model PasswordReset {
   @@index([userId])
   @@index([expiresAt])
   @@map("password_resets")
+}
+
+// Pedido de troca de e-mail. O link vai para o endereço **novo**: clicar nele é
+// a prova de que a pessoa o controla. Só o hash do token é persistido, e cada
+// pedido vale uma vez.
+model EmailChange {
+  id String @id @db.Uuid
+
+  userId String @db.Uuid
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  newEmail  String    @db.Citext
+  tokenHash String    @unique
+  expiresAt DateTime  @db.Timestamptz
+  usedAt    DateTime? @db.Timestamptz
+  createdAt DateTime  @default(now()) @db.Timestamptz
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("email_changes")
 }
 
 // Previsto para login com Google/Apple. Vazio no MVP; existe para não exigir

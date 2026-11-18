@@ -24,6 +24,8 @@ const ROTAS_SEM_TOKEN: readonly string[] = [
   ROTAS_DA_API.logout,
   ROTAS_DA_API.esqueciSenha,
   ROTAS_DA_API.redefinirSenha,
+  // Pública: quem clica no link pode estar sem sessão.
+  ROTAS_DA_API.confirmarEmail,
 ];
 
 export const authInterceptor: HttpInterceptorFn = (requisicao, proximo) => {

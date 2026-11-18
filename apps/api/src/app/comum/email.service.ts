@@ -21,6 +21,20 @@ export type PedidoDeRedefinicao = {
   readonly token: string;
 };
 
+export type PedidoDeConfirmacaoDeEmail = {
+  /** O endereço **novo**: clicar no link prova que a pessoa o controla. */
+  readonly para: string;
+  readonly nome: string;
+  readonly token: string;
+};
+
+export type AvisoDeTrocaDeEmail = {
+  /** O endereço **antigo**, que deixa de ser o da conta. */
+  readonly para: string;
+  readonly nome: string;
+  readonly novoEmail: string;
+};
+
 export type PedidoDeConvite = {
   readonly para: string;
   readonly convidadoPor: string;
@@ -77,6 +91,43 @@ export class EmailService {
         `${this.origemDaWeb}/redefinir-senha?token=${pedido.token}`,
         '',
         'Se não foi você, ignore esta mensagem: a sua senha continua a mesma.',
+      ].join('\n'),
+    });
+  }
+
+  /** O link para confirmar o endereço novo (vale por 30 minutos). */
+  async enviarConfirmacaoDeEmail(
+    pedido: PedidoDeConfirmacaoDeEmail,
+  ): Promise<void> {
+    await this.enviar({
+      para: pedido.para,
+      assunto: 'Confirmar seu novo e-mail no Norbit',
+      texto: [
+        `Olá, ${pedido.nome}.`,
+        '',
+        'Alguém pediu para usar este endereço como o e-mail da sua conta no Norbit. Se foi você, abra o link abaixo (vale por 30 minutos):',
+        '',
+        `${this.origemDaWeb}/confirmar-email?token=${pedido.token}`,
+        '',
+        'Se não foi você, ignore esta mensagem: nada muda.',
+      ].join('\n'),
+    });
+  }
+
+  /**
+   * Avisa o endereço que deixou de ser o da conta. Quem sequestrou uma sessão
+   * e trocou o e-mail conta com o silêncio do dono; este aviso o quebra.
+   */
+  async enviarAvisoDeTrocaDeEmail(aviso: AvisoDeTrocaDeEmail): Promise<void> {
+    await this.enviar({
+      para: aviso.para,
+      assunto: 'O e-mail da sua conta no Norbit foi trocado',
+      texto: [
+        `Olá, ${aviso.nome}.`,
+        '',
+        `O e-mail da sua conta no Norbit foi trocado para ${aviso.novoEmail}. Por segurança, todos os aparelhos foram desconectados.`,
+        '',
+        'Se foi você, não precisa fazer nada. Se não foi, use "Esqueci a senha" com o endereço novo, se for seu, ou fale com o suporte.',
       ].join('\n'),
     });
   }

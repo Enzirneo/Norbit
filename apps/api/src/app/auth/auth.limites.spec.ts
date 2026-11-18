@@ -200,4 +200,54 @@ describe('limites das rotas de autenticação', () => {
       }
     }
   });
+
+  it('trocar-email: a décima primeira tentativa do mesmo IP é barrada', async () => {
+    const senhaDaConta = ['senha', 'da', 'conta', 'de', 'teste'].join(' ');
+    const cadastro = await post(url, 'cadastro', {
+      email: 'limite-email@norbit.dev',
+      handle: 'limemail',
+      displayName: 'Limite',
+      password: senhaDaConta,
+    });
+    const { accessToken } = (await cadastro.json()) as { accessToken: string };
+
+    try {
+      const estados: number[] = [];
+      for (let i = 0; i < 11; i += 1) {
+        const resposta = await fetch(`${url}/auth/trocar-email`, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({
+            senha: SENHA_ERRADA,
+            novoEmail: 'qualquer@norbit.dev',
+          }),
+        });
+        estados.push(resposta.status);
+      }
+
+      // Dez recusas pela senha errada (400); a décima primeira nem confere.
+      expect(estados).toEqual([...Array(10).fill(400), 429]);
+    } finally {
+      const prisma = app.get(PrismaService);
+      const conta = await prisma.user.findFirst({
+        where: { email: 'limite-email@norbit.dev' },
+      });
+      if (conta) {
+        await prisma.calendar.deleteMany({ where: { ownerId: conta.id } });
+        await prisma.user.delete({ where: { id: conta.id } });
+      }
+    }
+  });
+
+  it('confirmar-email: tem limite por IP', async () => {
+    let ultimo = 0;
+    for (let i = 0; i < 21; i += 1) {
+      ultimo = (await post(url, 'confirmar-email', { token: 'x' })).status;
+    }
+
+    expect(ultimo).toBe(429);
+  });
 });

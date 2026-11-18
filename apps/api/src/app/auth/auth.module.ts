@@ -13,6 +13,7 @@ import { SenhasService } from './senhas.service';
 import { SessoesController } from './sessoes.controller';
 import { SessoesService } from './sessoes.service';
 import { TokensService } from './tokens.service';
+import { TrocaDeEmailService } from './troca-de-email.service';
 import { TrocaDeSenhaService } from './troca-de-senha.service';
 
 /** O que o `.env.example` traz como lembrete de trocar. */
@@ -50,6 +51,7 @@ const FORMATO_DE_TTL = /^\d+(ms|s|m|h|d|w|y)$/;
     SenhasService,
     SessoesService,
     TokensService,
+    TrocaDeEmailService,
     TrocaDeSenhaService,
     AuthGuard,
   ],

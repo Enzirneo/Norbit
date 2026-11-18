@@ -28,6 +28,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [19 — Trocar a senha](19-troca-de-senha.md)             | Senha atual como prova, outros aparelhos derrubados, limite por IP          |
 | [20 — Aparelhos conectados](20-sessoes-ativas.md)       | Aparelho = família de sessões, o atual protegido, 404 para o que não é seu  |
 | [21 — Apagar a conta](21-apagar-conta.md)               | Anonimiza em vez de apagar a linha, pede a senha, barra dono de agenda      |
+| [22 — Trocar o e-mail](22-troca-de-email.md)            | Dois passos, link ao endereço novo, resposta uniforme, sessões derrubadas   |
 
 ## Estado atual
 

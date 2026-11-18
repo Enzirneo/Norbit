@@ -47,6 +47,14 @@ const EMAIL_MARIA = 'maria@norbit.dev';
 /** Contas com este domínio são descartáveis: o seed as apaga a cada execução. */
 const DOMINIO_DOS_TESTES = '@e2e.norbit.dev';
 
+/**
+ * Os e2e que trocam o e-mail ou apagam a conta deixam as contas do seed com
+ * outro e-mail (ou anonimizadas). Varrer só por e-mail as perderia de vista, e
+ * o seed morreria no handle, que é único.
+ */
+const HANDLES_DO_SEED = ['enzo', 'maria'];
+const DOMINIO_DAS_CONTAS_APAGADAS = '@excluido.norbit.invalid';
+
 /** Data local em São Paulo, para os eventos caírem em horários plausíveis. */
 function em(diasAFrente: number, hora: number, minuto = 0): Date {
   const d = new Date();
@@ -74,6 +82,8 @@ async function main(): Promise<void> {
         // convite a quem ainda não tem conta). Sem varrê-las, o teste só passa
         // na primeira execução: na segunda o e-mail já existe.
         { email: { endsWith: DOMINIO_DOS_TESTES } },
+        { handle: { in: HANDLES_DO_SEED } },
+        { email: { endsWith: DOMINIO_DAS_CONTAS_APAGADAS } },
       ],
     },
     select: { id: true },

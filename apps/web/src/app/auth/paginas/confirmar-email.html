@@ -1,0 +1,35 @@
+<nb-moldura
+  titulo="Confirmar e-mail"
+  subtitulo="Confirme o endereço novo da sua conta."
+>
+  @if (concluido()) {
+  <div corpo role="status" class="flex flex-col gap-3 text-sm">
+    <p>E-mail trocado. Entre com o endereço novo.</p>
+    <p class="text-muted">
+      Por segurança, as sessões abertas da sua conta foram encerradas.
+    </p>
+  </div>
+  } @else if (token === '') {
+  <p corpo role="alert" class="text-sm text-danger">
+    O link está incompleto. Use o link do e-mail.
+  </p>
+  } @else {
+  <div corpo class="flex flex-col gap-5">
+    <p class="text-sm text-muted">
+      Ao confirmar, este endereço passa a ser o e-mail da conta.
+    </p>
+
+    @if (erro()) {
+    <p role="alert" class="text-sm text-danger">{{ erro() }}</p>
+    }
+
+    <button nb-botao type="button" [ocupado]="enviando()" (click)="confirmar()">
+      Confirmar a troca
+    </button>
+  </div>
+  }
+
+  <span rodape>
+    <a routerLink="/entrar" class="text-accent hover:underline">Entrar</a>
+  </span>
+</nb-moldura>

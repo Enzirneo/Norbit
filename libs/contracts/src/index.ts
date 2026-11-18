@@ -6,6 +6,7 @@ export * from './lib/auth/perfil';
 export * from './lib/auth/troca-de-senha';
 export * from './lib/auth/sessoes';
 export * from './lib/auth/apagar-conta';
+export * from './lib/auth/troca-de-email';
 
 export * from './lib/agendas/comum';
 export * from './lib/agendas/agenda';

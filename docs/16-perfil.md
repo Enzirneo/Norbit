@@ -76,5 +76,4 @@ chamada era recusada, e sem o filtro ela era recusada do mesmo jeito — pela se
 
 ## O que ainda não existe
 
-- **Troca de e-mail**, com confirmação por e-mail.
 - **Avatar de imagem**, que depende de decidir onde guardar arquivos.

@@ -105,6 +105,15 @@ export function linkDoEmail(texto: string): string {
   return achado[0];
 }
 
+/** O link de confirmação de e-mail que está no texto do e-mail. */
+export function linkDeConfirmacaoNoEmail(texto: string): string {
+  const achado = /https?:\/\/\S+\/confirmar-email\?token=\S+/.exec(texto);
+  if (!achado) {
+    throw new Error('O e-mail não traz o link de confirmação.');
+  }
+  return achado[0];
+}
+
 /** O link de convite que está no texto do e-mail. */
 export function linkDoConviteNoEmail(texto: string): string {
   const achado = /https?:\/\/\S+\/convite\?token=\S+/.exec(texto);
