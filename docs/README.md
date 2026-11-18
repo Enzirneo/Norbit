@@ -26,6 +26,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [17 — Limite de frequência](17-limite-de-frequencia.md) | Janela deslizante por IP e por e-mail, 429 com Retry-After, teto de memória |
 | [18 — Convites](18-convites.md)                         | Por e-mail ou link, hash no banco, aceite idempotente, corrida no banco     |
 | [19 — Trocar a senha](19-troca-de-senha.md)             | Senha atual como prova, outros aparelhos derrubados, limite por IP          |
+| [20 — Aparelhos conectados](20-sessoes-ativas.md)       | Aparelho = família de sessões, o atual protegido, 404 para o que não é seu  |
 
 ## Estado atual
 

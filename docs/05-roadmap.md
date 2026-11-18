@@ -71,7 +71,7 @@ mostra as tabelas, e um PR de teste para `dev` roda o CI até o verde. ✅
 - [x] Interceptor Angular que renova o access token de forma transparente
 - [x] Rotas protegidas por guard, redirecionamento após login
 - [~] Perfil: nome de exibição, handle e fuso feitos — ver [16](16-perfil.md); avatar de imagem pendente (sem armazenamento de arquivos)
-- [~] Trocar a senha logado feito — ver [19](19-troca-de-senha.md); listar e revogar sessões pendente
+- [x] Trocar a senha logado — ver [19](19-troca-de-senha.md); listar e revogar sessões — ver [20](20-sessoes-ativas.md)
 - [x] Recuperação de senha por e-mail (Mailpit no Docker para testar sem enviar nada) — ver [15](15-recuperacao-de-senha.md)
 - [x] Limite de frequência no login, no cadastro e na recuperação de senha — ver [17](17-limite-de-frequencia.md)
 

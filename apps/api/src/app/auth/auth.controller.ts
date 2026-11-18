@@ -38,6 +38,7 @@ import { Limitar } from '../comum/limite/limite.decorator';
 import { LimiteGuard } from '../comum/limite/limite.guard';
 import { ZodValidationPipe } from '../comum/zod-validation.pipe';
 import { AuthGuard } from './auth.guard';
+import { COOKIE_DE_REFRESH, refreshDoCookie } from './cookie-de-refresh';
 import {
   AuthService,
   type Autenticacao,
@@ -47,8 +48,6 @@ import { RedefinicaoDeSenhaService } from './redefinicao-de-senha.service';
 import { TrocaDeSenhaService } from './troca-de-senha.service';
 import { UsuarioAtual } from './usuario-atual.decorator';
 import type { Requisitante } from './auth.guard';
-
-const COOKIE_DE_REFRESH = 'norbit_refresh';
 
 const UM_MINUTO = 60_000;
 const QUINZE_MINUTOS = 15 * UM_MINUTO;
@@ -253,16 +252,6 @@ export class AuthController {
       path: CAMINHO_DO_COOKIE,
     };
   }
-}
-
-function refreshDoCookie(requisicao: Request): string | undefined {
-  const cookies: unknown = requisicao.cookies;
-  if (typeof cookies !== 'object' || cookies === null) {
-    return undefined;
-  }
-
-  const valor = (cookies as Record<string, unknown>)[COOKIE_DE_REFRESH];
-  return typeof valor === 'string' ? valor : undefined;
 }
 
 function contextoDa(requisicao: Request): ContextoDaSessao {

@@ -78,5 +78,4 @@ chamada era recusada, e sem o filtro ela era recusada do mesmo jeito — pela se
 
 - **Troca de e-mail**, com confirmação por e-mail.
 - **Avatar de imagem**, que depende de decidir onde guardar arquivos.
-- **Listar e revogar sessões.** Trocar a senha logado já existe: [19](19-troca-de-senha.md).
 - **Apagar a conta.**
