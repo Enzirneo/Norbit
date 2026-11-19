@@ -49,7 +49,11 @@
     />
 
     <div class="conta">
-      <nb-avatar tamanho="p" [nome]="u?.displayName ?? ''" />
+      <nb-avatar
+        tamanho="p"
+        [nome]="u?.displayName ?? ''"
+        [cor]="u?.profileColor"
+      />
       <span class="handle">&#64;{{ u?.handle }}</span>
       <button nb-botao aparencia="texto" type="button" (click)="sair()">
         Sair

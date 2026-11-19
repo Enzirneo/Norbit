@@ -382,6 +382,21 @@ describe('AgendasService', () => {
       ]);
     });
 
+    it('a lista de membros traz a cor de perfil de cada um, ou null', async () => {
+      const id = await agendaDoEnzoCom(maria, 'EDITOR');
+      await prisma.user.update({
+        where: { id: maria },
+        data: { profileColor: '#4adebb' },
+      });
+
+      const lista = await agendas.membros(enzo, id);
+
+      expect(lista.find((m) => m.userId === maria)?.profileColor).toBe(
+        '#4adebb',
+      );
+      expect(lista.find((m) => m.userId === enzo)?.profileColor).toBeNull();
+    });
+
     it('o novo dono ganha os poderes de dono, o antigo os perde', async () => {
       const id = await agendaDoEnzoCom(maria, 'VIEWER');
 

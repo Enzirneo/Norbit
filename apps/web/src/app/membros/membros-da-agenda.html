@@ -9,7 +9,7 @@
   <ul class="lista">
     @for (membro of membros(); track membro.userId) {
     <li class="item">
-      <nb-avatar [nome]="membro.displayName" />
+      <nb-avatar [nome]="membro.displayName" [cor]="membro.profileColor" />
 
       <div class="texto">
         <strong class="nome">{{ membro.displayName }}</strong>

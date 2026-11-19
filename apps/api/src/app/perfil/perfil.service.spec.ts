@@ -64,6 +64,40 @@ describe('PerfilService', () => {
     await auth.cadastrar(B, CONTEXTO);
   });
 
+  describe('cor de perfil', () => {
+    it('começa sem cor', async () => {
+      const linha = await prisma.user.findUniqueOrThrow({ where: { id: idA } });
+
+      expect(linha.profileColor).toBeNull();
+    });
+
+    it('guarda a cor e a devolve no usuário', async () => {
+      const atualizado = await perfil.atualizar(idA, {
+        profileColor: '#4adebb',
+      });
+
+      expect(atualizado.profileColor).toBe('#4adebb');
+    });
+
+    it('null tira a cor', async () => {
+      await perfil.atualizar(idA, { profileColor: '#4adebb' });
+
+      const atualizado = await perfil.atualizar(idA, { profileColor: null });
+
+      expect(atualizado.profileColor).toBeNull();
+    });
+
+    it('trocar o nome não mexe na cor', async () => {
+      await perfil.atualizar(idA, { profileColor: '#4adebb' });
+
+      const atualizado = await perfil.atualizar(idA, {
+        displayName: 'Outro nome',
+      });
+
+      expect(atualizado.profileColor).toBe('#4adebb');
+    });
+  });
+
   it('altera nome, handle e fuso, e devolve o usuário atualizado', async () => {
     const r = await perfil.atualizar(idA, {
       displayName: 'Novo Nome',

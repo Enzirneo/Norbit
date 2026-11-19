@@ -147,6 +147,7 @@ export class AgendasService {
             handle: true,
             displayName: true,
             avatarUrl: true,
+            profileColor: true,
           },
         },
       },
@@ -158,6 +159,7 @@ export class AgendasService {
       handle: linha.user.handle,
       displayName: linha.user.displayName,
       avatarUrl: linha.user.avatarUrl,
+      profileColor: linha.user.profileColor,
       // `ownerId` é a fonte da verdade do papel de dono, aqui como no
       // `AcessoService`: uma linha de membro divergente não pode rebaixá-lo.
       papel: linha.userId === agenda.ownerId ? 'OWNER' : linha.role,

@@ -24,3 +24,10 @@
 
   font-size: 1.25rem;
 }
+
+/* Com cor de perfil: o fundo é a cor da pessoa, e o texto vem pronto de
+   `corDeAvatar`, que garante o contraste. */
+:host(.avatar--cor) {
+  background: var(--avatar-fundo);
+  color: var(--avatar-texto);
+}

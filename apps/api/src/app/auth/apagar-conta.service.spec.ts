@@ -104,12 +104,17 @@ describe('ApagarContaService', () => {
 
   it('apaga os dados pessoais da linha que fica', async () => {
     const { usuario } = await auth.cadastrar(CADASTRO, CONTEXTO);
+    await prisma.user.update({
+      where: { id: usuario.id },
+      data: { profileColor: '#4adebb' },
+    });
 
     await apagar.apagar({ userId: usuario.id, senha: SENHA });
 
     const linha = await prisma.user.findUniqueOrThrow({
       where: { id: usuario.id },
     });
+    expect(linha.profileColor).toBeNull();
     expect(linha.deletedAt).not.toBeNull();
     expect(linha.passwordHash).toBeNull();
     expect(linha.avatarUrl).toBeNull();

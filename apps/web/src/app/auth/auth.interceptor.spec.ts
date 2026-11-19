@@ -27,6 +27,7 @@ const USUARIO = {
   handle: 'demo',
   displayName: 'Demo',
   avatarUrl: null,
+  profileColor: null,
   timeZone: 'America/Sao_Paulo',
 };
 
