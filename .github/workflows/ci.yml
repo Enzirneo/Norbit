@@ -147,7 +147,14 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected -t build --parallel=3 --configuration=production
       # O catálogo /design é só de desenvolvimento: confere que não está no pacote.
-      - run: npm run catalogo:verificar
+      # Só há o que conferir quando a web foi construída (`affected` a pula numa
+      # mudança que não a toca, como só documentação).
+      - run: |
+          if [ -d dist/apps/web/browser ]; then
+            npm run catalogo:verificar
+          else
+            echo "web não foi construída neste PR; nada a conferir."
+          fi
 
   e2e:
     needs: [guard, build]
