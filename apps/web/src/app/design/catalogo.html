@@ -1,0 +1,203 @@
+<main class="pagina">
+  <nb-cabecalho-de-pagina titulo="Catálogo de design" />
+
+  <nb-cartao-de-secao titulo="Tema (só desta página)">
+    <div class="controles">
+      <label class="controle" for="tema">
+        <span>Tema pronto</span>
+        <select
+          id="tema"
+          class="nb-entrada"
+          [value]="tema().base ?? ''"
+          (change)="escolherTema($any($event.target).value)"
+        >
+          @for (nome of temasProntos; track nome) {
+          <option [value]="nome">{{ nome }}</option>
+          }
+        </select>
+      </label>
+
+      <label class="controle" for="fundo">
+        <span>Fundo</span>
+        <input
+          id="fundo"
+          type="color"
+          [value]="tema().sementes.fundo"
+          (input)="mudarSemente('fundo', $any($event.target).value)"
+        />
+      </label>
+
+      <label class="controle" for="destaque">
+        <span>Destaque</span>
+        <input
+          id="destaque"
+          type="color"
+          [value]="tema().sementes.destaque"
+          (input)="mudarSemente('destaque', $any($event.target).value)"
+        />
+      </label>
+
+      <label class="controle controle--linha" for="contraste-alto">
+        <input
+          id="contraste-alto"
+          class="nb-caixa"
+          type="checkbox"
+          [checked]="tema().sementes.contraste === 'alto'"
+          (change)="alternarContrasteAlto($any($event.target).checked)"
+        />
+        <span>Contraste alto</span>
+      </label>
+
+      <label class="controle" for="cantos">
+        <span>Cantos: {{ tema().forma.cantos }}px</span>
+        <input
+          id="cantos"
+          type="range"
+          min="0"
+          max="16"
+          [value]="tema().forma.cantos"
+          (input)="mudarCantos($any($event.target).value)"
+        />
+      </label>
+
+      <label class="controle controle--linha" for="estrelas">
+        <input
+          id="estrelas"
+          class="nb-caixa"
+          type="checkbox"
+          [checked]="tema().forma.estrelas"
+          (change)="alternarEstrelas($any($event.target).checked)"
+        />
+        <span>Estrelas</span>
+      </label>
+    </div>
+
+    @for (aviso of avisosDoMotor(); track aviso) {
+    <nb-aviso class="avisos-do-motor" tipo="info">{{ aviso }}</nb-aviso>
+    }
+  </nb-cartao-de-secao>
+
+  <nb-cartao-de-secao titulo="Botão">
+    <div class="linha">
+      @for (aparencia of aparenciasDeBotao; track aparencia) {
+      <button nb-botao type="button" [aparencia]="aparencia">
+        {{ aparencia }}
+      </button>
+      <button
+        nb-botao
+        type="button"
+        [aparencia]="aparencia"
+        [desabilitado]="true"
+      >
+        {{ aparencia }} desabilitado
+      </button>
+      <button nb-botao type="button" [aparencia]="aparencia" [ocupado]="true">
+        {{ aparencia }} ocupado
+      </button>
+      }
+    </div>
+  </nb-cartao-de-secao>
+
+  <nb-cartao-de-secao titulo="Campo e entrada">
+    <nb-campo rotulo="Normal" dica="Uma dica de preenchimento.">
+      <input class="nb-entrada" type="text" value="Texto" />
+    </nb-campo>
+    <nb-campo rotulo="Com erro" erro="Algo não está certo.">
+      <input class="nb-entrada" type="text" value="Texto" aria-invalid="true" />
+    </nb-campo>
+    <nb-campo rotulo="Desabilitado">
+      <input class="nb-entrada" type="text" value="Texto" disabled />
+    </nb-campo>
+    <nb-campo rotulo="Área de texto">
+      <textarea class="nb-entrada" rows="2">Texto longo</textarea>
+    </nb-campo>
+    <nb-campo rotulo="Seleção">
+      <select class="nb-entrada">
+        <option>Primeira</option>
+        <option>Segunda</option>
+      </select>
+    </nb-campo>
+  </nb-cartao-de-secao>
+
+  <nb-cartao-de-secao titulo="Caixa">
+    <div class="linha">
+      <label class="marcacao">
+        <input class="nb-caixa" type="checkbox" checked />
+        <span>Marcada</span>
+      </label>
+      <label class="marcacao">
+        <input class="nb-caixa" type="checkbox" />
+        <span>Desmarcada</span>
+      </label>
+      <label class="marcacao">
+        <input class="nb-caixa" type="checkbox" checked disabled />
+        <span>Desabilitada</span>
+      </label>
+      <label class="marcacao">
+        <input class="nb-caixa" type="radio" name="r" checked />
+        <span>Rádio marcado</span>
+      </label>
+      <label class="marcacao">
+        <input class="nb-caixa" type="radio" name="r" />
+        <span>Rádio</span>
+      </label>
+    </div>
+  </nb-cartao-de-secao>
+
+  <nb-cartao-de-secao titulo="Alternador">
+    <nb-alternador
+      rotulo="Visão de exemplo"
+      [opcoes]="visoes"
+      [valor]="visao()"
+      (escolhido)="visao.set($event)"
+    />
+  </nb-cartao-de-secao>
+
+  <nb-cartao-de-secao titulo="Aviso e toast">
+    <nb-aviso tipo="info">Informação para a pessoa.</nb-aviso>
+    <nb-aviso tipo="sucesso">Deu certo.</nb-aviso>
+    <nb-aviso tipo="perigo">Algo deu errado.</nb-aviso>
+    <div class="linha">
+      <button
+        nb-botao
+        aparencia="contorno"
+        type="button"
+        (click)="mostrarToast('sucesso')"
+      >
+        Toast de sucesso
+      </button>
+      <button
+        nb-botao
+        aparencia="contorno"
+        type="button"
+        (click)="mostrarToast('perigo')"
+      >
+        Toast de perigo
+      </button>
+    </div>
+  </nb-cartao-de-secao>
+
+  <nb-cartao-de-secao titulo="Identidade">
+    <div class="linha">
+      <nb-avatar tamanho="p" nome="Maria Souza" />
+      <nb-avatar nome="Maria Souza" />
+      <nb-avatar tamanho="g" nome="Maria Souza" />
+      <nb-etiqueta>Dono</nb-etiqueta>
+      <nb-etiqueta tom="destaque">Padrão</nb-etiqueta>
+    </div>
+  </nb-cartao-de-secao>
+
+  <nb-cartao-de-secao titulo="Lua">
+    <div class="linha">
+      @for (fase of fases; track fase) {
+      <nb-lua [fase]="fase" [tamanho]="28" />
+      }
+    </div>
+  </nb-cartao-de-secao>
+
+  <nb-cartao-de-secao titulo="Estado vazio">
+    <nb-estado-vazio titulo="Nada em órbita por aqui."
+      >Clique num dia ou num horário para criar um evento.</nb-estado-vazio
+    >
+  </nb-cartao-de-secao>
+</main>

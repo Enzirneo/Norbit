@@ -317,7 +317,7 @@ críticos, e2e medindo o estilo calculado, olhar a tela de verdade, documentaç�
 | D   | **componentes de identidade e estrutura**: Avatar, Etiqueta, Estado vazio, Cabeçalho de página e Cartão de seção           | em andamento   |
 | E   | **motor puro**: `oklch.ts`, `derivar` com testes de propriedade e os temas prontos (teste dourado do nebula)               | em andamento   |
 | F   | **integração do motor**: `temaSchema` (com `forma`), coluna `theme`, migração (expandir), aplicar na web e cache de tokens | em andamento   |
-| G   | **catálogo `/design`** com axe e medição de contraste por tema                                                             |                |
+| G   | **catálogo `/design`** com axe e medição de contraste por tema                                                             | em andamento   |
 | H   | **editor de tema**: galeria, seletores, controles de forma, prévia ao vivo, avisos, restaurar e a migração (contrair)      |                |
 | I   | **cor de perfil**: schema, API, exposição só entre quem compartilha, edição e uso nos avatares                             |                |
 
