@@ -337,6 +337,22 @@ Toast · Skeleton
 TaskRow · OrbitPill (seletor de agenda) · MemberStack · ActivityItem · EmptyState ·
 CommandPalette
 
+## Componentes de formulário e de resposta
+
+- **Entrada** (`.nb-entrada`, global em `styles.scss`): um campo só, no raio de forma (`--raio-p`) e com **16px**
+  (abaixo disso o iPhone dá zoom ao focar). Borda de foco, `aria-invalid` em perigo, desabilitado apagado,
+  `textarea` só cresce na vertical. As cópias locais `.entrada` foram removidas; não devem voltar.
+- **Caixa** (`.nb-caixa`, global): checkbox e rádio com `appearance: none`, cantos a 60% do raio de forma
+  (o rádio é círculo) e a cor vinda de `--c` (a cor da órbita) ou, sem ela, do destaque do tema. Substitui o
+  `accent-color`.
+- **Alternador** (`nb-alternador`): grupo de rádio de verdade (`radiogroup`/`radio`, `aria-checked`). Teclado
+  como num grupo de rádio: só a escolhida entra no Tab; setas partem da opção **com o foco**, dão a volta nas
+  pontas; Home/End; o foco acompanha.
+- **Aviso** (`nb-aviso tipo="info|sucesso|perigo"`): o `role` vem do tipo (`alert` para perigo, `status` nos
+  demais). Substitui os `<p role="alert" class="text-danger">` espalhados.
+- **Toast** (`ToastService` + `nb-toasts` na raiz): confirmações curtas que somem sozinhas (4s; perigo 8s),
+  repetido reinicia o tempo, no máximo 3. Substitui as linhas "Salvando…/Perfil salvo." das telas.
+
 ## Armadilhas de CSS que já custaram caro
 
 Os testes de componente não enxergam CSS, e foi por isso que estes dois passaram por dezenas de

@@ -22,10 +22,11 @@ import { Moldura } from '../../auth/paginas/moldura';
 import { Botao } from '../../ui/botao';
 import { ConvitesService } from '../convites.service';
 import { rotuloDoPapel } from '../papel';
+import { Aviso } from '../../ui/aviso';
 
 @Component({
   selector: 'nb-convite',
-  imports: [RouterLink, Moldura, Botao],
+  imports: [Aviso, RouterLink, Moldura, Botao],
   templateUrl: './convite.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

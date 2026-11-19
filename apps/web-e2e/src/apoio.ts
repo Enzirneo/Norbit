@@ -122,3 +122,32 @@ export function linkDoConviteNoEmail(texto: string): string {
   }
   return achado[0];
 }
+
+/**
+ * Como o navegador resolve uma cor de CSS (`#a97bff`, `var(--accent)`) em
+ * `rgb(...)`. É o que dá para comparar com o que `getComputedStyle` devolve.
+ */
+export async function corCalculada(
+  page: import('@playwright/test').Page,
+  corDeCss: string,
+): Promise<string> {
+  return page.evaluate((valor) => {
+    const sonda = document.createElement('i');
+    sonda.style.color = valor;
+    document.body.append(sonda);
+    const resolvida = getComputedStyle(sonda).color;
+    sonda.remove();
+    return resolvida;
+  }, corDeCss);
+}
+
+/** A cor da primeira órbita da barra lateral, em `rgb(...)`. */
+export async function corDaPrimeiraOrbita(
+  page: import('@playwright/test').Page,
+): Promise<string> {
+  const cor = await page
+    .locator('.agenda-caixa')
+    .first()
+    .evaluate((el) => (el as HTMLElement).style.getPropertyValue('--c'));
+  return corCalculada(page, cor);
+}

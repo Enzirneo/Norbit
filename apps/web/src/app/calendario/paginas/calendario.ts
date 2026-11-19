@@ -30,6 +30,7 @@ import {
   type DataCivil,
 } from '@norbit/domain';
 import { AuthService } from '../../auth/auth.service';
+import { Alternador } from '../../ui/alternador';
 import { Botao } from '../../ui/botao';
 import { Dialogo } from '../../ui/dialogo';
 import { RouterLink } from '@angular/router';
@@ -47,6 +48,7 @@ import {
 import { CartaoDaLua } from '../cartao-da-lua';
 import { VisaoDeHoras, type Reagendamento } from '../visao-de-horas';
 import { VisaoDeMes } from '../visao-de-mes';
+import { Aviso } from '../../ui/aviso';
 
 /**
  * As visões que o produto tem hoje.
@@ -60,6 +62,8 @@ export type Visao = Periodo;
 @Component({
   selector: 'nb-calendario',
   imports: [
+    Aviso,
+    Alternador,
     Botao,
     CartaoDaLua,
     Dialogo,

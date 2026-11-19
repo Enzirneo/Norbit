@@ -118,13 +118,6 @@
   }
 }
 
-.agenda-caixa {
-  width: calc(var(--space-unit) * 4);
-  height: calc(var(--space-unit) * 4);
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-
 .agenda-nome {
   flex: 1;
   overflow: hidden;
@@ -156,16 +149,6 @@
   gap: calc(var(--space-unit) * 2);
   min-width: 0;
   padding: calc(var(--space-unit) * 4);
-}
-
-.erro {
-  margin: 0;
-  padding: calc(var(--space-unit) * 3);
-  border: 1px solid var(--state-danger);
-  border-radius: var(--raio-m);
-  background: color-mix(in oklab, var(--state-danger) 12%, transparent);
-  color: var(--text-primary);
-  font-size: 0.875rem;
 }
 
 .vazio {
@@ -203,39 +186,6 @@
 }
 
 /* Alternador de visão: três segmentos, um ativo. */
-.visoes {
-  display: flex;
-  padding: 2px;
-  border: 1px solid var(--border-subtle);
-  border-radius: calc(var(--raio-p) * 1.4);
-  background: var(--surface-sunken);
-}
-
-.visao {
-  padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3);
-  border: 0;
-  border-radius: var(--raio-p);
-  background: none;
-  color: var(--text-secondary);
-  font: inherit;
-  font-size: 0.8125rem;
-  cursor: pointer;
-
-  &:hover {
-    color: var(--text-primary);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--border-focus);
-    outline-offset: 1px;
-  }
-}
-
-.visao--ativa {
-  background: var(--surface-raised);
-  color: var(--text-primary);
-  font-weight: 500;
-}
 
 /* O atalho para as preferências, no pé da barra lateral. */
 /*

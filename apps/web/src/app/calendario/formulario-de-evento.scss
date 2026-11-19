@@ -6,26 +6,6 @@
   gap: calc(var(--space-unit) * 4);
 }
 
-.entrada {
-  width: 100%;
-  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 3);
-  border: 1px solid var(--border-default);
-  border-radius: calc(var(--space-unit) * 2);
-  background: var(--surface-sunken);
-  color: var(--text-primary);
-  font: inherit;
-  font-size: 0.9375rem;
-
-  &:focus-visible {
-    outline: 2px solid var(--border-focus);
-    outline-offset: 1px;
-  }
-}
-
-textarea.entrada {
-  resize: vertical;
-}
-
 /*
  * Início e Fim empilhados, cada um na largura toda do diálogo.
  *
@@ -44,11 +24,17 @@ textarea.entrada {
    coluna encolher abaixo do tamanho mínimo do `<input type="date">`. */
 .par {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  /* Só a coluna da data é explícita; a da hora nasce quando o campo de hora
+     existe. Com a coluna explícita, "Dia inteiro" (sem hora) deixava uma coluna
+     vazia e o intervalo entre as duas: a data ficava 8px mais estreita que os
+     outros campos. */
+  grid-template-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+  grid-auto-columns: auto;
   gap: calc(var(--space-unit) * 2);
 }
 
-.par .entrada[type='time'] {
+.par .nb-entrada[type='time'] {
   width: 7.5rem;
 }
 
@@ -58,11 +44,6 @@ textarea.entrada {
   gap: calc(var(--space-unit) * 2);
   font-size: 0.9375rem;
   cursor: pointer;
-
-  input {
-    accent-color: var(--accent);
-    cursor: pointer;
-  }
 }
 
 .dias,
@@ -126,15 +107,6 @@ textarea.entrada {
   height: 1px;
   opacity: 0;
   pointer-events: none;
-}
-
-.aviso {
-  margin: 0;
-  padding: calc(var(--space-unit) * 3);
-  border: 1px solid var(--state-danger);
-  border-radius: calc(var(--space-unit) * 2);
-  background: color-mix(in oklab, var(--state-danger) 12%, transparent);
-  font-size: 0.875rem;
 }
 
 .nota {

@@ -11,15 +11,10 @@
   <main class="conteudo">
     <div class="cabecalho">
       <h1 class="titulo">Preferências</h1>
-      <!--
-      `aria-live` na confirmação: a tela salva a cada alteração, sem botão, e
-      quem não vê a mudança de cor precisa ouvir que ela foi gravada.
-    -->
-      <p class="estado" aria-live="polite">@if (salvando()) { Salvando… }</p>
     </div>
 
     @if (erro(); as mensagem) {
-    <p class="aviso" role="alert">{{ mensagem }}</p>
+    <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
     }
 
     <section class="secao">
@@ -44,7 +39,7 @@
 
       <nb-campo rotulo="Densidade" dica="O espaçamento de toda a interface.">
         <select
-          class="entrada"
+          class="nb-entrada"
           [value]="p.density"
           (change)="alterarDensidade($any($event.target).value)"
         >
@@ -56,6 +51,7 @@
 
       <label class="marcacao">
         <input
+          class="nb-caixa"
           type="checkbox"
           [checked]="p.reducedMotion"
           (change)="alterar({ reducedMotion: !p.reducedMotion })"
@@ -75,7 +71,7 @@
 
       <nb-campo rotulo="Visão ao abrir">
         <select
-          class="entrada"
+          class="nb-entrada"
           [value]="p.defaultView"
           (change)="alterar({ defaultView: $any($event.target).value })"
         >
@@ -87,7 +83,7 @@
 
       <nb-campo rotulo="A semana começa em">
         <select
-          class="entrada"
+          class="nb-entrada"
           [value]="p.weekStartsOn"
           (change)="alterarInicioDaSemana($any($event.target).value)"
         >
@@ -99,6 +95,7 @@
 
       <label class="marcacao">
         <input
+          class="nb-caixa"
           type="checkbox"
           [checked]="p.use24Hour"
           (change)="alterar({ use24Hour: !p.use24Hour })"

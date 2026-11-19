@@ -17,10 +17,11 @@ import { errosDaApi } from '../auth/erros-de-formulario';
 import { Botao } from '../ui/botao';
 import { descreverAparelho } from './descrever-aparelho';
 import { SessoesService } from './sessoes.service';
+import { Aviso } from '../ui/aviso';
 
 @Component({
   selector: 'nb-sessoes-ativas',
-  imports: [DatePipe, Botao],
+  imports: [Aviso, DatePipe, Botao],
   templateUrl: './sessoes-ativas.html',
   // O hospedeiro é um bloco com espaço entre os filhos: o texto de apoio, o
   // formulário e o botão não ficam colados uns nos outros.

@@ -57,7 +57,7 @@
     </nb-campo>
 
     @if (e['formulario']) {
-    <p role="alert" class="text-sm text-danger">{{ e['formulario'] }}</p>
+    <nb-aviso tipo="perigo">{{ e['formulario'] }}</nb-aviso>
     }
 
     <button nb-botao type="submit" [ocupado]="enviando()">

@@ -1,0 +1,67 @@
+:host {
+  position: fixed;
+  inset-block-end: calc(var(--space-unit) * 4);
+  inset-inline-end: calc(var(--space-unit) * 4);
+  z-index: 50;
+  pointer-events: none;
+}
+
+.pilha {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 2);
+  max-inline-size: min(24rem, calc(100vw - var(--space-unit) * 8));
+}
+
+.toast {
+  --tom: var(--state-success);
+
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 3);
+  padding: calc(var(--space-unit) * 2.5) calc(var(--space-unit) * 3);
+  border: 1px solid var(--tom);
+  border-radius: var(--raio-m);
+  background: color-mix(in oklab, var(--tom) 14%, var(--surface-raised));
+  box-shadow: var(--sombra-2);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  pointer-events: auto;
+  animation: entrar var(--duration-quick) var(--ease-settle);
+}
+
+.toast--perigo {
+  --tom: var(--state-danger);
+}
+
+.toast--info {
+  --tom: var(--accent);
+}
+
+.texto {
+  flex: 1;
+}
+
+.fechar {
+  min-inline-size: var(--alvo-toque);
+  min-block-size: var(--alvo-toque);
+  border: 0;
+  border-radius: var(--raio-p);
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+}
+
+@keyframes entrar {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
+  }
+}

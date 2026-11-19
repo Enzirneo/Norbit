@@ -20,10 +20,11 @@ import {
 import { Botao } from '../ui/botao';
 import { Campo } from '../ui/campo';
 import { SenhaService } from './senha.service';
+import { Aviso } from '../ui/aviso';
 
 @Component({
   selector: 'nb-troca-de-senha',
-  imports: [ReactiveFormsModule, Botao, Campo],
+  imports: [Aviso, ReactiveFormsModule, Botao, Campo],
   templateUrl: './troca-de-senha.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

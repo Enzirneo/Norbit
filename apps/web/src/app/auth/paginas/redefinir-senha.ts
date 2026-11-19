@@ -17,10 +17,11 @@ import {
 } from '../erros-de-formulario';
 import { RecuperacaoService } from '../recuperacao.service';
 import { Moldura } from './moldura';
+import { Aviso } from '../../ui/aviso';
 
 @Component({
   selector: 'nb-redefinir-senha',
-  imports: [ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
+  imports: [Aviso, ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
   templateUrl: './redefinir-senha.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

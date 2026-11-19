@@ -1,6 +1,6 @@
 <form class="formulario" [formGroup]="formulario" (ngSubmit)="salvar()">
   @if (erros()['formulario']; as mensagem) {
-  <p class="aviso" role="alert">{{ mensagem }}</p>
+  <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
   } @if (!pronto()) {
   <!--
       Nada de campos antes de o evento chegar: ao editar, a resposta da API
@@ -11,7 +11,7 @@
   } @else {
   <nb-campo rotulo="Título" [erro]="erros()['title']">
     <input
-      class="entrada"
+      class="nb-entrada"
       type="text"
       formControlName="title"
       autocomplete="off"
@@ -20,7 +20,7 @@
   </nb-campo>
 
   <nb-campo rotulo="Agenda" [erro]="erros()['calendarId']">
-    <select class="entrada" formControlName="calendarId">
+    <select class="nb-entrada" formControlName="calendarId">
       @for (agenda of agendasPermitidas(); track agenda.id) {
       <option [value]="agenda.id">{{ agenda.name }}</option>
       }
@@ -28,32 +28,32 @@
   </nb-campo>
 
   <label class="marcacao">
-    <input type="checkbox" formControlName="isAllDay" />
+    <input class="nb-caixa" type="checkbox" formControlName="isAllDay" />
     <span>Dia inteiro</span>
   </label>
 
   <div class="periodo">
     <nb-campo rotulo="Início" [erro]="erros()['startsAt']">
       <div class="par">
-        <input class="entrada" type="date" formControlName="dataInicio" />
+        <input class="nb-entrada" type="date" formControlName="dataInicio" />
         @if (!formulario.controls.isAllDay.value) {
-        <input class="entrada" type="time" formControlName="horaInicio" />
+        <input class="nb-entrada" type="time" formControlName="horaInicio" />
         }
       </div>
     </nb-campo>
 
     <nb-campo rotulo="Fim" [erro]="erros()['endsAt']">
       <div class="par">
-        <input class="entrada" type="date" formControlName="dataFim" />
+        <input class="nb-entrada" type="date" formControlName="dataFim" />
         @if (!formulario.controls.isAllDay.value) {
-        <input class="entrada" type="time" formControlName="horaFim" />
+        <input class="nb-entrada" type="time" formControlName="horaFim" />
         }
       </div>
     </nb-campo>
   </div>
 
   <nb-campo rotulo="Repetição">
-    <select class="entrada" formControlName="repeticao">
+    <select class="nb-entrada" formControlName="repeticao">
       <option value="nao-repete">Não repete</option>
       <option value="diaria">Todos os dias</option>
       <option value="semanal">Toda semana</option>
@@ -102,22 +102,36 @@
   }
 
   <nb-campo rotulo="Local" [erro]="erros()['location']">
-    <input class="entrada" type="text" formControlName="location" />
+    <input class="nb-entrada" type="text" formControlName="location" />
   </nb-campo>
 
   <nb-campo rotulo="Descrição" [erro]="erros()['description']">
-    <textarea class="entrada" rows="3" formControlName="description"></textarea>
+    <textarea
+      class="nb-entrada"
+      rows="3"
+      formControlName="description"
+    ></textarea>
   </nb-campo>
 
   @if (precisaEscolherEscopo()) {
   <fieldset class="escopo">
     <legend class="escopo-titulo">Aplicar a</legend>
     <label class="marcacao">
-      <input type="radio" formControlName="escopo" value="este" />
+      <input
+        class="nb-caixa"
+        type="radio"
+        formControlName="escopo"
+        value="este"
+      />
       <span>Somente este evento</span>
     </label>
     <label class="marcacao">
-      <input type="radio" formControlName="escopo" value="todos" />
+      <input
+        class="nb-caixa"
+        type="radio"
+        formControlName="escopo"
+        value="todos"
+      />
       <span>Todos os eventos da série</span>
     </label>
   </fieldset>

@@ -20,6 +20,7 @@ import { PAPEIS_CONVIDAVEIS, type PapelConvidavel } from '../convites/papel';
 import { iniciaisDe } from '../perfil/iniciais';
 import { Botao } from '../ui/botao';
 import { MembrosService } from './membros.service';
+import { Aviso } from '../ui/aviso';
 
 /** A ação que espera confirmação, e para quem. */
 type Pendente = {
@@ -29,7 +30,7 @@ type Pendente = {
 
 @Component({
   selector: 'nb-membros-da-agenda',
-  imports: [Botao],
+  imports: [Aviso, Botao],
   templateUrl: './membros-da-agenda.html',
   styleUrl: './membros-da-agenda.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

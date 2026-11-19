@@ -32,10 +32,11 @@ import {
   type PapelConvidavel,
 } from './papel';
 import { validarConvite } from './validar-convite';
+import { Aviso } from '../ui/aviso';
 
 @Component({
   selector: 'nb-painel-de-convites',
-  imports: [ReactiveFormsModule, DatePipe, Campo, Botao],
+  imports: [Aviso, ReactiveFormsModule, DatePipe, Campo, Botao],
   templateUrl: './painel-de-convites.html',
   styleUrl: './painel-de-convites.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -17,10 +17,11 @@ import {
   errosDoZod,
   type ErrosPorCampo,
 } from '../erros-de-formulario';
+import { Aviso } from '../../ui/aviso';
 
 @Component({
   selector: 'nb-criar-conta',
-  imports: [ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
+  imports: [Aviso, ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
   templateUrl: './criar-conta.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

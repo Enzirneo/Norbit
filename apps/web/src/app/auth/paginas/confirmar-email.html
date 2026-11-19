@@ -10,9 +10,9 @@
     </p>
   </div>
   } @else if (token === '') {
-  <p corpo role="alert" class="text-sm text-danger">
+  <nb-aviso corpo tipo="perigo">
     O link está incompleto. Use o link do e-mail.
-  </p>
+  </nb-aviso>
   } @else {
   <div corpo class="flex flex-col gap-5">
     <p class="text-sm text-muted">
@@ -20,7 +20,7 @@
     </p>
 
     @if (erro()) {
-    <p role="alert" class="text-sm text-danger">{{ erro() }}</p>
+    <nb-aviso tipo="perigo">{{ erro() }}</nb-aviso>
     }
 
     <button nb-botao type="button" [ocupado]="enviando()" (click)="confirmar()">

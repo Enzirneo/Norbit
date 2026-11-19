@@ -307,19 +307,19 @@ Onde o editor mora (uma página de Preferências reestruturada, uma gaveta, ou o
 críticos, e2e medindo o estilo calculado, olhar a tela de verdade, documentação atualizada e PR para a
 `dev`. Quando o PR junta partes, o corpo dele diz o que é de cada uma.
 
-| PR  | Entrega                                                                                                                    | Estado       |
-| --- | -------------------------------------------------------------------------------------------------------------------------- | ------------ |
-| 1   | camada de forma (`--r` e derivados, estrelas, fonte monoespaçada) e guarda de estilo no CI                                 | **entregue** |
-| 2   | domínio da lua (`faseDaLua`, `iluminacao`, `nomeDaFase`) e o componente `Lua`                                              | **entregue** |
-| A   | **semana e dia**: evento firme com barra de cor, hierarquia de tempo, "agora" em órbita, lua no cabeçalho                  | **entregue** |
-| B   | **mês e casca**: o mesmo vocabulário no mês, a lua em cada célula, e a barra lateral (órbitas, cartão da lua) e a superior | em andamento |
-| C   | **componentes de formulário e resposta**: Entrada, Caixa, Alternador, Aviso e Toast                                        |              |
-| D   | **componentes de identidade e estrutura**: Avatar, Etiqueta, Estado vazio, Cabeçalho de página e Cartão de seção           |              |
-| E   | **motor puro**: `oklch.ts`, `derivar` com testes de propriedade e os temas prontos (teste dourado do nebula)               |              |
-| F   | **integração do motor**: `temaSchema` (com `forma`), coluna `theme`, migração (expandir), aplicar na web e cache de tokens |              |
-| G   | **catálogo `/design`** com axe e medição de contraste por tema                                                             |              |
-| H   | **editor de tema**: galeria, seletores, controles de forma, prévia ao vivo, avisos, restaurar e a migração (contrair)      |              |
-| I   | **cor de perfil**: schema, API, exposição só entre quem compartilha, edição e uso nos avatares                             |              |
+| PR  | Entrega                                                                                                                    | Estado         |
+| --- | -------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| 1   | camada de forma (`--r` e derivados, estrelas, fonte monoespaçada) e guarda de estilo no CI                                 | **entregue**   |
+| 2   | domínio da lua (`faseDaLua`, `iluminacao`, `nomeDaFase`) e o componente `Lua`                                              | **entregue**   |
+| A   | **semana e dia**: evento firme com barra de cor, hierarquia de tempo, "agora" em órbita, lua no cabeçalho                  | **entregue**   |
+| B   | **mês e casca**: o mesmo vocabulário no mês, a lua em cada célula, e a barra lateral (órbitas, cartão da lua) e a superior | entregue (#37) |
+| C   | **componentes de formulário e resposta**: Entrada, Caixa, Alternador, Aviso e Toast                                        | em andamento   |
+| D   | **componentes de identidade e estrutura**: Avatar, Etiqueta, Estado vazio, Cabeçalho de página e Cartão de seção           |                |
+| E   | **motor puro**: `oklch.ts`, `derivar` com testes de propriedade e os temas prontos (teste dourado do nebula)               |                |
+| F   | **integração do motor**: `temaSchema` (com `forma`), coluna `theme`, migração (expandir), aplicar na web e cache de tokens |                |
+| G   | **catálogo `/design`** com axe e medição de contraste por tema                                                             |                |
+| H   | **editor de tema**: galeria, seletores, controles de forma, prévia ao vivo, avisos, restaurar e a migração (contrair)      |                |
+| I   | **cor de perfil**: schema, API, exposição só entre quem compartilha, edição e uso nos avatares                             |                |
 
 **Antes do PR H há uma maquete, e não um PR:** a estrutura de Preferências e Perfil (seção 11) é decidida
 com um protótipo que a pessoa vê e escolhe, como foi feito com as direções visuais.

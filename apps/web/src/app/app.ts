@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { Toasts } from './ui/toasts';
 
 @Component({
-  imports: [RouterModule],
+  imports: [RouterModule, Toasts],
   selector: 'nb-root',
   templateUrl: './app.html',
   styleUrl: './app.scss',
