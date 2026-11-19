@@ -90,12 +90,14 @@ test.describe('entrada', () => {
       (el) => getComputedStyle(el).borderTopColor,
     );
     await campo.focus();
-    const depois = await campo.evaluate(
-      (el) => getComputedStyle(el).borderTopColor,
-    );
+    const esperada = await corCalculada(page, 'var(--border-focus)');
 
-    expect(depois).toBe(await corCalculada(page, 'var(--border-focus)'));
-    expect(depois).not.toBe(antes);
+    // A borda **transita** (`--duration-quick`): lê-la no mesmo instante do foco
+    // pegava a cor no meio do caminho.
+    await expect
+      .poll(() => campo.evaluate((el) => getComputedStyle(el).borderTopColor))
+      .toBe(esperada);
+    expect(esperada).not.toBe(antes);
   });
 
   test('um campo inválido tem a borda de perigo', async ({ page }) => {
@@ -150,7 +152,7 @@ test.describe('entrada', () => {
     page,
   }) => {
     await entrar(page);
-    await page.goto('/preferencias');
+    await page.goto('/aparencia');
 
     expect(await raio(page.getByLabel('Densidade'))).toBeCloseTo(6, 1);
   });

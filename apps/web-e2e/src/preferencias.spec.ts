@@ -34,7 +34,7 @@ test.describe('preferências', () => {
 
   test('trocar o acento muda a cor aplicada ao documento', async ({ page }) => {
     await entrar(page);
-    await page.goto('/preferencias');
+    await page.goto('/aparencia');
 
     await page.getByRole('radio', { name: 'Aurora' }).click();
 
@@ -47,7 +47,7 @@ test.describe('preferências', () => {
     // Os cinco acentos pedem frente escura, mas a cor da frente é *derivada* do
     // contraste — e esse teste garante que ela está sendo escrita no documento.
     await entrar(page);
-    await page.goto('/preferencias');
+    await page.goto('/aparencia');
 
     await page.getByRole('radio', { name: 'Solar' }).click();
 
@@ -68,9 +68,11 @@ test.describe('preferências', () => {
     // O ponto de guardar no servidor: um `localStorage` esqueceria ao trocar de
     // navegador, e esta preferência vale para a conta.
     await entrar(page);
-    await page.goto('/preferencias');
+    await page.goto('/aparencia');
     await page.getByRole('radio', { name: 'Pulsar' }).click();
     await expect.poll(() => variavel(page, '--accent')).toBe('#ff6b8a');
+    await page.getByRole('button', { name: 'Salvar tema' }).click();
+    await expect(page.getByText('Tema salvo.')).toBeVisible();
 
     await page.reload();
 
@@ -85,16 +87,18 @@ test.describe('preferências', () => {
     // servidor, a API de preferências é bloqueada na recarga — ela nunca
     // responde, e o acento tem de estar lá do mesmo jeito.
     await entrar(page);
-    await page.goto('/preferencias');
+    await page.goto('/aparencia');
     await page.getByRole('radio', { name: 'Pulsar' }).click();
     await expect.poll(() => variavel(page, '--accent')).toBe('#ff6b8a');
+    await page.getByRole('button', { name: 'Salvar tema' }).click();
+    await expect(page.getByText('Tema salvo.')).toBeVisible();
 
     await page.route('**/api/preferencias', (rota) => rota.abort());
 
     // `commit`: devolve assim que a navegação começa a responder, bem antes de
     // o Angular existir. Ler a variável aqui só passa se o script do
     // `index.html` já rodou.
-    await page.goto('/preferencias', { waitUntil: 'commit' });
+    await page.goto('/aparencia', { waitUntil: 'commit' });
     await page.waitForFunction(() => document.readyState !== 'loading');
 
     expect(await variavel(page, '--accent')).toBe('#ff6b8a');
@@ -104,9 +108,11 @@ test.describe('preferências', () => {
     // A aparência é informação sobre quem usava o navegador: a próxima pessoa
     // não deve ver, nem por um instante, a cor da anterior.
     await entrar(page);
-    await page.goto('/preferencias');
+    await page.goto('/aparencia');
     await page.getByRole('radio', { name: 'Solar' }).click();
     await expect.poll(() => variavel(page, '--accent')).toBe('#ffb357');
+    await page.getByRole('button', { name: 'Salvar tema' }).click();
+    await expect(page.getByText('Tema salvo.')).toBeVisible();
 
     await page.getByRole('button', { name: 'Voltar ao calendário' }).click();
     await page.getByRole('button', { name: 'Sair' }).click();
@@ -120,7 +126,7 @@ test.describe('preferências', () => {
 
   test('a densidade muda a unidade de espaçamento', async ({ page }) => {
     await entrar(page);
-    await page.goto('/preferencias');
+    await page.goto('/aparencia');
 
     await page.getByLabel('Densidade').selectOption('0');
     await expect.poll(() => variavel(page, '--space-unit')).toBe('3px');
@@ -131,7 +137,7 @@ test.describe('preferências', () => {
 
   test('reduzir movimento liga o atributo na raiz', async ({ page }) => {
     await entrar(page);
-    await page.goto('/preferencias');
+    await page.goto('/aparencia');
 
     await page.getByLabel(/Reduzir movimento/).check();
 

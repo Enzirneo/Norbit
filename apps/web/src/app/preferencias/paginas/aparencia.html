@@ -1,0 +1,42 @@
+@let p = atuais();
+
+<nb-moldura-de-configuracoes titulo="Aparência">
+  @if (erro(); as mensagem) {
+  <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
+  } @if (carregado()) {
+  <nb-cartao-de-secao titulo="Tema">
+    <nb-editor-de-tema />
+  </nb-cartao-de-secao>
+  }
+
+  <nb-cartao-de-secao titulo="Interface">
+    <nb-campo rotulo="Densidade" dica="O espaçamento de toda a interface.">
+      <select
+        class="nb-entrada"
+        (change)="alterarDensidade($any($event.target).value)"
+      >
+        @for (opcao of densidades; track opcao.valor) {
+        <option [value]="opcao.valor" [selected]="opcao.valor === p.density">
+          {{ opcao.rotulo }}
+        </option>
+        }
+      </select>
+    </nb-campo>
+
+    <label class="marcacao">
+      <input
+        class="nb-caixa"
+        type="checkbox"
+        [checked]="p.reducedMotion"
+        (change)="alterar({ reducedMotion: !p.reducedMotion })"
+      />
+      <span>
+        Reduzir movimento
+        <small class="nota">
+          Sem transições nem animações. Soma à preferência do sistema, não a
+          substitui.
+        </small>
+      </span>
+    </label>
+  </nb-cartao-de-secao>
+</nb-moldura-de-configuracoes>

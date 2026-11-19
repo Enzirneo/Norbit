@@ -9,6 +9,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
 } from '@angular/core';
 import {
@@ -18,13 +19,18 @@ import {
   type DataCivil,
 } from '@norbit/domain';
 import { Lua } from '../ui/lua';
+import { PreferenciasService } from '../preferencias/preferencias.service';
 
 @Component({
   selector: 'nb-cartao-da-lua',
   imports: [Lua],
   template: `
     <div class="cartao-da-lua">
-      <nb-lua [fase]="fase()" [tamanho]="34" />
+      <nb-lua
+        [fase]="fase()"
+        [tamanho]="34"
+        [hemisferio]="forma().hemisferio"
+      />
       <div class="texto">
         <b class="nome">{{ nome() }}</b>
         <small class="iluminacao">{{ iluminada() }}% iluminada hoje</small>
@@ -38,6 +44,7 @@ export class CartaoDaLua {
   /** O dia que o cartão mostra, normalmente hoje. */
   readonly dia = input.required<DataCivil>();
 
+  protected readonly forma = inject(PreferenciasService).forma;
   protected readonly fase = computed(() => faseDoDia(this.dia()));
   protected readonly nome = computed(() => nomeDaFase(this.fase()));
   protected readonly iluminada = computed(() => iluminacao(this.fase()));

@@ -13,6 +13,35 @@ function variavel(page: Page, nome: string): Promise<string> {
   );
 }
 
+type Forma = {
+  cantos: number;
+  estrelas: boolean;
+  lua: boolean;
+  hemisferio: 'sul' | 'norte';
+};
+
+/** Faz o servidor responder com um tema de outra forma, para provar o que a web faz com ele. */
+async function servirForma(page: Page, forma: Forma): Promise<void> {
+  await page.route('**/api/preferencias', async (rota) => {
+    if (rota.request().method() !== 'GET') {
+      return rota.continue();
+    }
+    const resposta = await rota.fetch();
+    const corpo = (await resposta.json()) as { tema: Record<string, unknown> };
+    await rota.fulfill({
+      response: resposta,
+      json: { ...corpo, tema: { ...corpo.tema, forma } },
+    });
+  });
+}
+
+const FORMA_PADRAO: Forma = {
+  cantos: 6,
+  estrelas: true,
+  lua: true,
+  hemisferio: 'sul',
+};
+
 test.describe('tema', () => {
   test.beforeEach(() => {
     restaurarBanco();
@@ -104,5 +133,46 @@ test.describe('tema', () => {
     await page.waitForURL(/\/entrar/);
 
     expect(await variavel(page, '--surface-base')).toBe('');
+  });
+
+  test('com a lua desligada, nenhuma lua aparece no calendário', async ({
+    page,
+  }) => {
+    await servirForma(page, { ...FORMA_PADRAO, lua: false });
+
+    await entrar(page);
+
+    await expect(page.locator('nb-cartao-da-lua')).toHaveCount(0);
+    await expect(page.locator('nb-lua')).toHaveCount(0);
+  });
+
+  test('com a lua ligada, ela aparece no cartão e nas colunas', async ({
+    page,
+  }) => {
+    await entrar(page);
+
+    await expect(page.locator('nb-cartao-da-lua')).toHaveCount(1);
+    expect(await page.locator('nb-lua').count()).toBeGreaterThan(1);
+  });
+
+  test('o hemisfério norte espelha o lado iluminado da lua', async ({
+    page,
+  }) => {
+    await page.clock.setFixedTime(new Date('2026-11-24T12:00:00Z'));
+    const luz = (): Promise<string> =>
+      page
+        .locator('nb-cartao-da-lua .luz')
+        .getAttribute('d')
+        .then((d) => d ?? '');
+
+    await entrar(page);
+    const sul = await luz();
+    await page.unroute('**/api/preferencias');
+    await servirForma(page, { ...FORMA_PADRAO, hemisferio: 'norte' });
+    await page.reload();
+    await page.locator('nb-cartao-da-lua').waitFor();
+    const norte = await luz();
+
+    expect(norte).not.toBe(sul);
   });
 });

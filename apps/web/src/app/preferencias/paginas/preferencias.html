@@ -1,101 +1,51 @@
 @let p = atuais();
 
-<div class="tela">
-  <header class="topo">
-    <nb-marca />
-    <button nb-botao aparencia="texto" type="button" (click)="voltar()">
-      Voltar ao calendário
-    </button>
-  </header>
+<nb-moldura-de-configuracoes titulo="Preferências">
+  @if (erro(); as mensagem) {
+  <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
+  }
 
-  <main class="conteudo">
-    <nb-cabecalho-de-pagina titulo="Preferências" />
-
-    @if (erro(); as mensagem) {
-    <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
-    }
-
-    <nb-cartao-de-secao titulo="Aparência">
-      <nb-campo rotulo="Cor de destaque" [dica]="rotuloDoAcento()">
-        <div class="acentos" role="radiogroup" aria-label="Cor de destaque">
-          @for (opcao of acentos; track opcao.nome) {
-          <button
-            class="acento"
-            type="button"
-            role="radio"
-            [class.acento--ativo]="p.accentColor === opcao.cor"
-            [attr.aria-checked]="p.accentColor === opcao.cor"
-            [attr.aria-label]="rotuloDe(opcao.nome)"
-            [style.background-color]="opcao.cor"
-            (click)="alterar({ accentColor: opcao.cor })"
-          ></button>
-          }
-        </div>
-      </nb-campo>
-
-      <nb-campo rotulo="Densidade" dica="O espaçamento de toda a interface.">
-        <select
-          class="nb-entrada"
-          [value]="p.density"
-          (change)="alterarDensidade($any($event.target).value)"
+  <nb-cartao-de-secao titulo="Calendário">
+    <nb-campo rotulo="Visão ao abrir">
+      <select
+        class="nb-entrada"
+        (change)="alterar({ defaultView: $any($event.target).value })"
+      >
+        @for (opcao of visoes; track opcao.valor) {
+        <option
+          [value]="opcao.valor"
+          [selected]="opcao.valor === p.defaultView"
         >
-          @for (opcao of densidades; track opcao.valor) {
-          <option [value]="opcao.valor">{{ opcao.rotulo }}</option>
-          }
-        </select>
-      </nb-campo>
+          {{ opcao.rotulo }}
+        </option>
+        }
+      </select>
+    </nb-campo>
 
-      <label class="marcacao">
-        <input
-          class="nb-caixa"
-          type="checkbox"
-          [checked]="p.reducedMotion"
-          (change)="alterar({ reducedMotion: !p.reducedMotion })"
-        />
-        <span>
-          Reduzir movimento
-          <small class="nota">
-            Sem transições nem animações. Soma à preferência do sistema, não a
-            substitui.
-          </small>
-        </span>
-      </label>
-    </nb-cartao-de-secao>
-
-    <nb-cartao-de-secao titulo="Calendário">
-      <nb-campo rotulo="Visão ao abrir">
-        <select
-          class="nb-entrada"
-          [value]="p.defaultView"
-          (change)="alterar({ defaultView: $any($event.target).value })"
+    <nb-campo rotulo="A semana começa em">
+      <select
+        class="nb-entrada"
+        (change)="alterarInicioDaSemana($any($event.target).value)"
+      >
+        @for (opcao of diasDaSemana; track opcao.valor) {
+        <option
+          [value]="opcao.valor"
+          [selected]="opcao.valor === p.weekStartsOn"
         >
-          @for (opcao of visoes; track opcao.valor) {
-          <option [value]="opcao.valor">{{ opcao.rotulo }}</option>
-          }
-        </select>
-      </nb-campo>
+          {{ opcao.rotulo }}
+        </option>
+        }
+      </select>
+    </nb-campo>
 
-      <nb-campo rotulo="A semana começa em">
-        <select
-          class="nb-entrada"
-          [value]="p.weekStartsOn"
-          (change)="alterarInicioDaSemana($any($event.target).value)"
-        >
-          @for (opcao of diasDaSemana; track opcao.valor) {
-          <option [value]="opcao.valor">{{ opcao.rotulo }}</option>
-          }
-        </select>
-      </nb-campo>
-
-      <label class="marcacao">
-        <input
-          class="nb-caixa"
-          type="checkbox"
-          [checked]="p.use24Hour"
-          (change)="alterar({ use24Hour: !p.use24Hour })"
-        />
-        <span>Relógio de 24 horas</span>
-      </label>
-    </nb-cartao-de-secao>
-  </main>
-</div>
+    <label class="marcacao">
+      <input
+        class="nb-caixa"
+        type="checkbox"
+        [checked]="p.use24Hour"
+        (change)="alterar({ use24Hour: !p.use24Hour })"
+      />
+      <span>Relógio de 24 horas</span>
+    </label>
+  </nb-cartao-de-secao>
+</nb-moldura-de-configuracoes>

@@ -12,7 +12,6 @@ import {
   signal,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { atualizarPerfilSchema } from '@norbit/contracts';
 import { AuthService } from '../../auth/auth.service';
 import {
@@ -21,8 +20,8 @@ import {
   type ErrosPorCampo,
 } from '../../auth/erros-de-formulario';
 import { Botao } from '../../ui/botao';
+import { MolduraDeConfiguracoes } from '../../configuracoes/moldura-de-configuracoes';
 import { Campo } from '../../ui/campo';
-import { Marca } from '../../ui/marca';
 import { ToastService } from '../../ui/toast.service';
 import { ApagarConta } from '../apagar-conta';
 import { PerfilService } from '../perfil.service';
@@ -31,48 +30,27 @@ import { TrocaDeEmail } from '../troca-de-email';
 import { TrocaDeSenha } from '../troca-de-senha';
 import { Aviso } from '../../ui/aviso';
 import { Avatar } from '../../ui/avatar';
-import { CabecalhoDePagina } from '../../ui/cabecalho-de-pagina';
 import { CartaoDeSecao } from '../../ui/cartao-de-secao';
 
 @Component({
   selector: 'nb-perfil',
   imports: [
     CartaoDeSecao,
-    CabecalhoDePagina,
     Avatar,
     Aviso,
     ReactiveFormsModule,
     ApagarConta,
     Botao,
     Campo,
-    Marca,
+    MolduraDeConfiguracoes,
     SessoesAtivas,
     TrocaDeEmail,
     TrocaDeSenha,
   ],
   templateUrl: './perfil.html',
-  // As mesmas classes de layout das preferências: são duas telas de ajustes da
-  // conta, e duas folhas iguais divergiriam na primeira alteração.
-  styleUrl: '../../preferencias/paginas/preferencias.scss',
-  styles: `
-    .avatar {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      inline-size: 4rem;
-      block-size: 4rem;
-      margin-block-end: 1rem;
-      border-radius: var(--raio-pilula);
-      background: var(--accent-muted);
-      color: var(--text-primary);
-      font-size: 1.25rem;
-      font-weight: 600;
-    }
-  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Perfil {
-  private readonly router = inject(Router);
   private readonly perfil = inject(PerfilService);
   private readonly fb = inject(FormBuilder);
   protected readonly usuario = inject(AuthService).usuario;
@@ -89,10 +67,6 @@ export class Perfil {
 
   protected readonly erros = signal<ErrosPorCampo>({});
   protected readonly salvando = signal(false);
-
-  protected voltar(): void {
-    void this.router.navigateByUrl('/');
-  }
 
   protected salvar(): void {
     const validado = atualizarPerfilSchema.safeParse(

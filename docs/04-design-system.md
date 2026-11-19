@@ -405,6 +405,22 @@ cantos e estrelas, que valem **só para a página** (não vão para a conta nem 
 aparecem quando ele ajusta uma semente. O e2e (`catalogo.spec.ts`) visita cada tema pronto, com e sem contraste
 alto, e roda **axe** (WCAG A/AA, `color-contrast` incluído); num build de produção os testes se pulam.
 
+## O editor de tema e as configurações
+
+As telas de ajuste moram sob uma moldura com menu lateral (`nb-moldura-de-configuracoes`): **Aparência**
+(`/aparencia`), **Preferências** (`/preferencias`, do calendário) e **Perfil** (`/perfil`). A estrutura foi
+escolhida entre quatro (a atual, menu lateral, perfil em primeiro lugar, gaveta); "Segurança" como área própria
+fica para quando o Perfil for dividido.
+
+`nb-editor-de-tema` edita um **rascunho**: cada alteração vira prévia no app inteiro
+(`PreferenciasService.definirPrevia`: tokens no `<html>` e `temaVigente` para a lua), mas só "Salvar tema" grava na
+conta; sair sem salvar desfaz. Tem galeria de temas prontos (miniaturas desenhadas com os tokens derivados),
+fundo, destaque (com os cinco atalhos), contraste alto, cantos, estrelas, lua e hemisfério, os avisos do motor e
+"Restaurar o tema padrão". Densidade e movimento continuam salvando a cada alteração.
+
+A migração para **contrair** (remover `themePreset` e `accentColor`) fica para um PR próprio, agora que a web
+não lê mais o `accentColor`.
+
 ## Armadilhas de CSS que já custaram caro
 
 Os testes de componente não enxergam CSS, e foi por isso que estes dois passaram por dezenas de

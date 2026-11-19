@@ -12,6 +12,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  inject,
   input,
   output,
 } from '@angular/core';
@@ -24,6 +25,7 @@ import {
 } from '@norbit/domain';
 import { Lua } from '../ui/lua';
 import { compararDias, corDaAgenda } from './apoio-da-grade';
+import { PreferenciasService } from '../preferencias/preferencias.service';
 
 /**
  * Quantas faixas uma célula mostra antes de resumir o resto em "+N".
@@ -77,6 +79,7 @@ type SemanaDesenhada = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisaoDeMes {
+  protected readonly forma = inject(PreferenciasService).forma;
   readonly grade = input.required<GradeDeMes>();
   readonly ocorrencias = input.required<readonly OcorrenciaVisivel[]>();
   readonly agendas = input.required<readonly AgendaVisivel[]>();

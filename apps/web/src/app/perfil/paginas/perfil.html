@@ -1,92 +1,81 @@
 @let e = erros();
 
-<div class="tela">
-  <header class="topo">
-    <nb-marca />
-    <button nb-botao aparencia="texto" type="button" (click)="voltar()">
-      Voltar ao calendário
-    </button>
-  </header>
-
-  <main class="conteudo">
-    <nb-cabecalho-de-pagina titulo="Perfil" />
-
-    <nb-cartao-de-secao titulo="Você">
-      <!--
+<nb-moldura-de-configuracoes titulo="Perfil">
+  <nb-cartao-de-secao titulo="Você">
+    <!--
         Iniciais no lugar de uma imagem: ainda não há onde guardar arquivos.
       -->
-      <nb-avatar tamanho="g" [nome]="usuario()?.displayName ?? ''" />
+    <nb-avatar tamanho="g" [nome]="usuario()?.displayName ?? ''" />
 
-      <form
-        [formGroup]="formulario"
-        (ngSubmit)="salvar()"
-        class="flex flex-col gap-5"
+    <form
+      [formGroup]="formulario"
+      (ngSubmit)="salvar()"
+      class="flex flex-col gap-5"
+    >
+      <nb-campo rotulo="Nome de exibição" [erro]="e['displayName']">
+        <input
+          type="text"
+          formControlName="displayName"
+          autocomplete="name"
+          class="nb-entrada"
+          [attr.aria-invalid]="e['displayName'] ? 'true' : null"
+        />
+      </nb-campo>
+
+      <nb-campo
+        rotulo="Handle"
+        dica="Seu endereço curto. Trocar quebra links antigos que apontem para ele."
+        [erro]="e['handle']"
       >
-        <nb-campo rotulo="Nome de exibição" [erro]="e['displayName']">
-          <input
-            type="text"
-            formControlName="displayName"
-            autocomplete="name"
-            class="nb-entrada"
-            [attr.aria-invalid]="e['displayName'] ? 'true' : null"
-          />
-        </nb-campo>
+        <input
+          type="text"
+          formControlName="handle"
+          autocomplete="username"
+          class="nb-entrada"
+          [attr.aria-invalid]="e['handle'] ? 'true' : null"
+        />
+      </nb-campo>
 
-        <nb-campo
-          rotulo="Handle"
-          dica="Seu endereço curto. Trocar quebra links antigos que apontem para ele."
-          [erro]="e['handle']"
-        >
-          <input
-            type="text"
-            formControlName="handle"
-            autocomplete="username"
-            class="nb-entrada"
-            [attr.aria-invalid]="e['handle'] ? 'true' : null"
-          />
-        </nb-campo>
+      <nb-campo
+        rotulo="Fuso horário"
+        dica="Define a hora dos seus eventos e lembretes."
+        [erro]="e['timeZone']"
+      >
+        <input
+          type="text"
+          formControlName="timeZone"
+          list="fusos"
+          class="nb-entrada"
+          [attr.aria-invalid]="e['timeZone'] ? 'true' : null"
+        />
+        <datalist id="fusos">
+          @for (fuso of fusos; track fuso) {
+          <option [value]="fuso"></option>
+          }
+        </datalist>
+      </nb-campo>
 
-        <nb-campo
-          rotulo="Fuso horário"
-          dica="Define a hora dos seus eventos e lembretes."
-          [erro]="e['timeZone']"
-        >
-          <input
-            type="text"
-            formControlName="timeZone"
-            list="fusos"
-            class="nb-entrada"
-            [attr.aria-invalid]="e['timeZone'] ? 'true' : null"
-          />
-          <datalist id="fusos">
-            @for (fuso of fusos; track fuso) {
-            <option [value]="fuso"></option>
-            }
-          </datalist>
-        </nb-campo>
+      @if (e['formulario']) {
+      <nb-aviso tipo="perigo">{{ e['formulario'] }}</nb-aviso>
+      }
 
-        @if (e['formulario']) {
-        <nb-aviso tipo="perigo">{{ e['formulario'] }}</nb-aviso>
-        }
+      <button nb-botao type="submit" [ocupado]="salvando()">Salvar</button>
+    </form>
+  </nb-cartao-de-secao>
 
-        <button nb-botao type="submit" [ocupado]="salvando()">Salvar</button>
-      </form>
-    </nb-cartao-de-secao>
+  <nb-cartao-de-secao titulo="E-mail">
+    <nb-troca-de-email />
+  </nb-cartao-de-secao>
 
-    <nb-cartao-de-secao titulo="E-mail">
-      <nb-troca-de-email />
-    </nb-cartao-de-secao>
+  <nb-cartao-de-secao titulo="Senha">
+    <nb-troca-de-senha />
+  </nb-cartao-de-secao>
 
-    <nb-cartao-de-secao titulo="Senha">
-      <nb-troca-de-senha />
-    </nb-cartao-de-secao>
+  <nb-cartao-de-secao titulo="Aparelhos conectados">
+    <nb-sessoes-ativas />
+  </nb-cartao-de-secao>
 
-    <nb-cartao-de-secao titulo="Aparelhos conectados">
-      <nb-sessoes-ativas />
-    </nb-cartao-de-secao>
-
-    <nb-cartao-de-secao titulo="Apagar conta">
-      <nb-apagar-conta />
-    </nb-cartao-de-secao>
-  </main>
-</div>
+  <nb-cartao-de-secao titulo="Apagar conta">
+    <nb-apagar-conta />
+  </nb-cartao-de-secao>
+</nb-moldura-de-configuracoes>

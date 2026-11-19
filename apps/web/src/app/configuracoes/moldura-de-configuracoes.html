@@ -1,0 +1,30 @@
+<nb-fundo-orbital />
+
+<div class="tela">
+  <header class="topo">
+    <nb-marca />
+    <button nb-botao aparencia="texto" type="button" (click)="voltar()">
+      Voltar ao calendário
+    </button>
+  </header>
+
+  <div class="corpo">
+    <nav class="menu" aria-label="Configurações">
+      @for (area of areas; track area.rota) {
+      <a
+        class="menu-link"
+        [routerLink]="area.rota"
+        routerLinkActive="menu-link--ativo"
+        ariaCurrentWhenActive="page"
+      >
+        {{ area.rotulo }}
+      </a>
+      }
+    </nav>
+
+    <main class="conteudo">
+      <nb-cabecalho-de-pagina [titulo]="titulo()" />
+      <ng-content />
+    </main>
+  </div>
+</div>
