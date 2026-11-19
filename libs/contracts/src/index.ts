@@ -16,3 +16,4 @@ export * from './lib/agendas/convite';
 export * from './lib/tarefas/tarefa';
 
 export * from './lib/preferencias/preferencias';
+export * from './lib/preferencias/tema';

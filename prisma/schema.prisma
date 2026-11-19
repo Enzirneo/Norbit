@@ -169,6 +169,10 @@ model UserSettings {
   // Nome do preset orbital (ver docs/04-design-system.md), ex.: "nebula".
   themePreset   String       @default("nebula")
   accentColor   String       @default("#6d7cff") // hex, validado na aplicação
+  // O tema como JSON versionado (sementes de cor e forma). Nulo = ainda não
+  // migrado: a API deriva do par themePreset/accentColor. Os dois antigos saem
+  // numa migração própria, depois que a web deixar de lê-los (expandir/contrair).
+  appearance    Json?
   // 0 = compacta, 1 = confortável, 2 = espaçosa
   density       Int          @default(1)
   reducedMotion Boolean      @default(false)

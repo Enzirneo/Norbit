@@ -12,10 +12,15 @@
  *
  * O cache guarda os **valores resolvidos**, e não as preferências. Guardar as
  * preferências obrigaria o script a repetir a derivação de cores — uma segunda
- * implementação de `derivarAcento`, escrita à mão num HTML, onde ninguém a testa.
+ * implementação de `derivar`, escrita à mão num HTML, onde ninguém a testa.
  */
 import type { PreferenciasVisiveis } from '@norbit/contracts';
-import { derivarAcento } from '@norbit/design-tokens';
+import {
+  VARIAVEIS_SEMANTICAS,
+  derivar,
+  tokensDeForma,
+  type TemaSemantico,
+} from '@norbit/design-tokens';
 
 /**
  * A chave do `localStorage`.
@@ -40,21 +45,27 @@ export type Aparencia = {
 };
 
 export function aparenciaDe(preferencias: PreferenciasVisiveis): Aparencia {
-  const derivado = derivarAcento(preferencias.accentColor);
+  const { sementes, forma } = preferencias.tema;
+  const { tokens, modo } = derivar(sementes);
 
   return {
     propriedades: {
-      '--accent': derivado.accent,
-      '--accent-hover': derivado.accentHover,
-      '--accent-muted': derivado.accentMuted,
-      '--text-on-accent': derivado.textOnAccent,
-      // O anel de foco acompanha o acento: ele existe para ser notado, e um
-      // foco de outra cor pareceria de outro produto.
-      '--border-focus': derivado.accent,
+      ...coresDe(tokens),
+      ...tokensDeForma(forma),
+      // Os controles nativos (rolagem, seletor de data) seguem o modo.
+      'color-scheme': modo === 'claro' ? 'light' : 'dark',
       '--space-unit': UNIDADES[preferencias.density] ?? UNIDADES[1],
     },
     semMovimento: preferencias.reducedMotion,
   };
+}
+
+function coresDe(tokens: TemaSemantico): Record<string, string> {
+  return Object.fromEntries(
+    (Object.keys(VARIAVEIS_SEMANTICAS) as (keyof TemaSemantico)[]).map(
+      (nome) => [VARIAVEIS_SEMANTICAS[nome], tokens[nome]],
+    ),
+  );
 }
 
 /**
@@ -106,10 +117,22 @@ export function lerAparenciaGuardada(): Aparencia | null {
  * Apaga o cache.
  *
  * Chamado no logout. Sem isso, a próxima pessoa a abrir o Norbit neste
- * navegador veria por um instante a cor da anterior — e a aparência é uma
- * informação sobre quem usava.
+ * navegador veria por um instante o tema da anterior — e a aparência é uma
+ * informação sobre quem usava. Também tira da página o que já estava escrito:
+ * a tela de entrada volta ao tema padrão na hora, sem esperar um recarregamento.
  */
 export function esquecerAparencia(): void {
+  // Antes de apagar o cache: é ele que diz **quais** propriedades a pessoa
+  // escreveu na página.
+  const guardada = lerAparenciaGuardada();
+  if (guardada) {
+    const raiz = document.documentElement;
+    for (const nome of Object.keys(guardada.propriedades)) {
+      raiz.style.removeProperty(nome);
+    }
+    raiz.removeAttribute('data-sem-movimento');
+  }
+
   try {
     localStorage.removeItem(CHAVE_DA_APARENCIA);
   } catch {

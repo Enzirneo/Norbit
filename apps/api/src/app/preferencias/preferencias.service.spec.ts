@@ -7,7 +7,8 @@
  */
 import { ConfigModule } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { PrismaModule, PrismaService } from '@norbit/db';
+import { TEMA_PADRAO, temaLegado } from '@norbit/contracts';
+import { Prisma, PrismaModule, PrismaService } from '@norbit/db';
 import { uuidv7 } from 'uuidv7';
 import { AcessoService } from '../agendas/acesso.service';
 import { AgendasService } from '../agendas/agendas.service';
@@ -59,11 +60,76 @@ describe('PreferenciasService', () => {
 
     expect(minhas).toEqual({
       accentColor: ACENTO_PADRAO,
+      tema: TEMA_PADRAO,
       density: 1,
       reducedMotion: false,
       defaultView: 'WEEK',
       weekStartsOn: 0,
       use24Hour: true,
+    });
+  });
+
+  describe('tema', () => {
+    const MEU_TEMA = {
+      ...TEMA_PADRAO,
+      base: null,
+      sementes: { fundo: '#140a1f', destaque: '#ff6b8a', contraste: 'alto' },
+      forma: { cantos: 12, estrelas: false, lua: true, hemisferio: 'norte' },
+    } as const;
+
+    it('guarda o tema inteiro e o devolve igual', async () => {
+      await preferencias.atualizar(enzo, { tema: MEU_TEMA });
+
+      expect((await preferencias.minhas(enzo)).tema).toEqual(MEU_TEMA);
+    });
+
+    it('mantém o par antigo em dia: o destaque do tema vira o accentColor', async () => {
+      await preferencias.atualizar(enzo, { tema: MEU_TEMA });
+
+      expect((await preferencias.minhas(enzo)).accentColor).toBe('#ff6b8a');
+    });
+
+    it('trocar só o accentColor atualiza o destaque do tema guardado', async () => {
+      await preferencias.atualizar(enzo, { tema: MEU_TEMA });
+
+      await preferencias.atualizar(enzo, { accentColor: '#4adebb' });
+      const { tema } = await preferencias.minhas(enzo);
+
+      expect(tema.sementes.destaque).toBe('#4adebb');
+      expect(tema.sementes.fundo).toBe('#140a1f');
+      expect(tema.forma.cantos).toBe(12);
+    });
+
+    it('uma conta sem tema guardado recebe o derivado do par antigo', async () => {
+      await prisma.userSettings.update({
+        where: { userId: enzo },
+        data: {
+          themePreset: 'dawn',
+          accentColor: '#4adebb',
+          appearance: Prisma.DbNull,
+        },
+      });
+
+      expect((await preferencias.minhas(enzo)).tema).toEqual(
+        temaLegado('dawn', '#4adebb'),
+      );
+    });
+
+    it('um tema guardado que ficou inválido não derruba a leitura', async () => {
+      await prisma.userSettings.update({
+        where: { userId: enzo },
+        data: { appearance: { v: 99, lixo: true } },
+      });
+
+      expect((await preferencias.minhas(enzo)).tema).toEqual(TEMA_PADRAO);
+    });
+
+    it('trocar a densidade não mexe no tema', async () => {
+      await preferencias.atualizar(enzo, { tema: MEU_TEMA });
+
+      await preferencias.atualizar(enzo, { density: 2 });
+
+      expect((await preferencias.minhas(enzo)).tema).toEqual(MEU_TEMA);
     });
   });
 

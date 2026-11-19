@@ -6,7 +6,12 @@
  * nada — isto verifica, e reprova a build.
  */
 import { MINIMO_GRAFICO, MINIMO_TEXTO, contraste } from './contraste';
-import { NOMES_SEMANTICOS, presets, type TemaSemantico } from './semanticos';
+import {
+  NOMES_SEMANTICOS,
+  VARIAVEIS_SEMANTICAS,
+  presets,
+  type TemaSemantico,
+} from './semanticos';
 
 /**
  * Os pares que precisam de contraste, declarados um por um.
@@ -82,5 +87,19 @@ describe('presets semânticos', () => {
         ).toBeGreaterThanOrEqual(MINIMO_GRAFICO);
       },
     );
+  });
+});
+
+describe('VARIAVEIS_SEMANTICAS', () => {
+  it('dá um nome de variável CSS a cada token semântico, sem repetir', () => {
+    const nomes = NOMES_SEMANTICOS.map((n) => VARIAVEIS_SEMANTICAS[n]);
+
+    expect(nomes.every((n) => /^--[a-z-]+$/.test(n))).toBe(true);
+    expect(new Set(nomes).size).toBe(NOMES_SEMANTICOS.length);
+  });
+
+  it('segue os nomes do docs/04', () => {
+    expect(VARIAVEIS_SEMANTICAS.surfaceBase).toBe('--surface-base');
+    expect(VARIAVEIS_SEMANTICAS.textOnAccent).toBe('--text-on-accent');
   });
 });

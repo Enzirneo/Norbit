@@ -105,3 +105,31 @@ export const nebula: TemaSemantico = {
 export const presets = { nebula } as const;
 
 export type NomeDePreset = keyof typeof presets;
+
+/**
+ * O nome da variável CSS de cada token semântico, o contrato do docs/04.
+ *
+ * Em um lugar só: o gerador do CSS padrão e a web, que escreve o tema derivado
+ * no `<html>`, precisam usar os mesmos nomes.
+ */
+export const VARIAVEIS_SEMANTICAS: Readonly<
+  Record<keyof TemaSemantico, string>
+> = Object.freeze({
+  surfaceBase: '--surface-base',
+  surfaceRaised: '--surface-raised',
+  surfaceOverlay: '--surface-overlay',
+  surfaceSunken: '--surface-sunken',
+  textPrimary: '--text-primary',
+  textSecondary: '--text-secondary',
+  textMuted: '--text-muted',
+  textOnAccent: '--text-on-accent',
+  borderSubtle: '--border-subtle',
+  borderDefault: '--border-default',
+  borderFocus: '--border-focus',
+  accent: '--accent',
+  accentHover: '--accent-hover',
+  accentMuted: '--accent-muted',
+  stateSuccess: '--state-success',
+  stateWarning: '--state-warning',
+  stateDanger: '--state-danger',
+});

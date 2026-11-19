@@ -7,9 +7,10 @@
  */
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
-import type {
-  AtualizarPreferencias,
-  PreferenciasVisiveis,
+import {
+  TEMA_PADRAO,
+  type AtualizarPreferencias,
+  type PreferenciasVisiveis,
 } from '@norbit/contracts';
 import { tap, type Observable } from 'rxjs';
 import { ACENTOS } from '@norbit/design-tokens';
@@ -23,6 +24,7 @@ import { aparenciaDe, aplicarAparencia, guardarAparencia } from './aparencia';
  */
 const PADRAO: PreferenciasVisiveis = {
   accentColor: ACENTOS.nebula,
+  tema: TEMA_PADRAO,
   density: 1,
   reducedMotion: false,
   defaultView: 'MONTH',

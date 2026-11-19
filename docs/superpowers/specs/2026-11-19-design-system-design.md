@@ -177,7 +177,7 @@ destaque para ficar legível sobre o fundo"). Quem decide o que mostrar é o edi
 
 ### 5.4 Os dados
 
-`UserSettings.theme`, um JSON versionado, substitui `themePreset` e `accentColor`:
+`UserSettings.appearance` (a coluna `theme` já existia, como enum `ThemeMode`), um JSON versionado, substitui `themePreset` e `accentColor`:
 
 ```json
 {
@@ -316,7 +316,7 @@ críticos, e2e medindo o estilo calculado, olhar a tela de verdade, documentaç�
 | C   | **componentes de formulário e resposta**: Entrada, Caixa, Alternador, Aviso e Toast                                        | em andamento   |
 | D   | **componentes de identidade e estrutura**: Avatar, Etiqueta, Estado vazio, Cabeçalho de página e Cartão de seção           | em andamento   |
 | E   | **motor puro**: `oklch.ts`, `derivar` com testes de propriedade e os temas prontos (teste dourado do nebula)               | em andamento   |
-| F   | **integração do motor**: `temaSchema` (com `forma`), coluna `theme`, migração (expandir), aplicar na web e cache de tokens |                |
+| F   | **integração do motor**: `temaSchema` (com `forma`), coluna `theme`, migração (expandir), aplicar na web e cache de tokens | em andamento   |
 | G   | **catálogo `/design`** com axe e medição de contraste por tema                                                             |                |
 | H   | **editor de tema**: galeria, seletores, controles de forma, prévia ao vivo, avisos, restaurar e a migração (contrair)      |                |
 | I   | **cor de perfil**: schema, API, exposição só entre quem compartilha, edição e uso nos avatares                             |                |
