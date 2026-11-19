@@ -1,0 +1,19 @@
+:host {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 0;
+}
+
+/* O lado escuro: uma superfície afundada, com o contorno do tema. */
+.disco {
+  fill: color-mix(in oklab, var(--surface-sunken) 70%, var(--surface-overlay));
+  stroke: var(--border-default);
+  stroke-width: 0.8;
+}
+
+/* O lado claro. Levemente abaixo do texto primário para não gritar numa grade
+   cheia de luas. */
+.luz {
+  fill: var(--text-primary);
+  opacity: 0.92;
+}

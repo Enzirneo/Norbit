@@ -30,6 +30,7 @@ completo do projeto, decidido antes da primeira linha de código de produto.
 | [21 — Apagar a conta](21-apagar-conta.md)               | Anonimiza em vez de apagar a linha, pede a senha, barra dono de agenda      |
 | [22 — Trocar o e-mail](22-troca-de-email.md)            | Dois passos, link ao endereço novo, resposta uniforme, sessões derrubadas   |
 | [23 — Arrastar eventos](23-arrastar-eventos.md)         | Mover e redimensionar na grade, deslocamento em tempo decorrido, só esta    |
+| [24 — A lua](24-lua.md)                                 | Fase pelo mês sinódico, orientação por hemisfério, desenho em SVG           |
 
 ## Estado atual
 
