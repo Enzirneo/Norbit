@@ -24,10 +24,11 @@ import {
 import { Botao } from '../ui/botao';
 import { Campo } from '../ui/campo';
 import { ContaService } from './conta.service';
+import { Aviso } from '../ui/aviso';
 
 @Component({
   selector: 'nb-troca-de-email',
-  imports: [ReactiveFormsModule, Botao, Campo],
+  imports: [Aviso, ReactiveFormsModule, Botao, Campo],
   templateUrl: './troca-de-email.html',
   // O hospedeiro é um bloco com espaço entre os filhos: o texto de apoio, o
   // formulário e o botão não ficam colados uns nos outros.

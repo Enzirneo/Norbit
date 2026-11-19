@@ -1,0 +1,37 @@
+:host {
+  display: inline-flex;
+}
+
+.alternador {
+  display: flex;
+  padding: 2px;
+  border: 1px solid var(--border-subtle);
+  border-radius: calc(var(--raio-p) * 1.4);
+  background: var(--surface-sunken);
+}
+
+.opcao {
+  padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3);
+  border: 0;
+  border-radius: var(--raio-p);
+  background: none;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8125rem;
+  cursor: pointer;
+
+  &:hover {
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+.opcao--ativa {
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font-weight: 500;
+}

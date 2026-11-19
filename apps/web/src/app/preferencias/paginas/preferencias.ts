@@ -21,7 +21,9 @@ import { ACENTOS, type NomeDeAcento } from '@norbit/design-tokens';
 import { Botao } from '../../ui/botao';
 import { Campo } from '../../ui/campo';
 import { Marca } from '../../ui/marca';
+import { ToastService } from '../../ui/toast.service';
 import { PreferenciasService } from '../preferencias.service';
+import { Aviso } from '../../ui/aviso';
 
 type OpcaoDeAcento = { readonly nome: NomeDeAcento; readonly cor: string };
 
@@ -35,7 +37,7 @@ const ROTULOS_DE_ACENTO: Record<NomeDeAcento, string> = {
 
 @Component({
   selector: 'nb-preferencias',
-  imports: [Botao, Campo, Marca],
+  imports: [Aviso, Botao, Campo, Marca],
   templateUrl: './preferencias.html',
   styleUrl: './preferencias.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -43,9 +45,9 @@ const ROTULOS_DE_ACENTO: Record<NomeDeAcento, string> = {
 export class Preferencias {
   private readonly api = inject(PreferenciasService);
   private readonly router = inject(Router);
+  private readonly toasts = inject(ToastService);
 
   protected readonly atuais = this.api.preferencias;
-  protected readonly salvando = signal(false);
   protected readonly erro = signal<string | null>(null);
 
   protected readonly acentos: readonly OpcaoDeAcento[] = (
@@ -88,13 +90,11 @@ export class Preferencias {
   }
 
   protected alterar(dados: AtualizarPreferencias): void {
-    this.salvando.set(true);
     this.erro.set(null);
 
     this.api.atualizar(dados).subscribe({
-      next: () => this.salvando.set(false),
+      next: () => this.toasts.mostrar('Preferências salvas.'),
       error: () => {
-        this.salvando.set(false);
         // Sem reverter à mão: o sinal continua com o que o servidor confirmou
         // por último, e o template lê dele. O que a pessoa tentou simplesmente
         // não vale.

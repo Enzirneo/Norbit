@@ -48,6 +48,7 @@ import { AuthService } from '../auth/auth.service';
 import { Botao } from '../ui/botao';
 import { Campo } from '../ui/campo';
 import { CalendarioService } from './calendario.service';
+import { Aviso } from '../ui/aviso';
 
 export type AlvoDoFormulario =
   | {
@@ -87,7 +88,7 @@ const DIAS: readonly { valor: DiaDaSemana; rotulo: string }[] = [
 
 @Component({
   selector: 'nb-formulario-de-evento',
-  imports: [ReactiveFormsModule, Campo, Botao],
+  imports: [Aviso, ReactiveFormsModule, Campo, Botao],
   templateUrl: './formulario-de-evento.html',
   styleUrl: './formulario-de-evento.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

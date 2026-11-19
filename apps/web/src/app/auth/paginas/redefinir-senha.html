@@ -9,9 +9,9 @@
     </p>
   </div>
   } @else if (token === '') {
-  <p corpo role="alert" class="text-sm text-danger">
+  <nb-aviso corpo tipo="perigo">
     O link está incompleto. Use o link do e-mail, ou peça um novo.
-  </p>
+  </nb-aviso>
   } @else {
   <form
     corpo
@@ -30,7 +30,7 @@
     </nb-campo>
 
     @if (e['formulario']) {
-    <p role="alert" class="text-sm text-danger">{{ e['formulario'] }}</p>
+    <nb-aviso tipo="perigo">{{ e['formulario'] }}</nb-aviso>
     }
 
     <button nb-botao type="submit" [ocupado]="enviando()">

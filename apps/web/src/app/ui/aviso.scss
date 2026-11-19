@@ -1,0 +1,19 @@
+:host {
+  --tom: var(--accent);
+
+  display: block;
+  padding: calc(var(--space-unit) * 3);
+  border: 1px solid var(--tom);
+  border-radius: var(--raio-p);
+  background: color-mix(in oklab, var(--tom) 12%, transparent);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+:host(.aviso--sucesso) {
+  --tom: var(--state-success);
+}
+
+:host(.aviso--perigo) {
+  --tom: var(--state-danger);
+}

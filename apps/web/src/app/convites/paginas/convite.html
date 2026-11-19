@@ -21,7 +21,7 @@
     @if (p.paraEmail) {
     <p class="text-sm text-muted">Este convite é para {{ p.paraEmail }}.</p>
     } @if (erro()) {
-    <p role="alert" class="text-sm text-danger">{{ erro() }}</p>
+    <nb-aviso tipo="perigo">{{ erro() }}</nb-aviso>
     } @if (usuario(); as u) {
     <div class="flex flex-col gap-3">
       <button nb-botao type="button" [ocupado]="agindo()" (click)="aceitar()">
@@ -68,7 +68,7 @@
     }
   </div>
   } @else {
-  <p corpo role="alert" class="text-sm text-danger">{{ erro() }}</p>
+  <nb-aviso corpo tipo="perigo">{{ erro() }}</nb-aviso>
   }
 
   <span rodape>

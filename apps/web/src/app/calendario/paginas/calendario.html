@@ -41,25 +41,12 @@
       </button>
     </div>
 
-    <!--
-      Alternador de visão. `radiogroup` e não três botões soltos: a escolha é
-      exclusiva, e é isso que o leitor de tela precisa ouvir — com botões,
-      nenhum deles anunciaria estar selecionado.
-    -->
-    <div class="visoes" role="radiogroup" aria-label="Visão do calendário">
-      @for (opcao of visoes; track opcao.valor) {
-      <button
-        class="visao"
-        type="button"
-        role="radio"
-        [class.visao--ativa]="visao() === opcao.valor"
-        [attr.aria-checked]="visao() === opcao.valor"
-        (click)="mudarVisao(opcao.valor)"
-      >
-        {{ opcao.rotulo }}
-      </button>
-      }
-    </div>
+    <nb-alternador
+      rotulo="Visão do calendário"
+      [opcoes]="visoes"
+      [valor]="visao()"
+      (escolhido)="mudarVisao($event)"
+    />
 
     <div class="conta">
       <span class="avatar" aria-hidden="true">{{ iniciais() }}</span>
@@ -86,9 +73,9 @@
             -->
           <label class="agenda">
             <input
-              class="agenda-caixa"
+              class="nb-caixa agenda-caixa"
               type="checkbox"
-              [style.accent-color]="agenda.color"
+              [style.--c]="agenda.color"
               [checked]="!estaOculta(agenda.id)"
               (change)="alternarAgenda(agenda.id)"
             />
@@ -155,7 +142,7 @@
 
     <main class="principal">
       @if (erro(); as mensagem) {
-      <p class="erro" role="alert">{{ mensagem }}</p>
+      <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
       } @if (visao() === 'MONTH') {
       <nb-visao-de-mes
         [grade]="grade()"

@@ -10,7 +10,7 @@
  * cairiam fora da semana conforme o dia em que a suíte roda.
  */
 import { test, expect, type Locator, type Page } from '@playwright/test';
-import { entrar, restaurarBanco } from './apoio';
+import { corDaPrimeiraOrbita, entrar, restaurarBanco } from './apoio';
 
 async function criarEventoAs9h(page: Page, titulo: string): Promise<void> {
   await page.getByRole('radio', { name: 'Dia' }).click();
@@ -98,10 +98,7 @@ test.describe('semana e dia', () => {
       };
     });
     // A cor da agenda, como a barra lateral a mostra na caixa de seleção.
-    const corDaAgenda = await page
-      .locator('.agenda-caixa')
-      .first()
-      .evaluate((el) => getComputedStyle(el).accentColor);
+    const corDaAgenda = await corDaPrimeiraOrbita(page);
 
     expect(barra.largura).toBe(3);
     expect(barra.cor).toBe(corDaAgenda);
@@ -241,10 +238,7 @@ test.describe('semana e dia', () => {
         cor: e.borderLeftColor,
       };
     });
-    const corDaAgenda = await page
-      .locator('.agenda-caixa')
-      .first()
-      .evaluate((el) => getComputedStyle(el).accentColor);
+    const corDaAgenda = await corDaPrimeiraOrbita(page);
 
     expect(estilo.barra).toBe(3);
     expect(estilo.raio).toBeCloseTo(2.1, 1);

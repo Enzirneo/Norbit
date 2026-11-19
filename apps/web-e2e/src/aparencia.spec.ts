@@ -160,7 +160,7 @@ test.describe('casca do app', () => {
     const blocos = [
       await caixaDe(page.locator('.topo nb-marca')),
       await caixaDe(page.locator('.navegacao')),
-      await caixaDe(page.locator('.visoes')),
+      await caixaDe(page.locator('.alternador')),
       await caixaDe(page.locator('.conta')),
     ];
 

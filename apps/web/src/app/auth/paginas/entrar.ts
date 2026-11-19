@@ -17,10 +17,11 @@ import {
   errosDoZod,
   type ErrosPorCampo,
 } from '../erros-de-formulario';
+import { Aviso } from '../../ui/aviso';
 
 @Component({
   selector: 'nb-entrar',
-  imports: [ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
+  imports: [Aviso, ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
   templateUrl: './entrar.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -18,10 +18,11 @@ import { Botao } from '../../ui/botao';
 import { AuthService } from '../auth.service';
 import { errosDaApi } from '../erros-de-formulario';
 import { Moldura } from './moldura';
+import { Aviso } from '../../ui/aviso';
 
 @Component({
   selector: 'nb-confirmar-email',
-  imports: [RouterLink, Moldura, Botao],
+  imports: [Aviso, RouterLink, Moldura, Botao],
   templateUrl: './confirmar-email.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

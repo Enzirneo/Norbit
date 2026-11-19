@@ -44,20 +44,27 @@ time,
   outline-offset: 2px;
 }
 
-/* ── Controle de formulário ──────────────────────────────────────────────────
+/* ── Controles de formulário ─────────────────────────────────────────────────
  *
- * Global, e não dentro do componente `nb-campo`, porque o controle é conteúdo
- * projetado: estilizá-lo de dentro exigiria `::ng-deep`, que é depreciado.
- * Esta é a alternativa honesta — uma classe que a página aplica no input.
+ * Globais, e não dentro de um componente, porque o controle é conteúdo
+ * projetado: estilizá-lo de dentro exigiria `::ng-deep`, que é depreciado. Esta é
+ * a alternativa honesta — uma classe que a página aplica no controle.
+ *
+ * **Um campo só.** Havia duas definições (esta e uma cópia local em dois
+ * arquivos), com paddings e tamanhos de fonte diferentes. Qualquer campo novo usa
+ * `.nb-entrada`, e o estilo local não deve voltar.
  */
 .nb-entrada {
   width: 100%;
   padding: calc(var(--space-unit) * 2.5) calc(var(--space-unit) * 3);
   border: 1px solid var(--border-default);
-  border-radius: calc(var(--space-unit) * 2);
+  border-radius: var(--raio-p);
   background-color: color-mix(in oklab, var(--surface-sunken) 60%, transparent);
   color: var(--text-primary);
   font: inherit;
+  /* 16px, e não 15: abaixo disso o iPhone dá zoom na tela ao focar o campo, e o
+     app vai para o iPhone. */
+  font-size: 1rem;
   transition:
     border-color var(--duration-quick) var(--ease-settle),
     background-color var(--duration-quick) var(--ease-settle);
@@ -66,7 +73,7 @@ time,
     color: var(--text-muted);
   }
 
-  &:hover:not(:focus) {
+  &:hover:not(:focus, :disabled) {
     border-color: var(--text-muted);
   }
 
@@ -80,6 +87,89 @@ time,
 
   &[aria-invalid='true'] {
     border-color: var(--state-danger);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+}
+
+textarea.nb-entrada {
+  resize: vertical;
+}
+
+/*
+ * A caixa de seleção e o rádio, na linguagem do resto: raio de forma e a cor do
+ * destaque. `appearance: none` troca o desenho do sistema por um que acompanha o
+ * tema e os cantos.
+ *
+ * A cor vem de `--c` quando o elemento a define (a caixa de uma órbita se enche
+ * da cor da órbita) e do destaque do tema quando não. O sinal de marcado usa
+ * `--text-on-accent`; para uma cor de órbita qualquer o contraste dele não é
+ * garantido, e é um dos motivos de o motor de temas existir.
+ */
+.nb-caixa {
+  position: relative;
+  flex: none;
+  appearance: none;
+  inline-size: 1.125rem;
+  block-size: 1.125rem;
+  margin: 0;
+  border: 1.5px solid var(--border-default);
+  border-radius: calc(var(--raio-p) * 0.6);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-quick) var(--ease-settle),
+    background-color var(--duration-quick) var(--ease-settle);
+
+  &:hover:not(:disabled) {
+    border-color: var(--text-muted);
+  }
+
+  &:checked {
+    border-color: var(--c, var(--accent));
+    background: var(--c, var(--accent));
+  }
+
+  /* O sinal de marcado: um "✓" feito de duas bordas, sem imagem nem cor fixa. */
+  &:checked::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 32%;
+    height: 58%;
+    margin: auto;
+    border: solid var(--text-on-accent);
+    border-width: 0 2px 2px 0;
+    rotate: 45deg;
+    translate: 0 -8%;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  &[type='radio'] {
+    border-radius: var(--raio-pilula);
+
+    /* No rádio o sinal é um ponto. */
+    &:checked::after {
+      width: 38%;
+      height: 38%;
+      border: 0;
+      border-radius: var(--raio-pilula);
+      background: var(--text-on-accent);
+      rotate: none;
+      translate: none;
+    }
   }
 }
 

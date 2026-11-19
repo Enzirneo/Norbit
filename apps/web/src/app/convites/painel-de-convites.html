@@ -56,7 +56,7 @@
   </div>
 
   @if (e['formulario']) {
-  <p class="erro" role="alert">{{ e['formulario'] }}</p>
+  <nb-aviso tipo="perigo">{{ e['formulario'] }}</nb-aviso>
   }
 
   <button nb-botao type="submit" [ocupado]="enviando()">

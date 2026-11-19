@@ -23,16 +23,19 @@ import {
 import { Botao } from '../../ui/botao';
 import { Campo } from '../../ui/campo';
 import { Marca } from '../../ui/marca';
+import { ToastService } from '../../ui/toast.service';
 import { iniciaisDe } from '../iniciais';
 import { ApagarConta } from '../apagar-conta';
 import { PerfilService } from '../perfil.service';
 import { SessoesAtivas } from '../sessoes-ativas';
 import { TrocaDeEmail } from '../troca-de-email';
 import { TrocaDeSenha } from '../troca-de-senha';
+import { Aviso } from '../../ui/aviso';
 
 @Component({
   selector: 'nb-perfil',
   imports: [
+    Aviso,
     ReactiveFormsModule,
     ApagarConta,
     Botao,
@@ -77,9 +80,10 @@ export class Perfil {
     timeZone: this.usuario()?.timeZone ?? '',
   });
 
+  private readonly toasts = inject(ToastService);
+
   protected readonly erros = signal<ErrosPorCampo>({});
   protected readonly salvando = signal(false);
-  protected readonly salvo = signal(false);
 
   protected iniciais(): string {
     return iniciaisDe(this.usuario()?.displayName ?? '');
@@ -90,7 +94,6 @@ export class Perfil {
   }
 
   protected salvar(): void {
-    this.salvo.set(false);
     const validado = atualizarPerfilSchema.safeParse(
       this.formulario.getRawValue(),
     );
@@ -106,7 +109,7 @@ export class Perfil {
     this.perfil.atualizar(validado.data).subscribe({
       next: (usuario) => {
         this.salvando.set(false);
-        this.salvo.set(true);
+        this.toasts.mostrar('Perfil salvo.');
         // O servidor devolve a forma canônica (handle em minúsculas, fuso com a
         // grafia certa); o formulário passa a mostrá-la.
         this.formulario.reset({

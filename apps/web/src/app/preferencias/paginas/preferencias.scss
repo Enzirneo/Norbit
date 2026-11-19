@@ -63,22 +63,6 @@
   text-transform: uppercase;
 }
 
-.entrada {
-  width: 100%;
-  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 3);
-  border: 1px solid var(--border-default);
-  border-radius: calc(var(--space-unit) * 2);
-  background: var(--surface-sunken);
-  color: var(--text-primary);
-  font: inherit;
-  font-size: 0.9375rem;
-
-  &:focus-visible {
-    outline: 2px solid var(--border-focus);
-    outline-offset: 1px;
-  }
-}
-
 .acentos {
   display: flex;
   gap: calc(var(--space-unit) * 2);
@@ -113,8 +97,6 @@
 
   input {
     margin-block-start: 2px;
-    accent-color: var(--accent);
-    cursor: pointer;
   }
 }
 
@@ -124,22 +106,4 @@
   color: var(--text-muted);
   font-size: 0.8125rem;
   line-height: 1.5;
-}
-
-.aviso {
-  margin: 0;
-  padding: calc(var(--space-unit) * 3);
-  border: 1px solid var(--state-danger);
-  border-radius: calc(var(--space-unit) * 2);
-  background: color-mix(in oklab, var(--state-danger) 12%, transparent);
-  font-size: 0.875rem;
-}
-
-/* Reserva a linha: sem altura mínima, o "Salvando…" empurra o conteúdo a cada
-   alteração. */
-.estado {
-  min-height: 1.25rem;
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.8125rem;
 }

@@ -7,7 +7,7 @@
  * suíte roda.
  */
 import { test, expect, type Locator, type Page } from '@playwright/test';
-import { entrar, restaurarBanco } from './apoio';
+import { corDaPrimeiraOrbita, entrar, restaurarBanco } from './apoio';
 
 // 15h30 de quarta, 18 de novembro de 2026, em São Paulo.
 const AGORA_FIXO = new Date('2026-11-18T18:30:00.000Z');
@@ -73,10 +73,7 @@ test.describe('mês', () => {
         raio: parseFloat(e.borderTopLeftRadius),
       };
     });
-    const corDaAgenda = await page
-      .locator('.agenda-caixa')
-      .first()
-      .evaluate((el) => getComputedStyle(el).accentColor);
+    const corDaAgenda = await corDaPrimeiraOrbita(page);
 
     expect(estilo.largura).toBe(3);
     expect(estilo.cor).toBe(corDaAgenda);
@@ -198,7 +195,7 @@ test.describe('casca', () => {
     const alvos = [
       page.locator('.agenda-acao').first(),
       page.locator('.lateral-link').first(),
-      page.locator('.visao').first(),
+      page.locator('.opcao').first(),
     ];
 
     // `--raio-p` é o próprio `--r`: 6px, e 16px quando a pessoa pede.

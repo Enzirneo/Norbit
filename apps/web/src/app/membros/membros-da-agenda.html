@@ -2,7 +2,7 @@
   <h3 id="titulo-dos-membros" class="subtitulo">Membros</h3>
 
   @if (erro(); as mensagem) {
-  <p class="erro" role="alert">{{ mensagem }}</p>
+  <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
   } @if (carregando()) {
   <p class="aviso" role="status">Carregando…</p>
   } @else {

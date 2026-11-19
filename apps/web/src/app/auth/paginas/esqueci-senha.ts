@@ -16,10 +16,11 @@ import {
 } from '../erros-de-formulario';
 import { RecuperacaoService } from '../recuperacao.service';
 import { Moldura } from './moldura';
+import { Aviso } from '../../ui/aviso';
 
 @Component({
   selector: 'nb-esqueci-senha',
-  imports: [ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
+  imports: [Aviso, ReactiveFormsModule, RouterLink, Moldura, Campo, Botao],
   templateUrl: './esqueci-senha.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

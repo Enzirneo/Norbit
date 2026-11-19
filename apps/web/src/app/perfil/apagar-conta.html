@@ -30,7 +30,7 @@
   </nb-campo>
 
   @if (e['formulario']) {
-  <p role="alert" class="text-sm text-danger">{{ e['formulario'] }}</p>
+  <nb-aviso tipo="perigo">{{ e['formulario'] }}</nb-aviso>
   }
 
   <div class="flex gap-5">

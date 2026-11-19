@@ -11,9 +11,6 @@
   <main class="conteudo">
     <div class="cabecalho">
       <h1 class="titulo">Perfil</h1>
-      <p class="estado" aria-live="polite">
-        @if (salvando()) { Salvando… } @else if (salvo()) { Perfil salvo. }
-      </p>
     </div>
 
     <section class="secao">
@@ -34,7 +31,7 @@
             type="text"
             formControlName="displayName"
             autocomplete="name"
-            class="entrada"
+            class="nb-entrada"
             [attr.aria-invalid]="e['displayName'] ? 'true' : null"
           />
         </nb-campo>
@@ -48,7 +45,7 @@
             type="text"
             formControlName="handle"
             autocomplete="username"
-            class="entrada"
+            class="nb-entrada"
             [attr.aria-invalid]="e['handle'] ? 'true' : null"
           />
         </nb-campo>
@@ -62,7 +59,7 @@
             type="text"
             formControlName="timeZone"
             list="fusos"
-            class="entrada"
+            class="nb-entrada"
             [attr.aria-invalid]="e['timeZone'] ? 'true' : null"
           />
           <datalist id="fusos">
@@ -73,7 +70,7 @@
         </nb-campo>
 
         @if (e['formulario']) {
-        <p role="alert" class="aviso">{{ e['formulario'] }}</p>
+        <nb-aviso tipo="perigo">{{ e['formulario'] }}</nb-aviso>
         }
 
         <button nb-botao type="submit" [ocupado]="salvando()">Salvar</button>
