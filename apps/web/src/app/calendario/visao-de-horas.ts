@@ -30,6 +30,7 @@ import {
   distribuirColunas,
   faixaNoDia,
   faixasDaSemana,
+  faseDoDia,
   horasDoDia,
   instanteNaGrade,
   intervaloDosDias,
@@ -41,11 +42,13 @@ import {
   celulasDeHora,
   type CelulaDeHora,
   comoTexto,
+  fracaoDoPassado,
   horarioDe,
   mesmoDia,
   rotuloCurtoDe,
   rotuloDeHora,
 } from './apoio-da-grade';
+import { Lua } from '../ui/lua';
 import { GestoDeArrasto, type ModoDeArrasto } from './gesto-de-arrasto';
 
 /**
@@ -62,8 +65,8 @@ const PASSO_DA_LINHA_DE_AGORA = 60_000;
 type FaixaComHora = {
   readonly chave: string;
   readonly ocorrencia: OcorrenciaVisivel;
-  readonly fundo: string;
-  readonly borda: string;
+  /** A cor da agenda: vira `--c` no CSS, de onde saem a barra e o fundo. */
+  readonly cor: string;
   /** Porcentagens, prontas para `top`, `height`, `left` e `width`. */
   readonly topo: number;
   readonly altura: number;
@@ -98,13 +101,16 @@ type Coluna = {
   readonly faixas: readonly FaixaComHora[];
   /** Posição da linha de agora, em porcentagem, ou `null` se não é hoje. */
   readonly agora: number | null;
+  /** Quanto da coluna, de cima para baixo, já é passado (0 a 100). */
+  readonly passado: number;
+  /** A fase da lua do dia, de 0 a 1. */
+  readonly fase: number;
 };
 
 type FaixaDeDiaInteiro = {
   readonly chave: string;
   readonly ocorrencia: OcorrenciaVisivel;
-  readonly fundo: string;
-  readonly borda: string;
+  readonly cor: string;
   readonly coluna: number;
   readonly colunas: number;
   readonly trilha: number;
@@ -112,6 +118,7 @@ type FaixaDeDiaInteiro = {
 
 @Component({
   selector: 'nb-visao-de-horas',
+  imports: [Lua],
   templateUrl: './visao-de-horas.html',
   styleUrl: './visao-de-horas.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -218,7 +225,7 @@ export class VisaoDeHoras {
         {
           chave: faixa.id,
           ocorrencia,
-          ...pinturaDe(cores.get(ocorrencia.calendarId)),
+          cor: corDaAgenda(cores.get(ocorrencia.calendarId)),
           coluna: faixa.de + 1,
           colunas: faixa.ate - faixa.de + 1,
           trilha: faixa.trilha,
@@ -420,6 +427,8 @@ export class VisaoDeHoras {
     comHora: readonly OcorrenciaVisivel[],
     cores: ReadonlyMap<string, string>,
   ): Coluna {
+    const agora = this.posicaoDeAgora(dia);
+
     return {
       dia,
       rotuloCurto: rotuloCurtoDe(dia),
@@ -431,7 +440,9 @@ export class VisaoDeHoras {
         this.vinteEQuatroHoras(),
       ),
       faixas: this.faixasDoDia(dia, comHora, cores),
-      agora: this.posicaoDeAgora(dia),
+      agora,
+      passado: fracaoDoPassado(dia, this.hoje(), agora),
+      fase: faseDoDia(dia),
     };
   }
 
@@ -477,7 +488,7 @@ export class VisaoDeHoras {
         {
           chave: c.id,
           ocorrencia,
-          ...pinturaDe(cores.get(ocorrencia.calendarId)),
+          cor: corDaAgenda(cores.get(ocorrencia.calendarId)),
           topo: c.topo * 100,
           altura: c.altura * 100,
           esquerda: (c.coluna / c.colunas) * 100,
@@ -524,13 +535,9 @@ function chaveDa(ocorrencia: OcorrenciaVisivel): string {
   return `${ocorrencia.id}|${ocorrencia.inicioOriginal}`;
 }
 
-function pinturaDe(cor: string | undefined): { fundo: string; borda: string } {
-  const base = cor ?? 'var(--accent)';
-
-  return {
-    fundo: `color-mix(in oklab, ${base} 26%, transparent)`,
-    borda: base,
-  };
+/** A cor da agenda, ou o destaque do tema se a agenda não está na lista. */
+function corDaAgenda(cor: string | undefined): string {
+  return cor ?? 'var(--accent)';
 }
 
 /**

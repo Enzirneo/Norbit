@@ -11,8 +11,11 @@
       100 + coluna.dia.dia) {
       <div class="dia-cabecalho" [class.dia-cabecalho--hoje]="coluna.ehHoje">
         <span class="dia-nome">{{ coluna.rotuloCurto }}</span>
-        <span class="dia-numero" [class.dia-numero--hoje]="coluna.ehHoje">
-          {{ coluna.numero }}
+        <span class="dia-linha">
+          <span class="dia-numero" [class.dia-numero--hoje]="coluna.ehHoje">
+            {{ coluna.numero }}
+          </span>
+          <nb-lua [fase]="coluna.fase" />
         </span>
       </div>
       }
@@ -33,8 +36,7 @@
         type="button"
         [style.grid-column]="faixa.coluna + ' / span ' + faixa.colunas"
         [style.grid-row]="faixa.trilha + 1"
-        [style.background-color]="faixa.fundo"
-        [style.border-inline-start-color]="faixa.borda"
+        [style.--c]="faixa.cor"
         (click)="selecionada.emit(faixa.ocorrencia)"
       >
         {{ faixa.ocorrencia.title }}
@@ -97,8 +99,7 @@
           [style.height.%]="faixa.altura"
           [style.left.%]="faixa.esquerda"
           [style.width.%]="faixa.largura"
-          [style.background-color]="faixa.fundo"
-          [style.border-inline-start-color]="faixa.borda"
+          [style.--c]="faixa.cor"
           (pointerdown)="iniciarArrasto($event, faixa)"
           (click)="selecionada.emit(faixa.ocorrencia)"
         >
@@ -108,6 +109,12 @@
           <span class="alca" aria-hidden="true"></span>
           }
         </button>
+        } @if (coluna.passado > 0) {
+        <span
+          class="passado"
+          [style.height.%]="coluna.passado"
+          aria-hidden="true"
+        ></span>
         } @if (coluna.agora !== null) {
         <span
           class="agora"

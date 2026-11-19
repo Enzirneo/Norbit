@@ -11,6 +11,7 @@ import type {
   OcorrenciaVisivel,
   PapelNaAgenda,
 } from '@norbit/contracts';
+import { faseDoDia, iluminacao, nomeDaFase } from '@norbit/domain';
 import { VisaoDeHoras } from './visao-de-horas';
 
 const FUSO = 'America/Sao_Paulo';
@@ -157,5 +158,82 @@ describe('VisaoDeHoras — quem pode arrastar', () => {
     expect(primeiro?.classList.contains('faixa--arrastavel')).toBe(true);
     expect(primeiro?.querySelector('.alca')).toBeNull();
     expect(segundo?.querySelector('.alca')).not.toBeNull();
+  });
+});
+
+/** Monta a grade com os dias dados e as ocorrências dadas. */
+function montarDias(
+  dias: { ano: number; mes: number; dia: number }[],
+  hoje: { ano: number; mes: number; dia: number },
+  ocorrencias: OcorrenciaVisivel[] = [],
+  agendas: AgendaVisivel[] = [agenda('OWNER')],
+): HTMLElement {
+  const fixture = TestBed.createComponent(VisaoDeHoras);
+  fixture.componentRef.setInput('dias', dias);
+  fixture.componentRef.setInput('agendas', agendas);
+  fixture.componentRef.setInput('ocorrencias', ocorrencias);
+  fixture.componentRef.setInput('fuso', FUSO);
+  fixture.componentRef.setInput('hoje', hoje);
+  fixture.componentRef.setInput('vinteEQuatroHoras', true);
+  fixture.componentRef.setInput('usuarioId', EU);
+  fixture.detectChanges();
+
+  return fixture.nativeElement as HTMLElement;
+}
+
+describe('VisaoDeHoras — a linguagem da semana', () => {
+  it('cada dia mostra a lua do dia, com o nome e a iluminação certos', () => {
+    const dias = [DIA, { ...DIA, dia: 16 }, { ...DIA, dia: 17 }];
+    const raiz = montarDias(dias, DIA);
+
+    const rotulos = Array.from(raiz.querySelectorAll('.dias nb-lua svg')).map(
+      (svg) => svg.getAttribute('aria-label'),
+    );
+
+    expect(rotulos).toEqual(
+      dias.map((d) => {
+        const fase = faseDoDia(d);
+        return `${nomeDaFase(fase)}, ${iluminacao(fase)}% iluminada`;
+      }),
+    );
+  });
+
+  it('a cor da agenda chega à faixa como `--c`, e é dela que saem a barra e o fundo', () => {
+    const raiz = montar('OWNER');
+
+    expect(faixa(raiz, 'Meu').style.getPropertyValue('--c')).toBe('#a97bff');
+  });
+
+  it('uma agenda fora da lista cai no destaque do tema', () => {
+    const raiz = montarDias(
+      [DIA],
+      DIA,
+      [{ ...ocorrencia(EU, 'Sem agenda'), calendarId: 'agenda-que-sumiu' }],
+      [],
+    );
+
+    expect(faixa(raiz, 'Sem agenda').style.getPropertyValue('--c')).toBe(
+      'var(--accent)',
+    );
+  });
+
+  it('um dia que já acabou escurece inteiro, e um que ainda vem não escurece', () => {
+    const passado = { ...DIA, dia: 14 };
+    const futuro = { ...DIA, dia: 16 };
+    const raiz = montarDias([passado, DIA, futuro], DIA);
+
+    const colunas = Array.from(raiz.querySelectorAll<HTMLElement>('.coluna'));
+    const camada = (c: HTMLElement): HTMLElement | null =>
+      c.querySelector('.passado');
+
+    expect(camada(colunas[0])?.style.height).toBe('100%');
+    expect(camada(colunas[2])).toBeNull();
+  });
+
+  it('a camada do passado não captura o ponteiro nem é lida por leitor de tela', () => {
+    const raiz = montarDias([{ ...DIA, dia: 14 }], DIA);
+    const camada = raiz.querySelector('.passado');
+
+    expect(camada?.getAttribute('aria-hidden')).toBe('true');
   });
 });

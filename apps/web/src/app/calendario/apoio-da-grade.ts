@@ -54,6 +54,36 @@ export function mesmoDia(a: DataCivil, b: DataCivil): boolean {
   return a.ano === b.ano && a.mes === b.mes && a.dia === b.dia;
 }
 
+/** -1 se `a` vem antes de `b`, 1 se vem depois, 0 se é o mesmo dia. */
+export function compararDias(a: DataCivil, b: DataCivil): -1 | 0 | 1 {
+  const diferenca = a.ano - b.ano || a.mes - b.mes || a.dia - b.dia;
+  return Math.sign(diferenca) as -1 | 0 | 1;
+}
+
+/**
+ * Quanto de uma coluna, de cima para baixo, já é passado: de 0 a 100.
+ *
+ * Um dia que acabou escurece inteiro, um que ainda vem não escurece, e hoje
+ * escurece até a linha de agora. É a hierarquia de tempo da grade: o passado
+ * recua, e o que sobra em destaque é o que ainda dá para fazer.
+ *
+ * `agora` é a posição da linha de agora em hoje, em porcentagem, ou `null` se
+ * ela está fora da grade.
+ */
+export function fracaoDoPassado(
+  dia: DataCivil,
+  hoje: DataCivil,
+  agora: number | null,
+): number {
+  const ordem = compararDias(dia, hoje);
+
+  if (ordem < 0) {
+    return 100;
+  }
+
+  return ordem === 0 ? (agora ?? 0) : 0;
+}
+
 export function comoTexto(dia: DataCivil): string {
   return `${dia.ano}-${dois(dia.mes)}-${dois(dia.dia)}`;
 }

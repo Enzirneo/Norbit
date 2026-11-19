@@ -80,6 +80,34 @@ clique em outro.
 > comportamento esperado de um calendário — não se clica "dentro" de um evento para criar
 > outro —, e o caminho é criar numa hora livre e ajustar o horário no formulário.
 
+## A linguagem: "o calendário como protagonista"
+
+A semana e o dia seguem a [especificação do design system](superpowers/specs/2026-11-19-design-system-design.md):
+a moldura é macia, o conteúdo é firme, o tempo tem hierarquia e o espaço é informação.
+
+- **O evento é mais reto que a moldura.** O quadro usa `--raio-tela` (`--r` × 2,2) e o evento, `--r-ev`
+  (`--r` × 0,35): com cantos de 6px, 13,2px e 2,1px; com 16px, 35,2px e 5,6px; com 0, tudo reto. O teste
+  mede os três valores.
+- **Barra de cor à esquerda.** 3px na cor da agenda (a mesma que a barra lateral mostra na caixa de
+  seleção), com o fundo tingido a 17% sobre a superfície afundada. A cor chega ao CSS como a variável
+  `--c` (`[style.--c]`), e **o CSS é quem calcula** a barra, o fundo e a cor do horário: o TypeScript deixou
+  de carregar `color-mix` e de devolver `fundo` e `borda`. O evento de dia inteiro tem a mesma barra e o
+  mesmo raio.
+- **O horário em fonte monoespaçada** (`--fonte-mono`, da camada de forma), na cor da agenda, e o título em
+  negrito.
+- **O passado recua.** Uma camada translúcida cobre a coluna de cima até a linha de agora, e a coluna
+  inteira num dia que já acabou; o futuro não é tocado. A regra é `fracaoDoPassado` (função pura, testada),
+  e a camada tem `pointer-events: none`: **dá para criar um evento numa hora que já passou**, e há um teste
+  que clica sob a camada.
+- **Hoje brilha**, com `--brilho-destaque` no número e um gradiente suave na coluna.
+- **O "agora" é uma órbita:** um anel de 11px com o miolo da cor do fundo e brilho, na ponta da linha.
+- **A lua em cada dia**, ao lado do número, com a fase do dia (ver [24](24-lua.md)).
+- **A grade ganhou a meia hora**: um tracejado no meio de cada hora.
+
+Um defeito meu, achado olhando a tela com eventos reais: para o teste do passado usei um relógio fixo
+(`page.clock.setFixedTime`), mas os eventos que o teste mede ele mesmo cria, porque os do seed são
+relativos ao dia real em que a suíte roda.
+
 ## Onde a grade abre
 
 A grade tem 24 horas e a janela mostra umas 13, então onde ela **abre** importa. Abrir à meia-noite
