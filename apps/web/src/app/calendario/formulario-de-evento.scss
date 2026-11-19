@@ -26,15 +26,30 @@ textarea.entrada {
   resize: vertical;
 }
 
+/*
+ * Início e Fim empilhados, cada um na largura toda do diálogo.
+ *
+ * Lado a lado, cada coluna tinha ~226px, e a data (~140px) mais a hora (~128px)
+ * não cabem nisso: os dois campos passavam por cima um do outro e o diálogo
+ * ganhava rolagem horizontal. Empilhar troca um pouco de altura por campos que
+ * nunca se sobrepõem, em qualquer largura.
+ */
 .periodo {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
-  gap: calc(var(--space-unit) * 3);
+  grid-template-columns: minmax(0, 1fr);
+  gap: calc(var(--space-unit) * 4);
 }
 
+/* A data cresce, a hora tem largura de uma hora. `minmax(0, 1fr)` deixa a
+   coluna encolher abaixo do tamanho mínimo do `<input type="date">`. */
 .par {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: calc(var(--space-unit) * 2);
+}
+
+.par .entrada[type='time'] {
+  width: 7.5rem;
 }
 
 .marcacao {

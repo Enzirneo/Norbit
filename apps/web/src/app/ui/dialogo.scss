@@ -1,6 +1,10 @@
 /* O `<dialog>` nativo, vestido com a camada semântica. */
 
 .dialogo {
+  /* O reset do Tailwind zera a margem de todo elemento, e é essa margem
+     automática (junto de `inset: 0`, do agente de usuário) que centraliza um
+     `<dialog>` modal: sem ela ele abre colado no canto superior esquerdo. */
+  margin: auto;
   width: min(32rem, calc(100vw - var(--space-unit) * 8));
   max-height: calc(100dvh - var(--space-unit) * 16);
   padding: calc(var(--space-unit) * 6);
