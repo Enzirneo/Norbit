@@ -12,7 +12,9 @@ import { join } from 'node:path';
 import {
   FORMA_DERIVADA,
   FORMA_PADRAO,
-  nebula,
+  TEMAS_PRONTOS,
+  VARIAVEIS_SEMANTICAS,
+  derivar,
   primitives,
   tokensDeForma,
   toCssVariables,
@@ -41,7 +43,9 @@ const camadaPrimitiva = primitives
  * `--surface-base`, `--text-primary` — porque é esse o contrato: um componente
  * pode sempre escrever `var(--text-primary)`.
  */
-const camadaSemantica = recuar(toCssVariables(nebula, 'nb'))
+const camadaSemantica = recuar(
+  toCssVariables(derivar(TEMAS_PRONTOS.nebula).tokens, 'nb'),
+)
   // O prefixo serve só para o gerador não exigir string vazia; os nomes
   // publicados são os do documento.
   .replace(/--nb-/g, '--');
@@ -75,30 +79,10 @@ const PARA_TAILWIND: Record<string, keyof TemaSemantico> = {
   danger: 'stateDanger',
 };
 
-const VARIAVEL_SEMANTICA: Record<keyof TemaSemantico, string> = {
-  surfaceBase: '--surface-base',
-  surfaceRaised: '--surface-raised',
-  surfaceOverlay: '--surface-overlay',
-  surfaceSunken: '--surface-sunken',
-  textPrimary: '--text-primary',
-  textSecondary: '--text-secondary',
-  textMuted: '--text-muted',
-  textOnAccent: '--text-on-accent',
-  borderSubtle: '--border-subtle',
-  borderDefault: '--border-default',
-  borderFocus: '--border-focus',
-  accent: '--accent',
-  accentHover: '--accent-hover',
-  accentMuted: '--accent-muted',
-  stateSuccess: '--state-success',
-  stateWarning: '--state-warning',
-  stateDanger: '--state-danger',
-};
-
 const utilitarios = Object.entries(PARA_TAILWIND)
   .map(
     ([classe, token]) =>
-      `  --color-${classe}: var(${VARIAVEL_SEMANTICA[token]});`,
+      `  --color-${classe}: var(${VARIAVEIS_SEMANTICAS[token]});`,
   )
   .join('\n');
 

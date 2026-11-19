@@ -382,6 +382,18 @@ são sementes; os valores de `eclipse`, `dawn`, `vacuum` e dos fundos são um pr
 O `nebula` derivado mantém fundo e destaque idênticos aos de hoje, mas os tons intermediários (texto de
 apoio, bordas) não são os escritos à mão em `semanticos.ts`: só passam a valer quando a web usar o motor (PR F).
 
+### O tema na conta e na web
+
+- `UserSettings.appearance` (JSON, `temaSchema` em `libs/contracts`): `{ v, base, sementes, forma }`. Nulo numa
+  conta ainda não migrada: a API deriva do par antigo (`temaLegado`); inválido: tema padrão. Escrever `tema`
+  mantém `accentColor` em dia, e escrever só `accentColor` atualiza o destaque do tema (expandir/contrair: o par
+  antigo sai numa migração própria, quando a web deixar de lê-lo).
+- A web chama `derivar(sementes)` e escreve **todos** os tokens, mais `--r`, `--estrelas` e `color-scheme`, no
+  `<html>`; o cache guarda esses valores. O CSS padrão (`tokens.generated.css`) é o nebula **derivado**, então
+  não há troca visível no primeiro quadro. Ao sair, o tema da pessoa é tirado da página.
+- A migração preenche `appearance` do par antigo: a conta com `themePreset: dawn` (Maria, no seed) passa a ter
+  de fato o tema claro, que antes era ignorado.
+
 ## Armadilhas de CSS que já custaram caro
 
 Os testes de componente não enxergam CSS, e foi por isso que estes dois passaram por dezenas de

@@ -58,22 +58,22 @@
    redefine este bloco e nenhum componente é tocado. */
 :root {
   --surface-base: #0b0d17;
-  --surface-raised: #13162a;
-  --surface-overlay: #1c2038;
-  --surface-sunken: #070812;
-  --text-primary: #f4f5fa;
-  --text-secondary: #c9cde0;
-  --text-muted: #9aa0bc;
-  --text-on-accent: #070812;
-  --border-subtle: #1c2038;
-  --border-default: #6e7595;
+  --surface-raised: #12151f;
+  --surface-overlay: #1a1d28;
+  --surface-sunken: #060811;
+  --text-primary: #f6f8ff;
+  --text-secondary: #8b8e98;
+  --text-muted: #7e808a;
+  --text-on-accent: #04050d;
+  --border-subtle: #21232f;
+  --border-default: #666976;
   --border-focus: #6d7cff;
   --accent: #6d7cff;
-  --accent-hover: #8793ff;
-  --accent-muted: #1f2547;
-  --state-success: #4adebb;
-  --state-warning: #ffb357;
-  --state-danger: #ff6b8a;
+  --accent-hover: #7a8aff;
+  --accent-muted: #1e2342;
+  --state-success: #26cb96;
+  --state-warning: #e49e22;
+  --state-danger: #ff828f;
 }
 
 /* Camada de forma — cantos, sombras, vidro, brilho, estrelas e alvo de toque.

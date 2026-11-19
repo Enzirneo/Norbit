@@ -8,6 +8,7 @@
 import { VALORES_DE_ACENTO } from '@norbit/design-tokens';
 import { z } from 'zod';
 import { corHex } from '../agendas/comum';
+import { temaSchema, type Tema } from './tema';
 
 /**
  * A cor de destaque, restrita à paleta que o produto oferece.
@@ -41,6 +42,7 @@ const inicioDaSemana = z.number().int().min(0).max(6);
 export const atualizarPreferenciasSchema = z
   .object({
     accentColor: acento,
+    tema: temaSchema,
     density: densidade,
     reducedMotion: z.boolean(),
     defaultView: z.enum(['MONTH', 'WEEK', 'DAY', 'AGENDA']),
@@ -65,6 +67,8 @@ export type AtualizarPreferencias = z.infer<typeof atualizarPreferenciasSchema>;
  */
 export type PreferenciasVisiveis = {
   readonly accentColor: string;
+  /** O tema completo. `accentColor` continua até a web deixar de lê-lo. */
+  readonly tema: Tema;
   readonly density: number;
   readonly reducedMotion: boolean;
   readonly defaultView: 'MONTH' | 'WEEK' | 'DAY' | 'AGENDA';

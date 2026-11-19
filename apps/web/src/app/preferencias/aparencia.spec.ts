@@ -6,10 +6,12 @@
  * existir. O script é cego de propósito — recebe um mapa genérico de
  * propriedades —, então a lista de nomes mora aqui e em lugar nenhum mais.
  */
-import { ACENTOS } from '@norbit/design-tokens';
+import { TEMA_PADRAO, type Tema } from '@norbit/contracts';
+import { ACENTOS, derivar } from '@norbit/design-tokens';
 import {
   CHAVE_DA_APARENCIA,
   aparenciaDe,
+  aplicarAparencia,
   esquecerAparencia,
   lerAparenciaGuardada,
   guardarAparencia,
@@ -17,6 +19,7 @@ import {
 
 const PADRAO = {
   accentColor: ACENTOS.nebula,
+  tema: TEMA_PADRAO,
   density: 1,
   reducedMotion: false,
   defaultView: 'WEEK' as const,
@@ -25,20 +28,58 @@ const PADRAO = {
 };
 
 describe('aparenciaDe', () => {
-  it('escreve o acento e as cores que derivam dele', () => {
+  it('escreve todos os tokens derivados das sementes do tema', () => {
     const { propriedades } = aparenciaDe(PADRAO);
+    const { tokens } = derivar(TEMA_PADRAO.sementes);
 
+    expect(propriedades['--surface-base']).toBe(tokens.surfaceBase);
+    expect(propriedades['--text-primary']).toBe(tokens.textPrimary);
+    expect(propriedades['--border-default']).toBe(tokens.borderDefault);
+    expect(propriedades['--state-danger']).toBe(tokens.stateDanger);
     expect(propriedades['--accent']).toBe(ACENTOS.nebula);
-    expect(propriedades['--accent-hover']).toBeDefined();
-    expect(propriedades['--accent-muted']).toBe('#1f2345');
-    expect(propriedades['--text-on-accent']).toBeDefined();
+    expect(propriedades['--accent-muted']).toBe(tokens.accentMuted);
   });
 
-  it('o foco acompanha o acento', () => {
+  it('o foco acompanha o destaque', () => {
     // Um anel de foco de outra cor pareceria de outro produto.
     expect(aparenciaDe(PADRAO).propriedades['--border-focus']).toBe(
       ACENTOS.nebula,
     );
+  });
+
+  it('um fundo claro escreve o esquema de cores claro, para os controles nativos', () => {
+    const claro: Tema = {
+      ...TEMA_PADRAO,
+      sementes: { ...TEMA_PADRAO.sementes, fundo: '#f6f1ea' },
+    };
+
+    expect(aparenciaDe(PADRAO).propriedades['color-scheme']).toBe('dark');
+    expect(
+      aparenciaDe({ ...PADRAO, tema: claro }).propriedades['color-scheme'],
+    ).toBe('light');
+  });
+
+  it('escreve a forma: os cantos e as estrelas', () => {
+    const tema: Tema = {
+      ...TEMA_PADRAO,
+      forma: { ...TEMA_PADRAO.forma, cantos: 12, estrelas: false },
+    };
+
+    const { propriedades } = aparenciaDe({ ...PADRAO, tema });
+
+    expect(propriedades['--r']).toBe('12px');
+    expect(propriedades['--estrelas']).toBe('0');
+  });
+
+  it('o tema muda tudo junto: outro fundo, outras superfícies', () => {
+    const outro: Tema = {
+      ...TEMA_PADRAO,
+      sementes: { ...TEMA_PADRAO.sementes, fundo: '#06141b' },
+    };
+
+    expect(
+      aparenciaDe({ ...PADRAO, tema: outro }).propriedades['--surface-base'],
+    ).toBe('#06141b');
   });
 
   it('a densidade escreve a unidade de espaçamento', () => {
@@ -81,7 +122,13 @@ describe('o cache da aparência', () => {
   });
 
   it('guarda e lê de volta', () => {
-    const aparencia = aparenciaDe({ ...PADRAO, accentColor: ACENTOS.aurora });
+    const aparencia = aparenciaDe({
+      ...PADRAO,
+      tema: {
+        ...TEMA_PADRAO,
+        sementes: { ...TEMA_PADRAO.sementes, destaque: ACENTOS.aurora },
+      },
+    });
 
     guardarAparencia(aparencia);
 
@@ -104,6 +151,24 @@ describe('o cache da aparência', () => {
     esquecerAparencia();
 
     expect(lerAparenciaGuardada()).toBeNull();
+  });
+
+  it('esquecer também tira o tema da pessoa da página, e a tela volta ao padrão', () => {
+    const claro: Tema = {
+      ...TEMA_PADRAO,
+      sementes: { ...TEMA_PADRAO.sementes, fundo: '#f6f1ea' },
+    };
+    const aparencia = aparenciaDe({ ...PADRAO, tema: claro });
+    aplicarAparencia(aparencia);
+    guardarAparencia(aparencia);
+    const raiz = document.documentElement;
+    expect(raiz.style.getPropertyValue('--surface-base')).not.toBe('');
+
+    esquecerAparencia();
+
+    // Quem entrar em seguida neste navegador não vê o tema de quem saiu.
+    expect(raiz.style.getPropertyValue('--surface-base')).toBe('');
+    expect(raiz.style.getPropertyValue('color-scheme')).toBe('');
   });
 
   it('um conteúdo corrompido vira "nada guardado", não um erro', () => {

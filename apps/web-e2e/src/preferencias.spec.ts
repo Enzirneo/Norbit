@@ -51,7 +51,17 @@ test.describe('preferências', () => {
 
     await page.getByRole('radio', { name: 'Solar' }).click();
 
-    await expect.poll(() => variavel(page, '--text-on-accent')).toBe('#070812');
+    // Derivada, e não o `#070812` fixo de antes: quase preta, com um toque do
+    // matiz do destaque. O que importa é ser escura e ter contraste (>= 4.5).
+    await expect
+      .poll(async () => {
+        const frente = await variavel(page, '--text-on-accent');
+        const canais = [1, 3, 5].map((i) =>
+          parseInt(frente.slice(i, i + 2), 16),
+        );
+        return frente !== '#070812' && Math.max(...canais) < 40;
+      })
+      .toBe(true);
   });
 
   test('a escolha sobrevive a recarregar a página', async ({ page }) => {
