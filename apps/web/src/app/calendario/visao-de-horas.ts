@@ -14,6 +14,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  afterRenderEffect,
   computed,
   effect,
   inject,
@@ -46,6 +47,14 @@ import {
   rotuloDeHora,
 } from './apoio-da-grade';
 import { GestoDeArrasto, type ModoDeArrasto } from './gesto-de-arrasto';
+
+/**
+ * A hora em que a grade abre quando a tela não mostra hoje.
+ *
+ * Abrir à meia-noite mostra oito horas em que quase ninguém marca nada, e o dia
+ * útil começa abaixo da dobra.
+ */
+const HORA_INICIAL_SEM_HOJE = 7;
 
 /** De quanto em quanto tempo a linha de agora se move. */
 const PASSO_DA_LINHA_DE_AGORA = 60_000;
@@ -125,6 +134,7 @@ export class VisaoDeHoras {
   readonly reagendada = output<Reagendamento>();
 
   private readonly gradeRef = viewChild<ElementRef<HTMLElement>>('grade');
+  private readonly rolagemRef = viewChild<ElementRef<HTMLElement>>('rolagem');
 
   /**
    * O horário provisório da ocorrência em arrasto.
@@ -155,10 +165,15 @@ export class VisaoDeHoras {
     const primeiro = this.dias()[0];
     const marcas = primeiro ? horasDoDia(primeiro, this.fuso()) : [];
 
-    return marcas.map((marca) => ({
-      ...marca,
-      texto: rotuloDeHora(marca.hora, this.vinteEQuatroHoras()),
-    }));
+    // A marca da fração 0 é a borda de cima da grade: o rótulo, centrado no
+    // traço, ficava com metade para fora, cortado. Ela fica sem rótulo, como nos
+    // calendários que a pessoa já conhece; o traço de cima continua lá.
+    return marcas
+      .filter((marca) => marca.posicao > 0)
+      .map((marca) => ({
+        ...marca,
+        texto: rotuloDeHora(marca.hora, this.vinteEQuatroHoras()),
+      }));
   });
 
   protected readonly colunas = computed<readonly Coluna[]>(() => {
@@ -222,6 +237,18 @@ export class VisaoDeHoras {
       PASSO_DA_LINHA_DE_AGORA,
     );
 
+    // A grade abre onde a pessoa vai olhar, e não no topo. Depende só dos dias
+    // na tela: rolar de novo a cada minuto (a linha de agora se move) ou a cada
+    // recarga de eventos tiraria a grade de debaixo de quem está usando.
+    afterRenderEffect(() => {
+      const rolagem = this.rolagemRef()?.nativeElement;
+      this.dias();
+
+      if (rolagem) {
+        untracked(() => this.rolarParaOHorarioUtil(rolagem));
+      }
+    });
+
     // Chegaram ocorrências novas (a página recarregou depois de gravar, ou
     // falhou e recarregou para desfazer): o horário provisório já cumpriu o papel.
     effect(() => {
@@ -277,6 +304,24 @@ export class VisaoDeHoras {
   /** `AAAA-MM-DD` do dia, que é o que o formulário recebe. */
   protected comoTexto(dia: DataCivil): string {
     return comoTexto(dia);
+  }
+
+  /**
+   * Hoje na tela: a hora de agora fica um terço abaixo do topo, com o passado
+   * recente acima e o que vem a seguir embaixo. Sem hoje: as 7h perto do topo.
+   */
+  private rolarParaOHorarioUtil(rolagem: HTMLElement): void {
+    const agora = this.colunas().find((c) => c.agora !== null)?.agora ?? null;
+    const fracaoDasSete =
+      this.eixo().find((m) => m.hora === HORA_INICIAL_SEM_HOJE)?.posicao ??
+      HORA_INICIAL_SEM_HOJE / 24;
+
+    const alvo =
+      (agora === null ? fracaoDasSete : agora / 100) * rolagem.scrollHeight;
+    const recuo =
+      agora === null ? rolagem.clientHeight * 0.05 : rolagem.clientHeight / 3;
+
+    rolagem.scrollTop = Math.max(0, alvo - recuo);
   }
 
   private readonly aoMoverPonteiro = (evento: PointerEvent): void => {

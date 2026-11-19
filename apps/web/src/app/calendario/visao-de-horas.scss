@@ -92,7 +92,7 @@ $eixo: 3.5rem;
 .tira-rotulo {
   padding: calc(var(--space-unit) * 2);
   color: var(--text-muted);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   text-align: end;
 }
 
@@ -110,7 +110,7 @@ $eixo: 3.5rem;
   border-radius: calc(var(--space-unit) * 1);
   color: var(--text-primary);
   font: inherit;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   text-align: start;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -146,7 +146,7 @@ $eixo: 3.5rem;
   /* Sobe meia linha para o texto ficar alinhado com o traço, e não abaixo. */
   transform: translateY(-50%);
   color: var(--text-muted);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
 
@@ -201,7 +201,7 @@ $eixo: 3.5rem;
   border-radius: calc(var(--space-unit) * 1);
   color: var(--text-primary);
   font: inherit;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   text-align: start;
   overflow: hidden;
   cursor: pointer;
@@ -245,6 +245,7 @@ $eixo: 3.5rem;
 
 .faixa-hora {
   color: var(--text-secondary);
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
 
