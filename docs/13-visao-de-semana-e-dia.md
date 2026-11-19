@@ -80,6 +80,25 @@ clique em outro.
 > comportamento esperado de um calendário — não se clica "dentro" de um evento para criar
 > outro —, e o caminho é criar numa hora livre e ajustar o horário no formulário.
 
+## Onde a grade abre
+
+A grade tem 24 horas e a janela mostra umas 13, então onde ela **abre** importa. Abrir à meia-noite
+mostra oito horas em que quase ninguém marca nada e empurra o dia útil para baixo da dobra.
+
+- **Com hoje na tela**, a linha de agora fica um terço abaixo do topo: o passado recente em cima e o
+  que vem a seguir embaixo.
+- **Sem hoje** (outra semana, outro dia), a grade abre às 7h, perto do topo.
+
+A rolagem acontece quando **os dias da tela mudam**, e só então. Rolar de novo a cada minuto (a linha
+de agora se move) ou a cada recarga de eventos tiraria a grade de debaixo de quem está usando; é por
+isso que o efeito depende só de `dias()` e lê o resto sem rastrear (`untracked`).
+
+O primeiro rótulo do eixo (a meia-noite, fração 0) não é desenhado: centrado no traço de cima da
+grade, metade dele ficava para fora e cortada. O traço continua lá.
+
+Os testes fixam o relógio (`page.clock.setFixedTime`): sem isso "perto da hora atual" dependeria da
+hora em que a suíte roda, e à 0h30 o topo da grade **é** a hora atual.
+
 ## Dia inteiro vai para uma tira
 
 Acima da grade, não dentro dela: um evento sem horário desenhado na grade de horas
@@ -167,4 +186,3 @@ Fica como entrega própria, com medição antes e depois.
 - **A visão de dia como padrão no celular** — ela existe, mas a escolha ainda é manual.
 - **`UserSettings.defaultView` e `weekStartsOn`**: o banco os tem, a API não os expõe.
   A tela abre no mês e começa a semana no domingo.
-- **Rolar até a hora atual** ao abrir: hoje a grade começa à meia-noite.

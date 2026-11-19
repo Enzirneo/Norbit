@@ -191,3 +191,101 @@ test.describe('casca do app', () => {
     expect(transborda).toBe(false);
   });
 });
+
+test.describe('calendário', () => {
+  test.beforeEach(async ({ page }) => {
+    restaurarBanco();
+    await page.setViewportSize({ width: 1280, height: 800 });
+  });
+
+  test('a semana abre rolada até a hora atual, e não às 0h', async ({
+    page,
+  }) => {
+    // 15h30 em São Paulo. Sem fixar o relógio o teste dependeria da hora em que
+    // roda: à 0h30 "perto da hora atual" é o topo da grade.
+    await page.clock.setFixedTime(new Date('2026-11-18T18:30:00.000Z'));
+    await entrar(page);
+    await page.getByRole('radio', { name: 'Semana' }).click();
+
+    const agora = await caixaDe(page.locator('.agora'));
+    const rolagem = await caixaDe(page.locator('.rolagem'));
+    const umaHora = (await caixaDe(page.locator('.grade'))).height / 24;
+
+    // A linha de agora está dentro da área visível, com folga dos dois lados.
+    expect(agora.y).toBeGreaterThan(rolagem.y + umaHora);
+    expect(agora.y).toBeLessThan(rolagem.y + rolagem.height - umaHora);
+  });
+
+  test('numa semana sem hoje, a grade abre às 7h e não à meia-noite', async ({
+    page,
+  }) => {
+    await page.clock.setFixedTime(new Date('2026-11-18T18:30:00.000Z'));
+    await entrar(page);
+    await page.getByRole('radio', { name: 'Semana' }).click();
+    await page.getByRole('button', { name: 'Período seguinte' }).click();
+    await expect(page.locator('.agora')).toHaveCount(0);
+
+    const rolagem = await caixaDe(page.locator('.rolagem'));
+    const sete = await caixaDe(
+      page.locator('.eixo-hora', { hasText: /^\s*7h\s*$/ }),
+    );
+    const umaHora = (await caixaDe(page.locator('.grade'))).height / 24;
+
+    // O rótulo de 7h está perto do topo da área visível.
+    expect(sete.y).toBeGreaterThanOrEqual(rolagem.y);
+    expect(sete.y).toBeLessThan(rolagem.y + umaHora * 2);
+  });
+
+  test('o eixo de horas não tem rótulo cortado no topo', async ({ page }) => {
+    await entrar(page);
+    await page.getByRole('radio', { name: 'Semana' }).click();
+    await page.locator('.rolagem').evaluate((el) => {
+      el.scrollTop = 0;
+    });
+
+    const rolagem = await caixaDe(page.locator('.rolagem'));
+    const topos = await page
+      .locator('.eixo-hora')
+      .evaluateAll((rotulos) =>
+        rotulos.map((r) => r.getBoundingClientRect().top),
+      );
+
+    // O primeiro rótulo ficava com metade para fora, escondida pela borda.
+    for (const topo of topos) {
+      expect(topo).toBeGreaterThanOrEqual(rolagem.y);
+    }
+  });
+
+  test('os textos da grade são legíveis: rótulos de hora e eventos', async ({
+    page,
+  }) => {
+    await entrar(page);
+    await page.getByRole('radio', { name: 'Semana' }).click();
+
+    const rotulo = await page
+      .locator('.eixo-hora')
+      .first()
+      .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+    // Toda semana tem uma terça e uma quinta, então há sempre uma "Academia".
+    const evento = await page
+      .locator('.faixa')
+      .first()
+      .evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+
+    expect(rotulo).toBeGreaterThanOrEqual(12);
+    expect(evento).toBeGreaterThanOrEqual(13);
+  });
+
+  test('o estado vazio diz o que fazer, e não só que está vazio', async ({
+    page,
+  }) => {
+    await entrar(page);
+    for (const caixa of await page.getByRole('checkbox').all()) {
+      await caixa.uncheck();
+    }
+
+    const vazio = page.locator('.vazio');
+    await expect(vazio).toContainText('Nada em órbita por aqui');
+    await expect(vazio).toContainText('Clique');
+  });
+});

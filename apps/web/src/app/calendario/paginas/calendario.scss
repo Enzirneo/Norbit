@@ -169,10 +169,18 @@
 }
 
 .vazio {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 0.5);
   margin: 0;
   color: var(--text-muted);
   font-size: 0.875rem;
   text-align: center;
+}
+
+.vazio-titulo {
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 /* No celular a barra lateral vira uma faixa acima da grade. A visão de dia,

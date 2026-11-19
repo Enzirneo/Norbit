@@ -316,3 +316,8 @@ PRs com tudo verde. Cada um tem agora um teste e2e que mede o estilo **calculado
 - **Cabeçalho com vários grupos precisa saber quebrar.** Em tela estreita o topo passa para duas
   linhas (marca e conta em cima, navegação e visões embaixo); numa linha só a página rolava na
   horizontal.
+- **Tamanho mínimo de texto na grade: 12px nos rótulos e 13px nos eventos.** Rótulos de hora em 11px
+  e eventos em 12px eram pequenos demais para ler de relance numa grade densa. O e2e mede o
+  `font-size` calculado, para um ajuste de estilo não encolhê-los de novo sem ninguém notar.
+- **Estado vazio diz o que fazer.** "Nada em órbita por aqui." sozinho só informa; a segunda linha
+  ("Clique num dia ou num horário para criar um evento.") dá o próximo passo.

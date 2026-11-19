@@ -164,7 +164,7 @@ $trilhas: 3;
   border-radius: calc(var(--space-unit) * 1);
   color: var(--text-primary);
   font: inherit;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   text-align: start;
   cursor: pointer;
 
@@ -194,7 +194,7 @@ $trilhas: 3;
   grid-row: #{$trilhas + 2};
   padding: 0 calc(var(--space-unit) * 2) calc(var(--space-unit) * 1);
   color: var(--text-muted);
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
 }
 
 /* No celular a grade de mês não cabe com faixas legíveis. Ela continua

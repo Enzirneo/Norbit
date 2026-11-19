@@ -45,7 +45,7 @@
   }
 
   <!-- A grade rola; o cabeçalho acima não. -->
-  <div class="rolagem">
+  <div #rolagem class="rolagem">
     <div class="eixo">
       @for (marca of eixo(); track marca.hora) {
       <span class="eixo-hora" [style.top.%]="marca.posicao * 100">
