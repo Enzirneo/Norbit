@@ -1,5 +1,5 @@
 /* ARQUIVO GERADO — NÃO EDITE À MÃO.
-   Fonte: libs/design-tokens/src/lib/{primitives,semanticos}.ts
+   Fonte: libs/design-tokens/src/lib/{primitives,semanticos,forma}.ts
    Regerar: npm run tokens:build */
 
 /* Camada 1 — primitivos. Nenhum componente deve usá-los direto. */
@@ -74,4 +74,25 @@
   --state-success: #4adebb;
   --state-warning: #ffb357;
   --state-danger: #ff6b8a;
+}
+
+/* Camada de forma — cantos, sombras, vidro, brilho, estrelas e alvo de toque.
+   `--r` e `--estrelas` são escolha da pessoa; o resto deriva. Ver
+   docs/superpowers/specs/2026-11-19-design-system-design.md, seção 4.1. */
+:root {
+  --r: 6px;
+  --estrelas: 1;
+  --raio-p: calc(var(--r) * 1);
+  --raio-m: calc(var(--r) * 1.6);
+  --raio-tela: calc(var(--r) * 2.2);
+  --r-ev: calc(var(--r) * 0.35);
+  --raio-pilula: 9999px;
+  --sombra-1: 0 1px 2px rgb(0 0 0 / 0.35);
+  --sombra-2: 0 8px 24px rgb(0 0 0 / 0.4);
+  --sombra-3: 0 18px 40px rgb(0 0 0 / 0.5);
+  --vidro-desfoque: 6px;
+  --brilho-destaque: 0 0 14px
+    color-mix(in oklab, var(--accent) 35%, transparent);
+  --alvo-toque: 2rem;
+  --alvo-toque-grosso: 2.75rem;
 }

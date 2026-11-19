@@ -10,15 +10,18 @@
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
+  FORMA_DERIVADA,
+  FORMA_PADRAO,
   nebula,
   primitives,
+  tokensDeForma,
   toCssVariables,
   type TemaSemantico,
 } from '../libs/design-tokens/src';
 
 const AVISO = [
   '/* ARQUIVO GERADO — NÃO EDITE À MÃO.',
-  '   Fonte: libs/design-tokens/src/lib/{primitives,semanticos}.ts',
+  '   Fonte: libs/design-tokens/src/lib/{primitives,semanticos,forma}.ts',
   '   Regerar: npm run tokens:build */',
 ].join('\n');
 
@@ -99,6 +102,22 @@ const utilitarios = Object.entries(PARA_TAILWIND)
   )
   .join('\n');
 
+/**
+ * A camada de forma: as escolhas da pessoa (`--r`, `--estrelas`) com o valor
+ * padrão, e o que deriva delas. As escolhas vêm primeiro porque os derivados as
+ * leem; o navegador resolve `var()` na hora de usar, então a ordem é só leitura.
+ */
+function declaracoes(tokens: Record<string, string>): string {
+  return Object.entries(tokens)
+    .map(([nome, valor]) => `  ${nome}: ${valor};`)
+    .join('\n');
+}
+
+const camadaDeForma = [
+  declaracoes(tokensDeForma(FORMA_PADRAO)),
+  declaracoes(FORMA_DERIVADA),
+].join('\n');
+
 const css = [
   AVISO,
   '',
@@ -115,6 +134,13 @@ const css = [
   '   redefine este bloco e nenhum componente é tocado. */',
   ':root {',
   camadaSemantica,
+  '}',
+  '',
+  '/* Camada de forma — cantos, sombras, vidro, brilho, estrelas e alvo de toque.',
+  '   `--r` e `--estrelas` são escolha da pessoa; o resto deriva. Ver',
+  '   docs/superpowers/specs/2026-11-19-design-system-design.md, seção 4.1. */',
+  ':root {',
+  camadaDeForma,
   '}',
   '',
 ].join('\n');

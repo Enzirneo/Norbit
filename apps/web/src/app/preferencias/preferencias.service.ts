@@ -12,6 +12,7 @@ import type {
   PreferenciasVisiveis,
 } from '@norbit/contracts';
 import { tap, type Observable } from 'rxjs';
+import { ACENTOS } from '@norbit/design-tokens';
 import { aparenciaDe, aplicarAparencia, guardarAparencia } from './aparencia';
 
 /**
@@ -21,7 +22,7 @@ import { aparenciaDe, aplicarAparencia, guardarAparencia } from './aparencia';
  * estado para o outro no carregamento.
  */
 const PADRAO: PreferenciasVisiveis = {
-  accentColor: '#6d7cff',
+  accentColor: ACENTOS.nebula,
   density: 1,
   reducedMotion: false,
   defaultView: 'MONTH',

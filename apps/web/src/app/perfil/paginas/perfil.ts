@@ -54,7 +54,7 @@ import { TrocaDeSenha } from '../troca-de-senha';
       inline-size: 4rem;
       block-size: 4rem;
       margin-block-end: 1rem;
-      border-radius: 9999px;
+      border-radius: var(--raio-pilula);
       background: var(--accent-muted);
       color: var(--text-primary);
       font-size: 1.25rem;
