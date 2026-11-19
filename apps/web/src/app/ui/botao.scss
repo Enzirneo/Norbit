@@ -1,4 +1,10 @@
-.botao {
+/*
+ * As classes `botao` e `botao--*` ficam no próprio elemento do componente (ver
+ * `host` em botao.ts). Com a encapsulação padrão, um seletor `.botao` é escopado
+ * ao *conteúdo* do componente e nunca casa com o hospedeiro, e foi assim que o
+ * app inteiro ficou com botões sem estilo. `:host(...)` é o que casa.
+ */
+:host(.botao) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -33,7 +39,7 @@
   }
 }
 
-.botao--solido {
+:host(.botao--solido) {
   background-color: var(--accent);
   // Letra escura sobre o acento, não clara: medido, dá 5.68:1 contra 3.23:1.
   color: var(--text-on-accent);
@@ -43,7 +49,7 @@
   }
 }
 
-.botao--contorno {
+:host(.botao--contorno) {
   border-color: var(--border-default);
   background-color: transparent;
   color: var(--text-primary);
@@ -54,7 +60,7 @@
   }
 }
 
-.botao--texto {
+:host(.botao--texto) {
   padding-inline: calc(var(--space-unit));
   background-color: transparent;
   color: var(--text-muted);
@@ -87,7 +93,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .botao {
+  :host(.botao) {
     transition-duration: var(--duration-instant);
   }
 

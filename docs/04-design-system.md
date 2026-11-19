@@ -288,3 +288,21 @@ Toast · Skeleton
 **Do domínio:** CalendarGrid (mês) · TimeGrid (semana/dia) · EventChip · EventCard ·
 TaskRow · OrbitPill (seletor de agenda) · MemberStack · ActivityItem · EmptyState ·
 CommandPalette
+
+## Armadilhas de CSS que já custaram caro
+
+Os testes de componente não enxergam CSS, e foi por isso que estes dois passaram por dezenas de
+PRs com tudo verde. Cada um tem agora um teste e2e que mede o estilo **calculado** pelo navegador
+(`apps/web-e2e/src/aparencia.spec.ts`).
+
+- **Estilo de componente que usa `host` não alcança o hospedeiro.** `Botao` põe as classes `botao`
+  e `botao--*` no próprio elemento (`host: { '[class]': ... }`). Com a encapsulação padrão do Angular,
+  um seletor `.botao` é escopado ao _conteúdo_ do componente e nunca casa com o elemento hospedeiro:
+  **nenhum botão do app tinha estilo**. A forma que casa é `:host(.botao)`. Regra: classe que o
+  componente aplica em si mesmo se estiliza com `:host(...)`.
+- **O reset do Tailwind zera a margem de todo elemento, inclusive a que centraliza o `<dialog>`.** O
+  diálogo modal depende de `margin: auto` (com o `inset: 0` do navegador) para abrir no centro; sem ela
+  ele abre colado no canto superior esquerdo. `dialogo.scss` devolve a margem.
+- **Dois campos em colunas apertadas passam um por cima do outro.** Data e hora lado a lado em
+  ~226px não cabem; o formulário de evento empilha Início e Fim e deixa a data crescer
+  (`minmax(0, 1fr)`) com a hora em largura fixa.
