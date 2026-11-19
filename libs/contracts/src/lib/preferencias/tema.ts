@@ -56,25 +56,3 @@ export const TEMA_PADRAO: Tema = {
     hemisferio: 'sul',
   },
 };
-
-/**
- * O tema de uma conta que ainda só tem o par antigo (`themePreset` e
- * `accentColor`): a migração faz isto em SQL, e a API, para contas sem o JSON.
- *
- * Um preset que não conhecemos cai no nebula: o campo era texto livre, e o que
- * importa é a pessoa continuar com um tema válido.
- */
-export function temaLegado(preset: string, destaque: string): Tema {
-  const base: NomeDeTemaPronto =
-    preset in TEMAS_PRONTOS ? (preset as NomeDeTemaPronto) : 'nebula';
-
-  return {
-    ...TEMA_PADRAO,
-    base,
-    sementes: {
-      fundo: TEMAS_PRONTOS[base].fundo,
-      destaque,
-      contraste: 'normal',
-    },
-  };
-}

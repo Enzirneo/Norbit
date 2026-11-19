@@ -18,7 +18,6 @@ import {
 } from './aparencia';
 
 const PADRAO = {
-  accentColor: ACENTOS.nebula,
   tema: TEMA_PADRAO,
   density: 1,
   reducedMotion: false,

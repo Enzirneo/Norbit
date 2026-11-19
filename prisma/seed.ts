@@ -21,6 +21,14 @@ import { PrismaClient } from '@norbit/db';
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
+/** A Maria usa o tema claro (dawn) com destaque verde-água: exercita o claro. */
+const TEMA_DA_MARIA = {
+  v: 1,
+  base: 'dawn',
+  sementes: { fundo: '#f6f1ea', destaque: '#4adebb', contraste: 'normal' },
+  forma: { cantos: 6, estrelas: true, lua: true, hemisferio: 'sul' },
+};
+
 /**
  * A senha das contas de desenvolvimento.
  *
@@ -115,8 +123,6 @@ async function main(): Promise<void> {
       emailVerifiedAt: new Date(),
       settings: {
         create: {
-          themePreset: 'nebula',
-          accentColor: '#6d7cff',
           // Explícita, e não o padrão do banco (`WEEK`): esta conta é a fixture
           // dos testes de ponta a ponta, que exercitam a grade de mês. Dependiam
           // do padrão sem saber — até a tela passar a respeitar a preferência.
@@ -147,7 +153,7 @@ async function main(): Promise<void> {
       passwordHash,
       timeZone: FUSO,
       emailVerifiedAt: new Date(),
-      settings: { create: { themePreset: 'dawn', accentColor: '#4adebb' } },
+      settings: { create: { appearance: TEMA_DA_MARIA } },
       ownedCalendars: {
         create: {
           id: uuidv7(),

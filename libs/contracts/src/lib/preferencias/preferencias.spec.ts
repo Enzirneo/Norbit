@@ -1,29 +1,18 @@
-import { ACENTOS } from '@norbit/design-tokens';
 import {
   atualizarPreferenciasSchema,
   preferenciasDaAgendaSchema,
 } from './preferencias';
 
 describe('atualizarPreferenciasSchema', () => {
-  it('aceita um acento da paleta', () => {
+  it('o accentColor antigo não é mais aceito: é descartado', () => {
     expect(
-      atualizarPreferenciasSchema.parse({ accentColor: ACENTOS.aurora }),
-    ).toEqual({ accentColor: ACENTOS.aurora });
+      atualizarPreferenciasSchema.parse({ density: 1, accentColor: '#4adebb' }),
+    ).toEqual({ density: 1 });
   });
 
-  it('normaliza a caixa antes de comparar com a paleta', () => {
-    // `corHex` passa para minúscula, e a paleta é minúscula. Sem a
-    // normalização antes do `refine`, um `#4ADEBB` válido seria recusado.
+  it('um pedido só com o accentColor antigo fica vazio e é recusado', () => {
     expect(
-      atualizarPreferenciasSchema.parse({ accentColor: '#4ADEBB' }).accentColor,
-    ).toBe(ACENTOS.aurora);
-  });
-
-  it('recusa uma cor fora da paleta', () => {
-    // Não é purismo: as cores companheiras do acento são derivadas dele, e
-    // derivar com garantia de contraste para qualquer cor é outra entrega.
-    expect(
-      atualizarPreferenciasSchema.safeParse({ accentColor: '#123456' }).success,
+      atualizarPreferenciasSchema.safeParse({ accentColor: '#4adebb' }).success,
     ).toBe(false);
   });
 
