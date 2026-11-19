@@ -102,7 +102,7 @@
   align-items: center;
   gap: calc(var(--space-unit) * 2);
   padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
-  border-radius: calc(var(--space-unit) * 2);
+  border-radius: var(--raio-p);
   font-size: 0.875rem;
   cursor: pointer;
 
@@ -162,7 +162,7 @@
   margin: 0;
   padding: calc(var(--space-unit) * 3);
   border: 1px solid var(--state-danger);
-  border-radius: calc(var(--space-unit) * 3);
+  border-radius: var(--raio-m);
   background: color-mix(in oklab, var(--state-danger) 12%, transparent);
   color: var(--text-primary);
   font-size: 0.875rem;
@@ -207,14 +207,14 @@
   display: flex;
   padding: 2px;
   border: 1px solid var(--border-subtle);
-  border-radius: calc(var(--space-unit) * 2.5);
+  border-radius: calc(var(--raio-p) * 1.4);
   background: var(--surface-sunken);
 }
 
 .visao {
   padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 3);
   border: 0;
-  border-radius: calc(var(--space-unit) * 2);
+  border-radius: var(--raio-p);
   background: none;
   color: var(--text-secondary);
   font: inherit;
@@ -252,7 +252,7 @@
 
 .lateral-link {
   padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
-  border-radius: calc(var(--space-unit) * 2);
+  border-radius: var(--raio-p);
   color: var(--text-muted);
   font-size: 0.8125rem;
   text-decoration: none;
@@ -281,7 +281,7 @@
   height: calc(var(--space-unit) * 8);
   padding: 0;
   border: 0;
-  border-radius: calc(var(--space-unit) * 2);
+  border-radius: var(--raio-p);
   background: none;
   color: var(--text-muted);
   cursor: pointer;

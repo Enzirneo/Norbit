@@ -150,3 +150,14 @@ export function rotuloDeHora(hora: number, vinteEQuatro: boolean): string {
 
   return `${doze} ${periodo}`;
 }
+
+/**
+ * A cor da agenda, ou o destaque do tema se a agenda não está na lista.
+ *
+ * Chega ao CSS como a variável `--c`, e é o CSS que calcula a barra, o fundo e a
+ * cor do horário a partir dela. A cor da agenda é escolha da pessoa e pode ser
+ * qualquer hexadecimal, então não existe variante pré-computada.
+ */
+export function corDaAgenda(cor: string | undefined): string {
+  return cor ?? 'var(--accent)';
+}

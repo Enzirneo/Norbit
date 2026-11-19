@@ -30,7 +30,13 @@
     ></button>
 
     <div class="numero-area" [style.grid-column]="$index + 1">
-      <span class="numero" [class.numero--hoje]="ehHoje(celula)">
+      <nb-lua [fase]="celula.fase" [tamanho]="12" />
+      <span
+        class="numero"
+        [class.numero--hoje]="ehHoje(celula)"
+        [class.numero--passado]="celula.passado"
+        [class.numero--fora]="!celula.noMes"
+      >
         {{ celula.dia }}
       </span>
     </div>
@@ -40,8 +46,7 @@
       type="button"
       [style.grid-column]="barra.coluna + ' / span ' + barra.colunas"
       [style.grid-row]="barra.trilha + 2"
-      [style.background-color]="barra.fundo"
-      [style.border-inline-start-color]="barra.borda"
+      [style.--c]="barra.cor"
       (click)="selecionada.emit(barra.ocorrencia)"
     >
       @if (barra.horario) {

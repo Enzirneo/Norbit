@@ -18,9 +18,12 @@ import {
 import type { AgendaVisivel, OcorrenciaVisivel } from '@norbit/contracts';
 import {
   faixasDaSemana,
+  faseDoDia,
   type CelulaDaGrade,
   type GradeDeMes,
 } from '@norbit/domain';
+import { Lua } from '../ui/lua';
+import { compararDias, corDaAgenda } from './apoio-da-grade';
 
 /**
  * Quantas faixas uma célula mostra antes de resumir o resto em "+N".
@@ -43,16 +46,24 @@ type BarraNaSemana = {
    * `%NS%` está desligada por padrão — depender disso é depender de um padrão
    * que pode mudar. `color-mix` resolvido aqui não tem esse risco.
    */
-  readonly fundo: string;
-  readonly borda: string;
+  /** A cor da agenda: vira `--c` no CSS. */
+  readonly cor: string;
   readonly coluna: number;
   readonly colunas: number;
   readonly trilha: number;
   readonly horario: string | null;
 };
 
+/** Um dia da grade, com o que a tela precisa saber dele além da data. */
+type CelulaDesenhada = CelulaDaGrade & {
+  /** A fase da lua do dia, de 0 a 1. */
+  readonly fase: number;
+  /** O dia já acabou: o número recua. */
+  readonly passado: boolean;
+};
+
 type SemanaDesenhada = {
-  readonly celulas: readonly CelulaDaGrade[];
+  readonly celulas: readonly CelulaDesenhada[];
   readonly barras: readonly BarraNaSemana[];
   /** Quantas faixas escondidas cobrem cada coluna, para o "+N". */
   readonly escondidas: readonly number[];
@@ -60,6 +71,7 @@ type SemanaDesenhada = {
 
 @Component({
   selector: 'nb-visao-de-mes',
+  imports: [Lua],
   templateUrl: './visao-de-mes.html',
   styleUrl: './visao-de-mes.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -152,7 +164,7 @@ export class VisaoDeMes {
         {
           chave: faixa.id,
           ocorrencia,
-          ...pinturaDe(cores.get(ocorrencia.calendarId)),
+          cor: corDaAgenda(cores.get(ocorrencia.calendarId)),
           // O CSS Grid conta colunas de 1, não de 0.
           coluna: faixa.de + 1,
           colunas: faixa.ate - faixa.de + 1,
@@ -162,7 +174,13 @@ export class VisaoDeMes {
       ];
     });
 
-    return { celulas, barras, escondidas };
+    const desenhadas = celulas.map((celula) => ({
+      ...celula,
+      fase: faseDoDia(celula),
+      passado: compararDias(celula, this.hoje()) < 0,
+    }));
+
+    return { celulas: desenhadas, barras, escondidas };
   }
 }
 
@@ -192,25 +210,6 @@ function horarioDe(
     hour12: !vinteEQuatro,
     timeZone: fuso,
   }).format(new Date(ocorrencia.inicio));
-}
-
-/**
- * A cor da agenda, virada em preenchimento e borda.
- *
- * `color-mix` em vez de uma tabela de variantes por cor: a cor da agenda é
- * escolhida pela pessoa e pode ser qualquer hexadecimal, então não existe
- * variante pré-computada para ela.
- */
-function pinturaDe(cor: string | undefined): {
-  fundo: string;
-  borda: string;
-} {
-  const base = cor ?? 'var(--accent)';
-
-  return {
-    fundo: `color-mix(in oklab, ${base} 22%, transparent)`,
-    borda: base,
-  };
 }
 
 /**

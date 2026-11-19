@@ -32,7 +32,7 @@ $trilhas: 3;
   flex-direction: column;
   min-height: 0;
   border: 1px solid var(--border-subtle);
-  border-radius: calc(var(--space-unit) * 4);
+  border-radius: var(--raio-tela);
   /* `auto` e não `hidden`: seis semanas cheias podem passar da altura da tela, e
      cortar o conteúdo esconderia eventos. Rolar é a resposta honesta. */
   overflow: auto;
@@ -128,7 +128,8 @@ $trilhas: 3;
      encontrou o defeito. */
   pointer-events: none;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
   padding: calc(var(--space-unit) * 1) calc(var(--space-unit) * 2) 0;
 }
 
@@ -144,12 +145,25 @@ $trilhas: 3;
   font-variant-numeric: tabular-nums;
 }
 
+/* Hoje brilha: é o único número com luz própria no mês. */
 .numero--hoje {
   background: var(--accent);
   color: var(--text-on-accent);
   font-weight: 600;
+  box-shadow: var(--brilho-destaque);
 }
 
+/* O que já passou recua, e o que é de outro mês recua mais. */
+.numero--passado {
+  color: var(--text-muted);
+}
+
+.numero--fora {
+  color: color-mix(in oklab, var(--text-muted) 65%, transparent);
+}
+
+/* O evento: barra de cor de 3px, fundo tingido pela cor da agenda e o raio de
+   evento (`--r-ev`), sempre mais reto que a moldura. A cor chega como `--c`. */
 .barra {
   display: flex;
   align-items: center;
@@ -158,10 +172,11 @@ $trilhas: 3;
   /* O recuo lateral é o que deixa a cor do fundo do dia aparecer entre barras
      de dias vizinhos — sem ele duas barras adjacentes pareceriam uma só. */
   margin-inline: 2px;
-  padding: 1px calc(var(--space-unit) * 1.5);
+  padding: 1px calc(var(--space-unit) * 2);
   border: 0;
-  border-inline-start: 2px solid;
-  border-radius: calc(var(--space-unit) * 1);
+  border-inline-start: 3px solid var(--c);
+  border-radius: var(--r-ev);
+  background: color-mix(in oklab, var(--c) 20%, var(--surface-sunken));
   color: var(--text-primary);
   font: inherit;
   font-size: 0.8125rem;
@@ -178,14 +193,18 @@ $trilhas: 3;
   }
 }
 
+/* A hora em fonte monoespaçada, na cor da agenda. */
 .barra-hora {
-  color: var(--text-secondary);
+  color: color-mix(in oklab, var(--c) 55%, var(--text-primary));
+  font-family: var(--fonte-mono);
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .barra-titulo {
   overflow: hidden;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -211,6 +230,6 @@ $trilhas: 3;
     padding: 0;
     border-inline-start-width: 0;
     border-radius: var(--raio-pilula);
-    background-clip: padding-box;
+    background: var(--c);
   }
 }

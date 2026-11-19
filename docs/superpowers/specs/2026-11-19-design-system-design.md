@@ -11,7 +11,7 @@
 > começar pelo calendário**.
 
 > **O que mudou na revisão 3.** O plano de entrega passou de **19 para 11 PRs**: vários pares eram o
-> mesmo trabalho cortado em fatias, e cada fatia custava uma revisão e um merge. Os PRs 1 e 2 já foram
+> mesmo trabalho cortado em fatias, e cada fatia custava uma revisão e um merge. Os PRs 1, 2 e A já foram
 > entregues; os 9 restantes (A a I) juntam o que é da mesma natureza. Os dois que **não** se juntam são
 > os que dependem do olho de quem decide: a semana e o dia (A) e o editor de tema (H).
 
@@ -311,8 +311,8 @@ críticos, e2e medindo o estilo calculado, olhar a tela de verdade, documentaç�
 | --- | -------------------------------------------------------------------------------------------------------------------------- | ------------ |
 | 1   | camada de forma (`--r` e derivados, estrelas, fonte monoespaçada) e guarda de estilo no CI                                 | **entregue** |
 | 2   | domínio da lua (`faseDaLua`, `iluminacao`, `nomeDaFase`) e o componente `Lua`                                              | **entregue** |
-| A   | **semana e dia**: evento firme com barra de cor, hierarquia de tempo, "agora" em órbita, lua no cabeçalho                  | em andamento |
-| B   | **mês e casca**: o mesmo vocabulário no mês, a lua em cada célula, e a barra lateral (órbitas, cartão da lua) e a superior |              |
+| A   | **semana e dia**: evento firme com barra de cor, hierarquia de tempo, "agora" em órbita, lua no cabeçalho                  | **entregue** |
+| B   | **mês e casca**: o mesmo vocabulário no mês, a lua em cada célula, e a barra lateral (órbitas, cartão da lua) e a superior | em andamento |
 | C   | **componentes de formulário e resposta**: Entrada, Caixa, Alternador, Aviso e Toast                                        |              |
 | D   | **componentes de identidade e estrutura**: Avatar, Etiqueta, Estado vazio, Cabeçalho de página e Cartão de seção           |              |
 | E   | **motor puro**: `oklch.ts`, `derivar` com testes de propriedade e os temas prontos (teste dourado do nebula)               |              |

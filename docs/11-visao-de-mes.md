@@ -83,6 +83,32 @@ exceção do marco de duração zero, que usa o próprio início.
 > Essa exceção só é visível num marco exatamente à meia-noite local. O primeiro teste
 > usava meio-dia e passava com as duas implementações; descoberto plantando o defeito.
 
+## A linguagem: "o calendário como protagonista"
+
+O mês fala a mesma língua da [semana e do dia](13-visao-de-semana-e-dia.md), conforme a
+[especificação do design system](superpowers/specs/2026-11-19-design-system-design.md):
+
+- **A barra do evento** tem 3px de cor à esquerda (na cor da agenda, que chega ao CSS como `--c`), o fundo
+  tingido, o raio de evento (`--r-ev`, sempre mais reto que a moldura) e o horário em fonte monoespaçada.
+  No celular ela continua virando um ponto, agora cheio na cor da agenda.
+- **A lua em cada dia**, à esquerda do número (ver [24](24-lua.md)). A fase do dia sai de `faseDoDia`, uma
+  vez por dia, quando a semana é desenhada.
+- **O tempo recua:** o número de um dia que já passou fica mais apagado, e o de outro mês, mais ainda.
+  Hoje brilha (`--brilho-destaque`). O teste do "mais ainda" compara o dia de fora com um dia **passado**,
+  e não com um futuro: com o futuro, qualquer cor apagada passaria (uma mutação mostrou isso).
+- **O quadro** usa `--raio-tela`, então acompanha os cantos que a pessoa escolher.
+
+## A casca
+
+A barra lateral e o topo ganharam o mesmo vocabulário:
+
+- **"Órbitas"**, e não "Agendas": é o nome do produto para o conceito (ver [04](04-design-system.md)).
+- **O cartão da lua** abre a barra lateral: a fase de hoje, o nome e quanto está iluminada
+  (`nb-cartao-da-lua`, que só junta o dia a quem desenha e a quem escreve).
+- **Os controles seguem os cantos:** as ações de cada órbita, os links do pé, o alternador Mês, Semana e
+  Dia e o aviso de erro usam `--raio-p` e `--raio-m` no lugar do raio em múltiplos de `--space-unit`. Com
+  `--r` em 16px, todos acompanham.
+
 ## Decisões da tela
 
 | Decisão                                            | Motivo                                                                                                                                                                                                                           |

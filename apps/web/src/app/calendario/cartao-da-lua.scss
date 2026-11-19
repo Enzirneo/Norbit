@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.cartao-da-lua {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 3);
+  padding: calc(var(--space-unit) * 3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--raio-m);
+  background: color-mix(in oklab, var(--surface-raised) 60%, transparent);
+}
+
+.texto {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nome {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.iluminacao {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
