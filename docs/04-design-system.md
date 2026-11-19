@@ -321,3 +321,13 @@ PRs com tudo verde. Cada um tem agora um teste e2e que mede o estilo **calculado
   `font-size` calculado, para um ajuste de estilo não encolhê-los de novo sem ninguém notar.
 - **Estado vazio diz o que fazer.** "Nada em órbita por aqui." sozinho só informa; a segunda linha
   ("Clique num dia ou num horário para criar um evento.") dá o próximo passo.
+- **Componente cujo conteúdo é "texto + campos + botão" precisa de `:host` com `gap`.** As seções
+  do perfil projetam componentes filhos (`nb-troca-de-email`, `nb-sessoes-ativas`, `nb-apagar-conta`),
+  e o `gap` do cartão vale só para filhos diretos: dentro do componente, o parágrafo ficava colado no
+  campo seguinte. O teste mede o vão entre filhos consecutivos (mínimo de 12px).
+- **Ação destrutiva tem aparência própria (`perigo`).** Contorno e texto em `--state-danger`, com o
+  fundo só no hover. "Apagar minha conta" era um botão de contorno igual aos neutros, e nada avisava
+  antes do clique. Fica com a largura do texto: em largura total pesaria mais que o "Salvar" ao lado.
+- **Uma linha de estado que reserva altura abre um vão morto.** O "Salvando… / Perfil salvo." era
+  irmã solta do título e, mesmo vazia, abria ~64px antes do primeiro cartão. Agora divide a linha com o
+  título.

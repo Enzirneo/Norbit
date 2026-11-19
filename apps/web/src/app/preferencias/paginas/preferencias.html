@@ -9,17 +9,18 @@
   </header>
 
   <main class="conteudo">
-    <h1 class="titulo">Preferências</h1>
+    <div class="cabecalho">
+      <h1 class="titulo">Preferências</h1>
+      <!--
+      `aria-live` na confirmação: a tela salva a cada alteração, sem botão, e
+      quem não vê a mudança de cor precisa ouvir que ela foi gravada.
+    -->
+      <p class="estado" aria-live="polite">@if (salvando()) { Salvando… }</p>
+    </div>
 
     @if (erro(); as mensagem) {
     <p class="aviso" role="alert">{{ mensagem }}</p>
     }
-
-    <!--
-      `aria-live` na confirmação: a tela salva a cada alteração, sem botão, e
-      quem não vê a mudança de cor precisa ouvir que ela foi gravada.
-    -->
-    <p class="estado" aria-live="polite">@if (salvando()) { Salvando… }</p>
 
     <section class="secao">
       <h2 class="secao-titulo">Aparência</h2>

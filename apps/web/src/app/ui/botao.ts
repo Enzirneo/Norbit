@@ -12,7 +12,7 @@ import {
   input,
 } from '@angular/core';
 
-export type AparenciaDeBotao = 'solido' | 'contorno' | 'texto';
+export type AparenciaDeBotao = 'solido' | 'contorno' | 'texto' | 'perigo';
 
 @Component({
   selector: 'button[nb-botao]',

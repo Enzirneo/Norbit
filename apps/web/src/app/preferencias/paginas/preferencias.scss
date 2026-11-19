@@ -25,6 +25,18 @@
   padding: calc(var(--space-unit) * 8) calc(var(--space-unit) * 4);
 }
 
+/*
+ * O título e a linha de estado ("Salvando…", "Perfil salvo.") na mesma linha. Como
+ * irmã solta do título, a linha de estado, mesmo vazia, reservava a altura dela
+ * e abria ~64px antes do primeiro cartão.
+ */
+.cabecalho {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: calc(var(--space-unit) * 4);
+}
+
 .titulo {
   margin: 0;
   font-size: 1.5rem;

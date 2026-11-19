@@ -29,6 +29,21 @@ import { ContaService } from './conta.service';
   selector: 'nb-apagar-conta',
   imports: [ReactiveFormsModule, Botao, Campo],
   templateUrl: './apagar-conta.html',
+  // O hospedeiro é um bloco com espaço entre os filhos: o texto de apoio, o
+  // formulário e o botão não ficam colados uns nos outros.
+  styles: `
+    :host {
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--space-unit) * 4);
+    }
+
+    /* O botão que abre a confirmação tem a largura do próprio texto: uma ação
+       destrutiva em largura total pesaria mais que o "Salvar" da seção ao lado. */
+    :host > button {
+      align-self: flex-start;
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApagarConta {

@@ -289,3 +289,67 @@ test.describe('calendário', () => {
     await expect(vazio).toContainText('Clique');
   });
 });
+
+test.describe('perfil e preferências', () => {
+  test.beforeEach(async ({ page }) => {
+    restaurarBanco();
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await entrar(page);
+  });
+
+  test('o conteúdo de cada seção do perfil respira entre os blocos', async ({
+    page,
+  }) => {
+    await page.goto('/perfil');
+    await expect(page.locator('nb-sessoes-ativas ul')).toBeVisible();
+
+    // Nas seções cujo conteúdo é um componente filho, o texto de apoio ficava
+    // colado no campo, na lista ou no botão que vinha a seguir.
+    const apertados = await page
+      .locator('nb-troca-de-email, nb-sessoes-ativas, nb-apagar-conta')
+      .evaluateAll((hosts) =>
+        hosts.flatMap((host) => {
+          const filhos = Array.from(host.children).map((f) =>
+            f.getBoundingClientRect(),
+          );
+          return filhos
+            .slice(1)
+            .map((caixa, i) => caixa.top - filhos[i].bottom)
+            .filter((vao) => vao < 12)
+            .map((vao) => `${host.tagName.toLowerCase()}: ${vao.toFixed(1)}px`);
+        }),
+      );
+
+    expect(apertados).toEqual([]);
+  });
+
+  test('apagar a conta tem a cor de perigo, e não a de um botão qualquer', async ({
+    page,
+  }) => {
+    await page.goto('/perfil');
+
+    const cor = await page
+      .getByRole('button', { name: 'Apagar minha conta' })
+      .evaluate((el) => getComputedStyle(el).color);
+    const [r, g, b] = (cor.match(/\d+/g) ?? []).map(Number);
+
+    // Rosa-avermelhado (`--state-danger`): vermelho alto, verde e azul baixos.
+    expect(r).toBeGreaterThan(200);
+    expect(g).toBeLessThan(150);
+    expect(b).toBeLessThan(180);
+  });
+
+  for (const rota of ['/perfil', '/preferencias']) {
+    test(`${rota}: não sobra um vão morto entre o título e o conteúdo`, async ({
+      page,
+    }) => {
+      await page.goto(rota);
+
+      const titulo = await caixaDe(page.getByRole('heading', { level: 1 }));
+      const primeira = await caixaDe(page.locator('.secao').first());
+
+      // A linha de estado (vazia) abria ~64px entre o título e o primeiro cartão.
+      expect(primeira.y - (titulo.y + titulo.height)).toBeLessThan(40);
+    });
+  }
+});
