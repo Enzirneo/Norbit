@@ -90,6 +90,11 @@ describe('FORMA_DERIVADA', () => {
     expect(FORMA_DERIVADA['--raio-pilula']).toBe('9999px');
   });
 
+  it('a fonte monoespaçada cai em `monospace` em qualquer sistema', () => {
+    expect(FORMA_DERIVADA['--fonte-mono']).toMatch(/monospace$/);
+    expect(FORMA_DERIVADA['--fonte-mono']).toContain('ui-monospace');
+  });
+
   it('o alvo de toque tem um valor para o mouse e outro para o dedo', () => {
     expect(FORMA_DERIVADA['--alvo-toque']).toBe('2rem');
     expect(FORMA_DERIVADA['--alvo-toque-grosso']).toBe('2.75rem');

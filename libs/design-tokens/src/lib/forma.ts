@@ -99,6 +99,10 @@ export const FORMA_DERIVADA = Object.freeze({
   '--brilho-destaque':
     '0 0 14px color-mix(in oklab, var(--accent) 35%, transparent)',
 
+  /** Horas, minutos e números que precisam alinhar: a fonte monoespaçada. */
+  '--fonte-mono':
+    "ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace",
+
   /** Altura mínima de um controle clicável: mouse e dedo. */
   '--alvo-toque': '2rem',
   '--alvo-toque-grosso': '2.75rem',

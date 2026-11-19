@@ -4,6 +4,11 @@
  * A altura do dia é fixa em pixels e a grade rola; as posições das faixas são
  * **porcentagens**, calculadas em `libs/domain`. É o que faz um dia de 23 ou 25
  * horas se distribuir certo sem o CSS saber que isso existe.
+ *
+ * A linguagem é a de "o calendário como protagonista": a moldura segue os cantos
+ * que a pessoa escolheu (`--r`), e o evento é sempre mais reto que ela
+ * (`--r-ev`), com uma barra de cor à esquerda. O passado recua, hoje brilha, e o
+ * "agora" é uma pequena órbita sobre a linha.
  */
 
 /* Altura de uma hora. Vinte e quatro delas dão a altura do dia, inclusive nos
@@ -25,7 +30,7 @@ $hora: 3rem;
   flex-direction: column;
   min-height: 0;
   border: 1px solid var(--border-subtle);
-  border-radius: calc(var(--space-unit) * 4);
+  border-radius: var(--raio-tela);
   background: var(--surface-raised);
   overflow: hidden;
 }
@@ -48,12 +53,13 @@ $eixo: 3.5rem;
   display: grid;
 }
 
+/* O nome do dia em cima; o número e a lua embaixo, na mesma linha. */
 .dia-cabecalho {
   display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: calc(var(--space-unit) * 1.5);
-  padding: calc(var(--space-unit) * 2);
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: calc(var(--space-unit) * 2) calc(var(--space-unit) * 1);
 
   &:not(:first-child) {
     border-inline-start: 1px solid var(--border-subtle);
@@ -63,8 +69,14 @@ $eixo: 3.5rem;
 .dia-nome {
   color: var(--text-muted);
   font-size: 0.75rem;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.dia-linha {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 2);
 }
 
 .dia-numero {
@@ -74,14 +86,16 @@ $eixo: 3.5rem;
   min-width: calc(var(--space-unit) * 6);
   height: calc(var(--space-unit) * 6);
   border-radius: var(--raio-pilula);
-  font-size: 0.875rem;
+  font-size: 1rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
+/* Hoje brilha: é o único número com luz própria na semana. */
 .dia-numero--hoje {
   background: var(--accent);
   color: var(--text-on-accent);
-  font-weight: 600;
+  box-shadow: var(--brilho-destaque);
 }
 
 .tira {
@@ -102,15 +116,18 @@ $eixo: 3.5rem;
   padding: calc(var(--space-unit) * 1) 0;
 }
 
+/* O evento de dia inteiro tem a mesma barra de cor do evento com hora. */
 .faixa-dia-inteiro {
   margin-inline: 2px;
-  padding: 1px calc(var(--space-unit) * 1.5);
+  padding: 2px calc(var(--space-unit) * 2);
   border: 0;
-  border-inline-start: 2px solid;
-  border-radius: calc(var(--space-unit) * 1);
+  border-inline-start: 3px solid var(--c);
+  border-radius: var(--r-ev);
+  background: color-mix(in oklab, var(--c) 22%, var(--surface-sunken));
   color: var(--text-primary);
   font: inherit;
   font-size: 0.8125rem;
+  font-weight: 600;
   text-align: start;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -146,6 +163,7 @@ $eixo: 3.5rem;
   /* Sobe meia linha para o texto ficar alinhado com o traço, e não abaixo. */
   transform: translateY(-50%);
   color: var(--text-muted);
+  font-family: var(--fonte-mono);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
@@ -163,7 +181,8 @@ $eixo: 3.5rem;
   }
 }
 
-/* A hora clicável. Sem aparência de botão: o retorno visual é o `:hover`. */
+/* A hora clicável. Sem aparência de botão: o retorno visual é o `:hover`. O
+   traço de cima é a hora cheia; o tracejado do meio, a meia hora. */
 .celula-de-hora {
   position: absolute;
   left: 0;
@@ -173,6 +192,16 @@ $eixo: 3.5rem;
   border-block-start: 1px solid var(--border-subtle);
   background: none;
   cursor: pointer;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    top: 50%;
+    border-block-start: 1px dashed var(--border-subtle);
+    opacity: 0.55;
+    pointer-events: none;
+  }
 
   &:hover {
     background: color-mix(in oklab, var(--surface-overlay) 60%, transparent);
@@ -184,8 +213,25 @@ $eixo: 3.5rem;
   }
 }
 
+/* A coluna de hoje tem um brilho suave que some para baixo. */
 .coluna--hoje {
-  background: color-mix(in oklab, var(--accent) 5%, transparent);
+  background: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--accent) 7%, transparent),
+    transparent 70%
+  );
+}
+
+/* O passado do dia: uma camada translúcida de cima até a linha de agora (ou a
+   coluna inteira, num dia que já acabou). Não captura o ponteiro: dá para criar
+   um evento numa hora que passou, e a camada só faz o que passou recuar. */
+.passado {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 1;
+  background: color-mix(in oklab, var(--surface-base) 45%, transparent);
+  pointer-events: none;
 }
 
 .faixa {
@@ -195,19 +241,27 @@ $eixo: 3.5rem;
   gap: 1px;
   /* Recuo à direita para a faixa de trás aparecer por baixo quando há colunas,
      e para duas colunas vizinhas não se tocarem. */
-  padding: 2px calc(var(--space-unit) * 1.5);
+  padding: 4px calc(var(--space-unit) * 2) 3px calc(var(--space-unit) * 2);
   border: 0;
-  border-inline-start: 2px solid;
-  border-radius: calc(var(--space-unit) * 1);
+  border-inline-start: 3px solid var(--c);
+  border-radius: var(--r-ev);
+  background: color-mix(in oklab, var(--c) 17%, var(--surface-sunken));
+  box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--c) 18%, transparent);
   color: var(--text-primary);
   font: inherit;
   font-size: 0.8125rem;
   text-align: start;
   overflow: hidden;
   cursor: pointer;
+  transition:
+    transform var(--duration-quick) var(--ease-settle),
+    box-shadow var(--duration-quick) var(--ease-settle);
 
   &:hover {
-    filter: brightness(1.2);
+    transform: translateY(-1px);
+    box-shadow:
+      inset 0 0 0 1px color-mix(in oklab, var(--c) 45%, transparent),
+      var(--sombra-2);
     /* Sobe acima das vizinhas no hover: numa faixa estreita, o título só cabe
        assim. */
     z-index: 1;
@@ -226,12 +280,14 @@ $eixo: 3.5rem;
   user-select: none;
 }
 
-.faixa--arrastando {
-  /* Acima das vizinhas e sem o filtro do hover: é o que a pessoa está movendo. */
+/* Dois seletores de classe, para vencer o `.faixa:hover` enquanto o ponteiro
+   está em cima: o que a pessoa move não sobe nem ganha a sombra do hover. */
+.faixa.faixa--arrastando {
+  /* Acima das vizinhas e da camada do passado: é o que está sendo movido. */
   z-index: 2;
   box-shadow: 0 0 0 2px var(--border-focus);
   cursor: grabbing;
-  filter: none;
+  transform: none;
 }
 
 /* A alça de redimensionar: uma faixa fina na borda de baixo. */
@@ -243,14 +299,17 @@ $eixo: 3.5rem;
   cursor: ns-resize;
 }
 
+/* A hora em fonte monoespaçada, na cor da agenda: lê-se de relance e alinha. */
 .faixa-hora {
-  color: var(--text-secondary);
+  color: color-mix(in oklab, var(--c) 55%, var(--text-primary));
+  font-family: var(--fonte-mono);
   font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
 }
 
 .faixa-titulo {
   overflow: hidden;
+  font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -259,22 +318,26 @@ $eixo: 3.5rem;
    de um evento não serve para nada. */
 .agora {
   position: absolute;
-  left: 0;
+  left: -1px;
   right: 0;
-  z-index: 2;
-  border-block-start: 2px solid var(--state-danger);
+  z-index: 3;
+  border-block-start: 1.5px solid var(--state-danger);
+  box-shadow: 0 0 10px color-mix(in oklab, var(--state-danger) 70%, transparent);
   pointer-events: none;
 
-  /* O ponto na ponta esquerda, que é o que torna a linha legível quando ela
-     cruza uma faixa colorida. */
+  /* A órbita: um anel com o miolo da cor do fundo, na ponta esquerda. É o que
+     torna a linha legível quando ela cruza uma faixa colorida. */
   &::before {
     content: '';
     position: absolute;
-    top: -4px;
-    left: -3px;
-    width: 6px;
-    height: 6px;
+    top: -6.5px;
+    left: -5px;
+    box-sizing: border-box;
+    width: 11px;
+    height: 11px;
+    border: 1.5px solid var(--state-danger);
     border-radius: var(--raio-pilula);
-    background: var(--state-danger);
+    background: var(--surface-base);
+    box-shadow: 0 0 10px var(--state-danger);
   }
 }

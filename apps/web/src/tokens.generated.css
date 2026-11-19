@@ -93,6 +93,8 @@
   --vidro-desfoque: 6px;
   --brilho-destaque: 0 0 14px
     color-mix(in oklab, var(--accent) 35%, transparent);
+  --fonte-mono:
+    ui-monospace, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
   --alvo-toque: 2rem;
   --alvo-toque-grosso: 2.75rem;
 }

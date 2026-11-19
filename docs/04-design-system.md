@@ -125,17 +125,18 @@ A camada semântica cobre **cor**. A **forma** (cantos, sombras, vidro, brilho, 
 toque) também é token, e parte dela é **escolha de quem usa**. A fonte é
 `libs/design-tokens/src/lib/forma.ts`; o gerador a escreve no `:root` de `tokens.generated.css`.
 
-| Token                                 | Valor                            | Quem decide                  |
-| ------------------------------------- | -------------------------------- | ---------------------------- |
-| `--r`                                 | `6px` (de 0 a 16)                | **a pessoa** (cantos)        |
-| `--estrelas`                          | `1` ou `0`                       | **a pessoa**                 |
-| `--raio-p`, `--raio-m`, `--raio-tela` | `calc(var(--r) * 1 / 1.6 / 2.2)` | deriva de `--r`              |
-| `--r-ev`                              | `calc(var(--r) * 0.35)`          | deriva de `--r`: **eventos** |
-| `--raio-pilula`                       | `9999px`                         | fixo: círculo e pílula       |
-| `--sombra-1`, `-2`, `-3`              | preto translúcido                | fixo (não muda com o tema)   |
-| `--vidro-desfoque`                    | `6px`                            | fixo                         |
-| `--brilho-destaque`                   | `0 0 14px` do `--accent` a 35%   | acompanha o destaque         |
-| `--alvo-toque`, `--alvo-toque-grosso` | `2rem` / `2.75rem`               | mouse / dedo                 |
+| Token                                 | Valor                                                 | Quem decide                       |
+| ------------------------------------- | ----------------------------------------------------- | --------------------------------- |
+| `--r`                                 | `6px` (de 0 a 16)                                     | **a pessoa** (cantos)             |
+| `--estrelas`                          | `1` ou `0`                                            | **a pessoa**                      |
+| `--raio-p`, `--raio-m`, `--raio-tela` | `calc(var(--r) * 1 / 1.6 / 2.2)`                      | deriva de `--r`                   |
+| `--r-ev`                              | `calc(var(--r) * 0.35)`                               | deriva de `--r`: **eventos**      |
+| `--raio-pilula`                       | `9999px`                                              | fixo: círculo e pílula            |
+| `--sombra-1`, `-2`, `-3`              | preto translúcido                                     | fixo (não muda com o tema)        |
+| `--vidro-desfoque`                    | `6px`                                                 | fixo                              |
+| `--brilho-destaque`                   | `0 0 14px` do `--accent` a 35%                        | acompanha o destaque              |
+| `--fonte-mono`                        | `ui-monospace, 'SF Mono', Menlo, Consolas, monospace` | fixo: horas e números que alinham |
+| `--alvo-toque`, `--alvo-toque-grosso` | `2rem` / `2.75rem`                                    | mouse / dedo                      |
 
 **O evento é sempre mais reto que a moldura.** Os multiplicadores ficam em
 `MULTIPLICADORES_DE_RAIO` (evento 0.35 < pequeno 1 < médio 1.6 < tela 2.2), e um teste garante a ordem:

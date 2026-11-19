@@ -1,6 +1,6 @@
 # Design system do Norbit e motor de temas — especificação
 
-**Data:** 2026-11-19 · **Revisão 2** · **Estado:** proposta, aguardando revisão · **Substitui:** nada
+**Data:** 2026-11-19 · **Revisão 3** · **Estado:** proposta, aguardando revisão · **Substitui:** nada
 (evolui [04 — Design System](../../04-design-system.md))
 
 > **O que mudou na revisão 2.** A primeira versão escolhia como identidade "a evolução do que já existe".
@@ -9,6 +9,11 @@
 > lua**. Uma proposta interativa ("o calendário como protagonista") foi aprovada como direção. Esta revisão
 > reescreve a identidade (seção 4), amplia o que a pessoa pode personalizar, e **reordena o plano para
 > começar pelo calendário**.
+
+> **O que mudou na revisão 3.** O plano de entrega passou de **19 para 11 PRs**: vários pares eram o
+> mesmo trabalho cortado em fatias, e cada fatia custava uma revisão e um merge. Os PRs 1 e 2 já foram
+> entregues; os 9 restantes (A a I) juntam o que é da mesma natureza. Os dois que **não** se juntam são
+> os que dependem do olho de quem decide: a semana e o dia (A) e o editor de tema (H).
 
 ## 1. Objetivo
 
@@ -86,10 +91,11 @@ usa**. Um único valor-base, `--r` (de 0 a 16px, padrão 6px), gera os raios:
 | `--vidro-desfoque`                    | `6px`                                                          | superfícies de vidro (diálogos, barras)    |
 | `--brilho-destaque`                   | `0 0 14px color-mix(in oklab, var(--accent) 35%, transparent)` | botão primário, "hoje", "agora"            |
 | `--estrelas`                          | `1` ou `0` (a pessoa escolhe)                                  | liga o campo de estrelas do fundo          |
+| `--fonte-mono`                        | `ui-monospace, 'SF Mono', Menlo, Consolas, monospace`          | horas e números que precisam alinhar       |
 | `--alvo-toque`, `--alvo-toque-grosso` | `2rem` (mouse) / `2.75rem` (dedo)                              | altura mínima de controles clicáveis       |
 
 As sombras usam preto translúcido (não dependem do tema). Os números são ponto de partida: a decisão final é
-visual e é ajustada no PR 1, olhando o resultado.
+visual e é ajustada olhando o resultado, a partir do PR A.
 
 ### 4.2 A lua
 
@@ -297,33 +303,28 @@ Onde o editor mora (uma página de Preferências reestruturada, uma gaveta, ou o
 
 ## 8. Plano de entrega
 
-Estimativa de **19 PRs**, em cinco etapas. Cada PR segue o fluxo do projeto: branch, TDD, mutação nos pontos
-críticos, e2e medindo o estilo calculado, olhar a tela de verdade, documentação atualizada e PR para a `dev`.
+**11 PRs**: 2 entregues e 9 por vir. Cada PR segue o fluxo do projeto: branch, TDD, mutação nos pontos
+críticos, e2e medindo o estilo calculado, olhar a tela de verdade, documentação atualizada e PR para a
+`dev`. Quando o PR junta partes, o corpo dele diz o que é de cada uma.
 
-| Etapa                           | PR  | Entrega                                                                                       |
-| ------------------------------- | --- | --------------------------------------------------------------------------------------------- |
-| **1 · Calendário protagonista** | 1   | camada de forma (`--r` e derivados, estrelas), guarda de CI                                   |
-|                                 | 2   | domínio da lua (`faseDaLua`, `iluminacao`, `nomeDaFase`) e o componente `Lua`                 |
-|                                 | 3   | semana e dia: chip de evento firme, hierarquia de tempo, "agora" em órbita, lua no cabeçalho  |
-|                                 | 4   | mês: o mesmo vocabulário, com a lua em cada célula                                            |
-|                                 | 5   | casca: barra lateral (órbitas e cartão da lua) e barra superior                               |
-| **2 · Componentes**             | 6   | Entrada e Caixa                                                                               |
-|                                 | 7   | Alternador, Cartão de seção, Aviso                                                            |
-|                                 | 8   | Avatar, Etiqueta, Estado vazio, Cabeçalho de página                                           |
-|                                 | 9   | Toast (substitui as linhas de estado)                                                         |
-| **3 · Motor**                   | 10  | `oklch.ts` e `derivar` com testes de propriedade (contraste garantido em sementes aleatórias) |
-|                                 | 11  | `temaSchema` (com `forma`), coluna `theme` e migração (expandir)                              |
-|                                 | 12  | aplicar o tema derivado e a forma na web, cache de tokens, preferências migradas              |
-|                                 | 13  | os temas prontos, com o nebula reproduzindo as cores de hoje (teste dourado)                  |
-| **4 · Catálogo e editor**       | 14  | catálogo `/design` com axe e medição de contraste por tema                                    |
-|                                 | 15  | protótipo e decisão da estrutura de Preferências e Perfil (seção 11)                          |
-|                                 | 16  | editor de tema: galeria, seletores e controles de forma                                       |
-|                                 | 17  | editor de tema: prévia ao vivo, avisos, descartar e restaurar; migração (contrair)            |
-| **5 · Perfil**                  | 18  | cor de perfil: schema, API e exposição só entre quem compartilha                              |
-|                                 | 19  | cor de perfil: edição e uso nos avatares                                                      |
+| PR  | Entrega                                                                                                                    | Estado       |
+| --- | -------------------------------------------------------------------------------------------------------------------------- | ------------ |
+| 1   | camada de forma (`--r` e derivados, estrelas, fonte monoespaçada) e guarda de estilo no CI                                 | **entregue** |
+| 2   | domínio da lua (`faseDaLua`, `iluminacao`, `nomeDaFase`) e o componente `Lua`                                              | **entregue** |
+| A   | **semana e dia**: evento firme com barra de cor, hierarquia de tempo, "agora" em órbita, lua no cabeçalho                  | em andamento |
+| B   | **mês e casca**: o mesmo vocabulário no mês, a lua em cada célula, e a barra lateral (órbitas, cartão da lua) e a superior |              |
+| C   | **componentes de formulário e resposta**: Entrada, Caixa, Alternador, Aviso e Toast                                        |              |
+| D   | **componentes de identidade e estrutura**: Avatar, Etiqueta, Estado vazio, Cabeçalho de página e Cartão de seção           |              |
+| E   | **motor puro**: `oklch.ts`, `derivar` com testes de propriedade e os temas prontos (teste dourado do nebula)               |              |
+| F   | **integração do motor**: `temaSchema` (com `forma`), coluna `theme`, migração (expandir), aplicar na web e cache de tokens |              |
+| G   | **catálogo `/design`** com axe e medição de contraste por tema                                                             |              |
+| H   | **editor de tema**: galeria, seletores, controles de forma, prévia ao vivo, avisos, restaurar e a migração (contrair)      |              |
+| I   | **cor de perfil**: schema, API, exposição só entre quem compartilha, edição e uso nos avatares                             |              |
 
-O primeiro resultado visível é o **PR 3**. Imagens de perfil somam cerca de 2 PRs depois da decisão de
-armazenamento.
+**Antes do PR H há uma maquete, e não um PR:** a estrutura de Preferências e Perfil (seção 11) é decidida
+com um protótipo que a pessoa vê e escolhe, como foi feito com as direções visuais.
+
+Imagens de perfil somam cerca de 2 PRs depois da decisão de armazenamento de arquivos.
 
 ## 9. Verificação
 
@@ -356,11 +357,11 @@ armazenamento.
 
 ## 11. Decisões adiadas
 
-Nenhuma delas bloqueia o PR 1.
+Nenhuma delas bloqueia os PRs A a G.
 
 - **A estrutura de Preferências e Perfil.** Foram mostradas a atual (cartões empilhados), a navegação
   lateral com linhas, o perfil em primeiro lugar e a gaveta sobre o calendário; **nenhuma** foi escolhida, e
-  a pessoa pediu menos blocos e mais liberdade. Será decidida com um protótipo próprio (PR 15), depois que
+  a pessoa pediu menos blocos e mais liberdade. Será decidida com um protótipo próprio (antes do PR H), depois que
   o calendário e os componentes estiverem prontos e houver o que mostrar.
 - **Onde guardar arquivos** (imagem de avatar e banner): depende da hospedagem, ainda em aberto.
 - **Seguir o sistema (claro e escuro):** fora de escopo; o `ThemeMode` fica sem uso até alguém pedir.

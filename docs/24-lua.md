@@ -1,8 +1,8 @@
 # 24 — A lua
 
 A fase da lua é **informação** no calendário, e não enfeite: em cada dia, a fase; num cartão, o nome e
-quanto dela está iluminada. Este PR entrega a conta e o desenho; **nenhuma tela os usa ainda**. A lua entra
-no calendário nos PRs 3 (semana e dia), 4 (mês) e 5 (cartão da barra lateral) da
+quanto dela está iluminada. A conta e o desenho entraram num PR sem uso na tela; a **semana e o dia** já mostram a lua em cada dia (ver
+[13](13-visao-de-semana-e-dia.md)). O mês e o cartão da barra lateral vêm no PR B da
 [especificação](superpowers/specs/2026-11-19-design-system-design.md).
 
 ```
@@ -38,7 +38,7 @@ inteiros do mês e só aparece na fronteira, não no meio de cada fase.
 ## A orientação depende do hemisfério
 
 No **sul**, a lua crescente aparece iluminada à **esquerda** e a minguante à direita; no **norte**, o
-contrário. O padrão do produto é o sul, e o hemisfério vira escolha no editor de tema (PR 16).
+contrário. O padrão do produto é o sul, e o hemisfério vira escolha no editor de tema (PR H da especificação).
 `ladoIluminado(fase, hemisferio)` é a única parte da lógica que depende dele.
 
 ## O desenho
@@ -80,6 +80,5 @@ Um erro meu durante o caminho, no teste e não no código: escrevi 65% de ilumin
 
 ## O que ainda não existe
 
-- **Nenhum uso na tela.** Chega nos PRs 3, 4 e 5.
-- **A escolha do hemisfério pela pessoa**: o editor de tema (PR 16).
-- **O cartão da lua** (nome da fase e porcentagem de hoje): PR 5.
+- **A lua no mês e o cartão da lua na barra lateral**: PR B da especificação.
+- **A escolha do hemisfério pela pessoa**: o editor de tema (PR H).
