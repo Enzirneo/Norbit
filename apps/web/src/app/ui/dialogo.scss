@@ -18,6 +18,7 @@
      navegadores, então a cor é literal aqui — é a única exceção do projeto, e
      o valor é preto translúcido, não uma cor do tema. */
   &::backdrop {
+    /* estilo-literal: ::backdrop não herda as variáveis; preto translúcido */
     background: rgb(0 0 0 / 0.55);
     backdrop-filter: blur(2px);
   }

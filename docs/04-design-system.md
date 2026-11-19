@@ -119,6 +119,48 @@ produziria texto ilegível.
 das linhas da grade. Nenhum componente conhece a densidade; todos leem
 `--space-unit` e `--row-height`.
 
+## Camada de forma
+
+A camada semântica cobre **cor**. A **forma** (cantos, sombras, vidro, brilho, estrelas, alvo de
+toque) também é token, e parte dela é **escolha de quem usa**. A fonte é
+`libs/design-tokens/src/lib/forma.ts`; o gerador a escreve no `:root` de `tokens.generated.css`.
+
+| Token                                 | Valor                            | Quem decide                  |
+| ------------------------------------- | -------------------------------- | ---------------------------- |
+| `--r`                                 | `6px` (de 0 a 16)                | **a pessoa** (cantos)        |
+| `--estrelas`                          | `1` ou `0`                       | **a pessoa**                 |
+| `--raio-p`, `--raio-m`, `--raio-tela` | `calc(var(--r) * 1 / 1.6 / 2.2)` | deriva de `--r`              |
+| `--r-ev`                              | `calc(var(--r) * 0.35)`          | deriva de `--r`: **eventos** |
+| `--raio-pilula`                       | `9999px`                         | fixo: círculo e pílula       |
+| `--sombra-1`, `-2`, `-3`              | preto translúcido                | fixo (não muda com o tema)   |
+| `--vidro-desfoque`                    | `6px`                            | fixo                         |
+| `--brilho-destaque`                   | `0 0 14px` do `--accent` a 35%   | acompanha o destaque         |
+| `--alvo-toque`, `--alvo-toque-grosso` | `2rem` / `2.75rem`               | mouse / dedo                 |
+
+**O evento é sempre mais reto que a moldura.** Os multiplicadores ficam em
+`MULTIPLICADORES_DE_RAIO` (evento 0.35 < pequeno 1 < médio 1.6 < tela 2.2), e um teste garante a ordem:
+é ela que quebra o "tudo arredondado" para qualquer valor de `--r` que a pessoa escolha.
+
+`--estrelas` já liga e desliga o campo de estrelas do fundo (`.ceu` em `fundo-orbital.scss`). Os
+componentes **ainda não** usam `--raio-*`: cada um migra no PR em que é redesenhado, apagando o CSS antigo
+no mesmo PR (ver a especificação, seção 6.6).
+
+## A guarda de estilo
+
+Um token só protege o que o usa. Cor literal (`#6d7cff`, `rgb(...)`, `hsl(...)`, `oklch(...)`) ou
+`border-radius` em medida fixa (`8px`, `0.5rem`) fora dos tokens deixa aquele pedaço de fora de qualquer
+tema e de qualquer escolha de cantos, e a quebra só aparece quando alguém troca o tema.
+
+- **Regras e testes:** `libs/design-tokens/src/lib/guarda-de-estilo.ts` (função pura, 34 testes).
+- **Varredura:** `npm run estilo:verificar` percorre `apps/web/src` e sai com código 1 se achar algo. Roda no
+  job `lint` do CI e no pré-commit.
+- **Exceção justificada:** um comentário `estilo-literal: <motivo>` na linha, ou na de cima, libera **aquela
+  linha**, e só ela. Hoje há uma: o `::backdrop` do diálogo, que não herda as variáveis CSS.
+- **O que ela aceita:** `var(--...)`, `color-mix(...)`, `calc(var(--space-unit) * N)`, `50%` e `0`. Os
+  raios em `calc(var(--space-unit) * N)` passam até serem migrados para `--raio-*`.
+- **Falso positivo conhecido:** uma referência de template do Angular com nome só de dígitos hexadecimais
+  (`#add`, `#bad`) parece uma cor. Use o marcador, ou escolha outro nome.
+
 ## Motion
 
 ### Princípios

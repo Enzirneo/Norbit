@@ -88,7 +88,7 @@
   width: calc(var(--space-unit) * 8);
   height: calc(var(--space-unit) * 8);
   border: 2px solid transparent;
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   cursor: pointer;
 
   /* O selecionado ganha um anel **externo**, com um vão: um anel na própria

@@ -60,6 +60,8 @@ jobs:
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected -t lint --parallel=3
       - run: npx nx format:check
+      # Cor literal e raio em pixel fora dos tokens: ver docs/04-design-system.md.
+      - run: npm run estilo:verificar
 
   test:
     needs: guard

@@ -353,3 +353,127 @@ test.describe('perfil e preferências', () => {
     });
   }
 });
+
+test.describe('camada de forma', () => {
+  /**
+   * Lê o raio que o navegador **calcula** para uma expressão de CSS, usando um
+   * elemento-sonda. É o que a pessoa veria, e não o texto do arquivo gerado.
+   */
+  async function raiosCalculados(
+    page: Page,
+    cantos?: number,
+  ): Promise<Record<string, number>> {
+    return page.evaluate((valorDeR) => {
+      const sonda = document.createElement('div');
+      document.body.append(sonda);
+      if (valorDeR !== undefined) {
+        document.documentElement.style.setProperty('--r', `${valorDeR}px`);
+      }
+
+      const ler = (variavel: string): number => {
+        sonda.style.borderTopLeftRadius = `var(${variavel})`;
+        return parseFloat(getComputedStyle(sonda).borderTopLeftRadius);
+      };
+      const raios = {
+        pequeno: ler('--raio-p'),
+        medio: ler('--raio-m'),
+        tela: ler('--raio-tela'),
+        evento: ler('--r-ev'),
+        pilula: ler('--raio-pilula'),
+      };
+
+      sonda.remove();
+      document.documentElement.style.removeProperty('--r');
+      return raios;
+    }, cantos);
+  }
+
+  test('os raios existem e derivam de `--r`, que abre em 6px', async ({
+    page,
+  }) => {
+    await page.goto('/entrar');
+
+    const raios = await raiosCalculados(page);
+
+    expect(raios['pequeno']).toBeCloseTo(6, 1);
+    expect(raios['medio']).toBeCloseTo(9.6, 1);
+    expect(raios['tela']).toBeCloseTo(13.2, 1);
+    expect(raios['evento']).toBeCloseTo(2.1, 1);
+    expect(raios['pilula']).toBeGreaterThan(1000);
+  });
+
+  test('mexer em `--r` move todos os raios, e o evento fica mais reto que a moldura', async ({
+    page,
+  }) => {
+    await page.goto('/entrar');
+
+    for (const cantos of [6, 16]) {
+      const r = await raiosCalculados(page, cantos);
+
+      expect(r['pequeno']).toBeCloseTo(cantos, 1);
+      // Com algum arredondamento, o evento é estritamente mais reto, e as
+      // molduras crescem na ordem pequeno, médio, tela.
+      expect(r['evento']).toBeLessThan(r['pequeno']);
+      expect(r['pequeno']).toBeLessThan(r['medio']);
+      expect(r['medio']).toBeLessThan(r['tela']);
+    }
+  });
+
+  test('com cantos retos (0), todos os raios somem juntos', async ({
+    page,
+  }) => {
+    await page.goto('/entrar');
+
+    const r = await raiosCalculados(page, 0);
+
+    expect([r['pequeno'], r['medio'], r['tela'], r['evento']]).toEqual([
+      0, 0, 0, 0,
+    ]);
+    // A pílula não depende dos cantos: continua círculo.
+    expect(r['pilula']).toBeGreaterThan(1000);
+  });
+
+  test('o campo de estrelas abre ligado', async ({ page }) => {
+    await page.goto('/entrar');
+
+    const estrelas = await page.evaluate(() =>
+      getComputedStyle(document.documentElement)
+        .getPropertyValue('--estrelas')
+        .trim(),
+    );
+
+    expect(estrelas).toBe('1');
+  });
+
+  test('os alvos de toque têm um valor para o mouse e outro para o dedo', async ({
+    page,
+  }) => {
+    await page.goto('/entrar');
+
+    const alvos = await page.evaluate(() => {
+      const css = getComputedStyle(document.documentElement);
+      return [
+        css.getPropertyValue('--alvo-toque').trim(),
+        css.getPropertyValue('--alvo-toque-grosso').trim(),
+      ];
+    });
+
+    expect(alvos).toEqual(['2rem', '2.75rem']);
+  });
+
+  test('`--estrelas` liga e desliga o campo de estrelas do fundo', async ({
+    page,
+  }) => {
+    await page.goto('/entrar');
+    const ceu = page.locator('.ceu');
+
+    const ligado = await ceu.evaluate((el) => getComputedStyle(el).opacity);
+    await page.evaluate(() =>
+      document.documentElement.style.setProperty('--estrelas', '0'),
+    );
+    const desligado = await ceu.evaluate((el) => getComputedStyle(el).opacity);
+
+    expect(ligado).toBe('1');
+    expect(desligado).toBe('0');
+  });
+});

@@ -10,6 +10,7 @@
     "db:studio": "prisma studio",
     "prepare": "husky",
     "tokens:build": "tsx tools/generate-tokens.ts",
+    "estilo:verificar": "tsx --tsconfig tsconfig.base.json tools/verificar-estilo.ts",
     "db:seed": "tsx --tsconfig tsconfig.base.json prisma/seed.ts",
     "db:generate": "prisma generate",
     "format": "nx format:write"

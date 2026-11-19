@@ -72,20 +72,21 @@ vindos da proposta aprovada:
 A camada semântica cobre **cor**; a forma passa a ser tokenizada também, e **parte dela é escolha de quem
 usa**. Um único valor-base, `--r` (de 0 a 16px, padrão 6px), gera os raios:
 
-| Token               | Valor                                                          | Uso                                        |
-| ------------------- | -------------------------------------------------------------- | ------------------------------------------ |
-| `--r`               | `6px` (a pessoa escolhe de 0 a 16px)                           | a base de todos os raios                   |
-| `--raio-p`          | `var(--r)`                                                     | botões, campos, chips                      |
-| `--raio-m`          | `calc(var(--r) * 1.6)`                                         | painéis internos, cartão da lua            |
-| `--raio-tela`       | `calc(var(--r) * 2.2)`                                         | o quadro do calendário e os diálogos       |
-| `--r-ev`            | `calc(var(--r) * 0.35)`                                        | **eventos**: sempre mais retos que o resto |
-| `--sombra-1`        | `0 1px 2px rgb(0 0 0 / 0.35)`                                  | elementos elevados leves                   |
-| `--sombra-2`        | `0 8px 24px rgb(0 0 0 / 0.4)`                                  | menus, toasts, evento em hover             |
-| `--sombra-3`        | `0 18px 40px rgb(0 0 0 / 0.5)`                                 | diálogos                                   |
-| `--vidro-desfoque`  | `6px`                                                          | superfícies de vidro (diálogos, barras)    |
-| `--brilho-destaque` | `0 0 14px color-mix(in oklab, var(--accent) 35%, transparent)` | botão primário, "hoje", "agora"            |
-| `--estrelas`        | `1` ou `0` (a pessoa escolhe)                                  | liga o campo de estrelas do fundo          |
-| `--alvo-toque`      | `2rem` (desktop) / `2.75rem` (toque)                           | altura mínima de controles clicáveis       |
+| Token                                 | Valor                                                          | Uso                                        |
+| ------------------------------------- | -------------------------------------------------------------- | ------------------------------------------ |
+| `--r`                                 | `6px` (a pessoa escolhe de 0 a 16px)                           | a base de todos os raios                   |
+| `--raio-p`                            | `var(--r)`                                                     | botões, campos, chips                      |
+| `--raio-m`                            | `calc(var(--r) * 1.6)`                                         | painéis internos, cartão da lua            |
+| `--raio-tela`                         | `calc(var(--r) * 2.2)`                                         | o quadro do calendário e os diálogos       |
+| `--r-ev`                              | `calc(var(--r) * 0.35)`                                        | **eventos**: sempre mais retos que o resto |
+| `--raio-pilula`                       | `9999px`                                                       | círculo e pílula: não depende dos cantos   |
+| `--sombra-1`                          | `0 1px 2px rgb(0 0 0 / 0.35)`                                  | elementos elevados leves                   |
+| `--sombra-2`                          | `0 8px 24px rgb(0 0 0 / 0.4)`                                  | menus, toasts, evento em hover             |
+| `--sombra-3`                          | `0 18px 40px rgb(0 0 0 / 0.5)`                                 | diálogos                                   |
+| `--vidro-desfoque`                    | `6px`                                                          | superfícies de vidro (diálogos, barras)    |
+| `--brilho-destaque`                   | `0 0 14px color-mix(in oklab, var(--accent) 35%, transparent)` | botão primário, "hoje", "agora"            |
+| `--estrelas`                          | `1` ou `0` (a pessoa escolhe)                                  | liga o campo de estrelas do fundo          |
+| `--alvo-toque`, `--alvo-toque-grosso` | `2rem` (mouse) / `2.75rem` (dedo)                              | altura mínima de controles clicáveis       |
 
 As sombras usam preto translúcido (não dependem do tema). Os números são ponto de partida: a decisão final é
 visual e é ajustada no PR 1, olhando o resultado.
@@ -243,7 +244,9 @@ As telas não definem cor, raio nem sombra.
 
 ### 6.3 Guarda de CI
 
-O job `guard` (que já existe) ganha uma verificação que reprova, em `apps/web/src/**/*.{scss,html,ts}`:
+A verificação (`npm run estilo:verificar`, regras em `libs/design-tokens/src/lib/guarda-de-estilo.ts`) roda
+no job `lint` do CI e no pré-commit. O job `guard` do `ci.yml` é só o portão que espera o `package.json`, e
+por isso a verificação não mora nele. Ela reprova, em `apps/web/src/**/*.{scss,html,ts}`:
 cor literal (`#hex`, `rgb(`, `hsl(`) e raio em pixel, **exceto** em `libs/design-tokens` e em uma lista curta
 de exceções comentadas (hoje só o `::backdrop` do diálogo). A verificação tem teste próprio.
 

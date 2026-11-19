@@ -303,7 +303,7 @@
   justify-content: center;
   width: calc(var(--space-unit) * 8);
   height: calc(var(--space-unit) * 8);
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   background: color-mix(in oklab, var(--accent) 22%, transparent);
   color: var(--text-primary);
   font-size: 0.75rem;

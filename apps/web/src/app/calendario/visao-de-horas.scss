@@ -73,7 +73,7 @@ $eixo: 3.5rem;
   justify-content: center;
   min-width: calc(var(--space-unit) * 6);
   height: calc(var(--space-unit) * 6);
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
 }
@@ -274,7 +274,7 @@ $eixo: 3.5rem;
     left: -3px;
     width: 6px;
     height: 6px;
-    border-radius: 999px;
+    border-radius: var(--raio-pilula);
     background: var(--state-danger);
   }
 }

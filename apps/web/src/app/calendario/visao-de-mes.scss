@@ -138,7 +138,7 @@ $trilhas: 3;
   justify-content: center;
   min-width: calc(var(--space-unit) * 6);
   height: calc(var(--space-unit) * 6);
-  border-radius: 999px;
+  border-radius: var(--raio-pilula);
   color: var(--text-secondary);
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
@@ -210,7 +210,7 @@ $trilhas: 3;
     height: calc(var(--space-unit) * 1.5);
     padding: 0;
     border-inline-start-width: 0;
-    border-radius: 999px;
+    border-radius: var(--raio-pilula);
     background-clip: padding-box;
   }
 }
