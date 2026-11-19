@@ -60,6 +60,19 @@
   }
 }
 
+/* Ação destrutiva: o contorno e o texto na cor de perigo avisam antes do clique,
+   e o fundo só aparece no hover para não gritar em repouso. */
+:host(.botao--perigo) {
+  border-color: color-mix(in oklab, var(--state-danger) 55%, transparent);
+  background-color: transparent;
+  color: var(--state-danger);
+
+  &:not(:disabled):hover {
+    border-color: var(--state-danger);
+    background-color: color-mix(in oklab, var(--state-danger) 12%, transparent);
+  }
+}
+
 :host(.botao--texto) {
   padding-inline: calc(var(--space-unit));
   background-color: transparent;

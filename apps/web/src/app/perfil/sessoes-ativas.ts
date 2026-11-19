@@ -22,6 +22,15 @@ import { SessoesService } from './sessoes.service';
   selector: 'nb-sessoes-ativas',
   imports: [DatePipe, Botao],
   templateUrl: './sessoes-ativas.html',
+  // O hospedeiro é um bloco com espaço entre os filhos: o texto de apoio, o
+  // formulário e o botão não ficam colados uns nos outros.
+  styles: `
+    :host {
+      display: flex;
+      flex-direction: column;
+      gap: calc(var(--space-unit) * 4);
+    }
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessoesAtivas {

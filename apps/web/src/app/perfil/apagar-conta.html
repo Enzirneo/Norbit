@@ -6,7 +6,7 @@
 </p>
 
 @if (!confirmando()) {
-<button nb-botao aparencia="contorno" type="button" (click)="abrir()">
+<button nb-botao aparencia="perigo" type="button" (click)="abrir()">
   Apagar minha conta
 </button>
 } @else {
@@ -34,7 +34,7 @@
   }
 
   <div class="flex gap-5">
-    <button nb-botao type="submit" [ocupado]="enviando()">
+    <button nb-botao aparencia="perigo" type="submit" [ocupado]="enviando()">
       Apagar a conta para sempre
     </button>
     <button nb-botao aparencia="texto" type="button" (click)="cancelar()">
