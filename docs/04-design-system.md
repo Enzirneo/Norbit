@@ -421,6 +421,20 @@ fundo, destaque (com os cinco atalhos), contraste alto, cantos, estrelas, lua e 
 A migração para **contrair** (remover `themePreset` e `accentColor`) fica para um PR próprio, agora que a web
 não lê mais o `accentColor`.
 
+## Cor de perfil
+
+`User.profileColor` (hex minúsculo, opcional; `CHECK` no banco) é a identidade **pública** da pessoa: tinge o avatar
+na lista de membros de uma agenda e no cabeçalho do calendário. Escolhe-se em Perfil, com prévia no avatar; "Usar a
+cor do tema" a tira (`null`).
+
+- **Privacidade:** a API a devolve só onde já devolve dados de membros (`MembroVisivel`, que exige acesso à agenda)
+  e para a própria pessoa (`UsuarioAutenticado`). Nenhuma outra rota a expõe; a conta apagada a perde, como o avatar.
+- **Contraste:** `corDeAvatar(cor)` (em `libs/design-tokens`) devolve `{ fundo, texto }` com pelo menos 4.5:1. Uma cor
+  que já serve fica exatamente como foi escolhida; só a faixa estreita de tons médios é ajustada (claridade em OKLCH,
+  matiz mantido). Em vez de recusar a escolha, como o motor faz com o destaque.
+- Fora do escopo: os convites (quem convida ainda não compartilha agenda com o convidado) e os criadores de evento
+  (a tela ainda não mostra autoria). Imagem de avatar e banner continuam esperando a decisão sobre armazenamento.
+
 ## Armadilhas de CSS que já custaram caro
 
 Os testes de componente não enxergam CSS, e foi por isso que estes dois passaram por dezenas de

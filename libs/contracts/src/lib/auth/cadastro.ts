@@ -94,5 +94,7 @@ export type UsuarioAutenticado = {
   readonly handle: string;
   readonly displayName: string;
   readonly avatarUrl: string | null;
+  /** A cor de perfil escolhida, ou `null` para a do tema. */
+  readonly profileColor: string | null;
   readonly timeZone: string;
 };

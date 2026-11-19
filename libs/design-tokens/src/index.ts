@@ -9,3 +9,4 @@ export * from './lib/oklch';
 export * from './lib/sementes';
 export * from './lib/derivar';
 export * from './lib/temas-prontos';
+export * from './lib/cor-de-avatar';

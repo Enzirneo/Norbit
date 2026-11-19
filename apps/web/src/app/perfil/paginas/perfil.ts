@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { atualizarPerfilSchema } from '@norbit/contracts';
+import { ACENTOS } from '@norbit/design-tokens';
 import { AuthService } from '../../auth/auth.service';
 import {
   errosDaApi,
@@ -48,6 +49,7 @@ import { CartaoDeSecao } from '../../ui/cartao-de-secao';
     TrocaDeSenha,
   ],
   templateUrl: './perfil.html',
+  styleUrl: './perfil.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Perfil {
@@ -65,13 +67,30 @@ export class Perfil {
 
   private readonly toasts = inject(ToastService);
 
+  /** A cor de perfil em edição; `null` é a do tema. Mostrada no avatar na hora. */
+  protected readonly cor = signal<string | null>(
+    this.usuario()?.profileColor ?? null,
+  );
+
+  /** Onde o seletor de cor começa quando a pessoa ainda não escolheu uma. */
+  protected readonly corInicial = ACENTOS.nebula;
+
   protected readonly erros = signal<ErrosPorCampo>({});
   protected readonly salvando = signal(false);
 
+  protected mudarCor(cor: string): void {
+    this.cor.set(cor.toLowerCase());
+  }
+
+  protected tirarCor(): void {
+    this.cor.set(null);
+  }
+
   protected salvar(): void {
-    const validado = atualizarPerfilSchema.safeParse(
-      this.formulario.getRawValue(),
-    );
+    const validado = atualizarPerfilSchema.safeParse({
+      ...this.formulario.getRawValue(),
+      profileColor: this.cor(),
+    });
 
     if (!validado.success) {
       this.erros.set(errosDoZod(validado.error));
@@ -87,6 +106,7 @@ export class Perfil {
         this.toasts.mostrar('Perfil salvo.');
         // O servidor devolve a forma canônica (handle em minúsculas, fuso com a
         // grafia certa); o formulário passa a mostrá-la.
+        this.cor.set(usuario.profileColor);
         this.formulario.reset({
           displayName: usuario.displayName,
           handle: usuario.handle,

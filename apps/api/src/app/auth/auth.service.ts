@@ -288,6 +288,7 @@ export function paraUsuarioAutenticado(usuario: User): UsuarioAutenticado {
     handle: usuario.handle,
     displayName: usuario.displayName,
     avatarUrl: usuario.avatarUrl,
+    profileColor: usuario.profileColor,
     timeZone: usuario.timeZone,
   };
 }

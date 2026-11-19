@@ -50,4 +50,24 @@ describe('atualizarPerfilSchema', () => {
 
     expect(r).toEqual({ displayName: 'Enzo' });
   });
+
+  describe('cor de perfil', () => {
+    it('aceita uma cor em hexadecimal, em minúsculas', () => {
+      expect(
+        atualizarPerfilSchema.parse({ profileColor: '#4ADEBB' }).profileColor,
+      ).toBe('#4adebb');
+    });
+
+    it('aceita null: tirar a cor volta ao destaque do tema', () => {
+      expect(
+        atualizarPerfilSchema.parse({ profileColor: null }).profileColor,
+      ).toBeNull();
+    });
+
+    it.each(['azul', '#fff', '#12345g', ''])('recusa %j', (cor) => {
+      expect(
+        atualizarPerfilSchema.safeParse({ profileColor: cor }).success,
+      ).toBe(false);
+    });
+  });
 });

@@ -124,6 +124,8 @@ export type MembroVisivel = {
   readonly handle: string;
   readonly displayName: string;
   readonly avatarUrl: string | null;
+  /** A cor de perfil do membro. Só chega a quem compartilha a agenda. */
+  readonly profileColor: string | null;
   readonly papel: PapelNaAgenda;
   /** ISO-8601, para a interface formatar no fuso de quem lê. */
   readonly desde: string;

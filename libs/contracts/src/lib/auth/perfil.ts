@@ -8,7 +8,7 @@
  * não há onde guardar arquivo ainda.
  */
 import { z } from 'zod';
-import { fusoIana } from '../agendas/comum';
+import { corHex, fusoIana } from '../agendas/comum';
 import { handle, nomeDeExibicao } from './cadastro';
 
 export const atualizarPerfilSchema = z
@@ -16,6 +16,8 @@ export const atualizarPerfilSchema = z
     displayName: nomeDeExibicao.optional(),
     handle: handle.optional(),
     timeZone: fusoIana.optional(),
+    /** `null` tira a cor: o avatar volta ao destaque do tema. */
+    profileColor: corHex.nullable().optional(),
   })
   .strip()
   .refine((dados) => Object.keys(dados).length > 0, {

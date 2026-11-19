@@ -319,7 +319,7 @@ críticos, e2e medindo o estilo calculado, olhar a tela de verdade, documentaç�
 | F   | **integração do motor**: `temaSchema` (com `forma`), coluna `theme`, migração (expandir), aplicar na web e cache de tokens | em andamento   |
 | G   | **catálogo `/design`** com axe e medição de contraste por tema                                                             | em andamento   |
 | H   | **editor de tema**: galeria, seletores, controles de forma, prévia ao vivo, avisos, restaurar e a migração (contrair)      | em andamento   |
-| I   | **cor de perfil**: schema, API, exposição só entre quem compartilha, edição e uso nos avatares                             |                |
+| I   | **cor de perfil**: schema, API, exposição só entre quem compartilha, edição e uso nos avatares                             | em andamento   |
 
 **Antes do PR H há uma maquete, e não um PR:** a estrutura de Preferências e Perfil (seção 11) é decidida
 com um protótipo que a pessoa vê e escolhe, como foi feito com as direções visuais.

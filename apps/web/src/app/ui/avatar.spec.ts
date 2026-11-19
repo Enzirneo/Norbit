@@ -4,10 +4,12 @@ import { Avatar } from './avatar';
 
 @Component({
   imports: [Avatar],
-  template: `<nb-avatar nome="Maria Souza" /><nb-avatar
-      nome="Enzo"
-      tamanho="g"
-    />`,
+  template: `
+    <nb-avatar nome="Maria Souza" />
+    <nb-avatar nome="Enzo" tamanho="g" />
+    <nb-avatar nome="Ana" cor="#4adebb" />
+    <nb-avatar nome="Zé" cor="#767676" />
+  `,
 })
 class Anfitriao {}
 
@@ -36,5 +38,28 @@ describe('Avatar', () => {
 
     expect(maria.classList.contains('avatar--m')).toBe(true);
     expect(enzo.classList.contains('avatar--g')).toBe(true);
+  });
+
+  describe('com cor de perfil', () => {
+    it('o fundo é a cor escolhida e o texto se lê sobre ela', () => {
+      const ana = montar()[2];
+
+      expect(ana.style.getPropertyValue('--avatar-fundo')).toBe('#4adebb');
+      expect(ana.style.getPropertyValue('--avatar-texto')).not.toBe('');
+      expect(ana.classList.contains('avatar--cor')).toBe(true);
+    });
+
+    it('uma cor que não aguenta texto é ajustada, sem mudar o que a pessoa escolheu', () => {
+      const ze = montar()[3];
+
+      expect(ze.style.getPropertyValue('--avatar-fundo')).not.toBe('#767676');
+    });
+
+    it('sem cor, não há variáveis: vale o destaque do tema', () => {
+      const maria = montar()[0];
+
+      expect(maria.style.getPropertyValue('--avatar-fundo')).toBe('');
+      expect(maria.classList.contains('avatar--cor')).toBe(false);
+    });
   });
 });

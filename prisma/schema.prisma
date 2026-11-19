@@ -127,6 +127,9 @@ model User {
   handle       String    @unique @db.Citext // @enzo — identificador público curto
   displayName  String
   avatarUrl    String?
+  // Cor de perfil, hex minúsculo. Pública só para quem compartilha agenda: a API a
+  // inclui na lista de membros e em nenhum outro lugar. Nulo = o destaque do tema.
+  profileColor String?
   // Fuso do usuário, IANA (ex.: "America/Sao_Paulo"). Usado para renderizar as
   // datas guardadas em UTC e para calcular a hora do resumo diário.
   timeZone     String    @default("America/Sao_Paulo")

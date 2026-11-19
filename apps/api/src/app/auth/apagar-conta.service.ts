@@ -101,6 +101,7 @@ export class ApagarContaService {
           handle: `excluida-${id.replaceAll('-', '').slice(-12)}`,
           displayName: NOME_DA_CONTA_EXCLUIDA,
           avatarUrl: null,
+          profileColor: null,
           passwordHash: null,
           deletedAt: agora,
         },

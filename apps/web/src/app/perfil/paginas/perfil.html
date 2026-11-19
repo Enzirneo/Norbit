@@ -5,7 +5,35 @@
     <!--
         Iniciais no lugar de uma imagem: ainda não há onde guardar arquivos.
       -->
-    <nb-avatar tamanho="g" [nome]="usuario()?.displayName ?? ''" />
+    <nb-avatar
+      tamanho="g"
+      [nome]="usuario()?.displayName ?? ''"
+      [cor]="cor()"
+    />
+
+    <div class="cor-de-perfil">
+      <label class="cor-de-perfil-campo" for="cor-de-perfil">
+        <span>Cor do perfil</span>
+        <input
+          id="cor-de-perfil"
+          type="color"
+          [value]="cor() ?? corInicial"
+          (input)="mudarCor($any($event.target).value)"
+        />
+      </label>
+      <button
+        nb-botao
+        aparencia="texto"
+        type="button"
+        [desabilitado]="cor() === null"
+        (click)="tirarCor()"
+      >
+        Usar a cor do tema
+      </button>
+      <small class="cor-de-perfil-nota">
+        Quem compartilha uma agenda com você vê o seu avatar nesta cor.
+      </small>
+    </div>
 
     <form
       [formGroup]="formulario"

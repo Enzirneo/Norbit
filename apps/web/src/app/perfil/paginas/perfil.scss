@@ -1,0 +1,23 @@
+.cor-de-perfil {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space-unit) * 3);
+  align-items: center;
+}
+
+.cor-de-perfil-campo {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 1);
+  font-size: 0.875rem;
+
+  input {
+    accent-color: var(--accent);
+  }
+}
+
+.cor-de-perfil-nota {
+  flex-basis: 100%;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}

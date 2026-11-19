@@ -143,6 +143,7 @@ async function main(): Promise<void> {
       email: EMAIL_MARIA,
       handle: 'maria',
       displayName: 'Maria',
+      profileColor: '#4adebb',
       passwordHash,
       timeZone: FUSO,
       emailVerifiedAt: new Date(),
