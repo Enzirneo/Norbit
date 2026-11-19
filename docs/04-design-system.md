@@ -5,6 +5,11 @@ planejado antes da interface: todo componente nasce consumindo tokens, nunca val
 cravados. Trocar de tema depois fica impossível se os componentes forem escritos com
 cores literais.
 
+> **Evolução planejada:** o motor de temas (cores derivadas de sementes), a camada de forma e a
+> biblioteca completa de componentes estão especificados em
+> [docs/superpowers/specs/2026-11-19-design-system-design.md](superpowers/specs/2026-11-19-design-system-design.md).
+> Este documento descreve o que **existe**; aquele, o que vem.
+
 ## A ideia visual
 
 **Órbita, não nave espacial.** A referência é a quietude do espaço: profundidade,
