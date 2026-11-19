@@ -1,9 +1,9 @@
 # 24 — A lua
 
 A fase da lua é **informação** no calendário, e não enfeite: em cada dia, a fase; num cartão, o nome e
-quanto dela está iluminada. A conta e o desenho entraram num PR sem uso na tela; a **semana e o dia** já mostram a lua em cada dia (ver
-[13](13-visao-de-semana-e-dia.md)). O mês e o cartão da barra lateral vêm no PR B da
-[especificação](superpowers/specs/2026-11-19-design-system-design.md).
+quanto dela está iluminada. A conta e o desenho entraram num PR sem uso na tela; hoje a **semana e o dia** mostram a lua em cada dia (ver
+[13](13-visao-de-semana-e-dia.md)), o **mês** a mostra em cada célula (ver [11](11-visao-de-mes.md)) e a
+**barra lateral** tem o cartão da lua de hoje.
 
 ```
 libs/domain/src/lib/calendario/
@@ -80,5 +80,4 @@ Um erro meu durante o caminho, no teste e não no código: escrevi 65% de ilumin
 
 ## O que ainda não existe
 
-- **A lua no mês e o cartão da lua na barra lateral**: PR B da especificação.
 - **A escolha do hemisfério pela pessoa**: o editor de tema (PR H).

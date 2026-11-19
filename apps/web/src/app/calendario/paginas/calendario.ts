@@ -44,6 +44,7 @@ import {
   FormularioDeEvento,
   type AlvoDoFormulario,
 } from '../formulario-de-evento';
+import { CartaoDaLua } from '../cartao-da-lua';
 import { VisaoDeHoras, type Reagendamento } from '../visao-de-horas';
 import { VisaoDeMes } from '../visao-de-mes';
 
@@ -60,6 +61,7 @@ export type Visao = Periodo;
   selector: 'nb-calendario',
   imports: [
     Botao,
+    CartaoDaLua,
     Dialogo,
     RouterLink,
     FormularioDeEvento,

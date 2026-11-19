@@ -42,6 +42,7 @@ import {
   celulasDeHora,
   type CelulaDeHora,
   comoTexto,
+  corDaAgenda,
   fracaoDoPassado,
   horarioDe,
   mesmoDia,
@@ -533,11 +534,6 @@ export class VisaoDeHoras {
 /** A identidade de uma instância: a linha mais o início original. Ver docs/08. */
 function chaveDa(ocorrencia: OcorrenciaVisivel): string {
   return `${ocorrencia.id}|${ocorrencia.inicioOriginal}`;
-}
-
-/** A cor da agenda, ou o destaque do tema se a agenda não está na lista. */
-function corDaAgenda(cor: string | undefined): string {
-  return cor ?? 'var(--accent)';
 }
 
 /**
