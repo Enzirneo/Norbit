@@ -9,9 +9,7 @@
   <ul class="lista">
     @for (membro of membros(); track membro.userId) {
     <li class="item">
-      <span class="avatar" aria-hidden="true"
-        >{{ iniciaisDe(membro.displayName) }}</span
-      >
+      <nb-avatar [nome]="membro.displayName" />
 
       <div class="texto">
         <strong class="nome">{{ membro.displayName }}</strong>
@@ -19,7 +17,7 @@
       </div>
 
       @if (membro.papel === 'OWNER') {
-      <span class="papel-fixo">Dono</span>
+      <nb-etiqueta>Dono</nb-etiqueta>
       } @else if (aguardando(membro, 'remover')) {
       <div class="acoes">
         <button

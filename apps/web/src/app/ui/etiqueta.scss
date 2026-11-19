@@ -1,0 +1,18 @@
+:host {
+  --tom: var(--text-muted);
+
+  display: inline-block;
+  padding: 0 calc(var(--space-unit) * 2);
+  border: 1px solid color-mix(in oklab, var(--tom) 45%, transparent);
+  border-radius: var(--raio-p);
+  color: var(--tom);
+  font-family: var(--fonte-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+
+:host(.etiqueta--destaque) {
+  --tom: var(--accent);
+}

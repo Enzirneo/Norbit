@@ -9,17 +9,13 @@
   </header>
 
   <main class="conteudo">
-    <div class="cabecalho">
-      <h1 class="titulo">Preferências</h1>
-    </div>
+    <nb-cabecalho-de-pagina titulo="Preferências" />
 
     @if (erro(); as mensagem) {
     <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
     }
 
-    <section class="secao">
-      <h2 class="secao-titulo">Aparência</h2>
-
+    <nb-cartao-de-secao titulo="Aparência">
       <nb-campo rotulo="Cor de destaque" [dica]="rotuloDoAcento()">
         <div class="acentos" role="radiogroup" aria-label="Cor de destaque">
           @for (opcao of acentos; track opcao.nome) {
@@ -64,11 +60,9 @@
           </small>
         </span>
       </label>
-    </section>
+    </nb-cartao-de-secao>
 
-    <section class="secao">
-      <h2 class="secao-titulo">Calendário</h2>
-
+    <nb-cartao-de-secao titulo="Calendário">
       <nb-campo rotulo="Visão ao abrir">
         <select
           class="nb-entrada"
@@ -102,6 +96,6 @@
         />
         <span>Relógio de 24 horas</span>
       </label>
-    </section>
+    </nb-cartao-de-secao>
   </main>
 </div>
