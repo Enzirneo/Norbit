@@ -37,12 +37,18 @@
               "maximumError": "8kb"
             }
           ],
-          "outputHashing": "all"
+          "outputHashing": "all",
+          "define": {
+            "CATALOGO": "false"
+          }
         },
         "development": {
           "optimization": false,
           "extractLicenses": false,
-          "sourceMap": true
+          "sourceMap": true,
+          "define": {
+            "CATALOGO": "true"
+          }
         }
       }
     },

@@ -146,6 +146,8 @@ jobs:
       - run: npm run db:generate
       - uses: nrwl/nx-set-shas@v4
       - run: npx nx affected -t build --parallel=3 --configuration=production
+      # O catálogo /design é só de desenvolvimento: confere que não está no pacote.
+      - run: npm run catalogo:verificar
 
   e2e:
     needs: [guard, build]

@@ -394,6 +394,17 @@ apoio, bordas) não são os escritos à mão em `semanticos.ts`: só passam a va
 - A migração preenche `appearance` do par antigo: a conta com `themePreset: dawn` (Maria, no seed) passa a ter
   de fato o tema claro, que antes era ignorado.
 
+## O catálogo vivo (`/design`)
+
+Só em desenvolvimento: a constante de build `CATALOGO` (`define` no `project.json`) é `true` no build de
+desenvolvimento e `false` na produção, e com ela falsa o bundler elimina o `import()` da rota.
+`npm run catalogo:verificar` (roda no job `build` do CI) procura o catálogo no `dist` e reprova se ele estiver lá.
+
+A página mostra cada componente em cada estado e tem controles de tema (pronto, fundo, destaque, contraste alto),
+cantos e estrelas, que valem **só para a página** (não vão para a conta nem para o cache). Os avisos do motor
+aparecem quando ele ajusta uma semente. O e2e (`catalogo.spec.ts`) visita cada tema pronto, com e sem contraste
+alto, e roda **axe** (WCAG A/AA, `color-contrast` incluído); num build de produção os testes se pulam.
+
 ## Armadilhas de CSS que já custaram caro
 
 Os testes de componente não enxergam CSS, e foi por isso que estes dois passaram por dezenas de

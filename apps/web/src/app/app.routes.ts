@@ -1,5 +1,6 @@
 import { Route } from '@angular/router';
 import { exigeSessao, exigeVisitante } from './auth/auth.guard';
+import { rotasDoCatalogo } from './design/rotas-do-catalogo';
 
 export const appRoutes: Route[] = [
   {
@@ -59,6 +60,8 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./convites/paginas/convite').then((m) => m.Convite),
   },
+  // O catálogo de design: só existe no build de desenvolvimento.
+  ...rotasDoCatalogo(),
   // Qualquer outro caminho cai na raiz, e o guard decide se é login ou início.
   { path: '**', redirectTo: '' },
 ];
