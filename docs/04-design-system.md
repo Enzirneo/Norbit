@@ -362,6 +362,26 @@ CommandPalette
 - **Cabeçalho de página** (`nb-cabecalho-de-pagina`): o `h1` das telas de ajuste.
 - **Cartão de seção** (`nb-cartao-de-secao`): `section` nomeada pelo título (`aria-labelledby`), no raio de tela.
 
+## O motor de temas (funções puras)
+
+Em `libs/design-tokens`, sem DOM: `oklch.ts` (sRGB ↔ OKLCH, com corte de croma na gama), `sementes.ts`
+(`{ fundo, destaque, contraste }`, `modoDe`), `derivar.ts` e `temas-prontos.ts`.
+
+`derivar(sementes)` devolve `{ tokens, avisos, modo }` com todos os tokens semânticos:
+
+- **modo** sai da claridade do fundo (corte 0.6 em OKLCH); superfícies sobem em degraus (clareiam no escuro);
+- **texto**: principal ≥ 7:1 (10:1 em contraste alto); apoio é o mais discreto que ainda passa o alvo;
+- **destaque** mantido exatamente se legível (≥ 4.5:1 sobre as superfícies **e** com texto legível por cima);
+  senão ajustado, com aviso. Hover afasta-se da frente; fundo de seleção é o mais sutil com tinta ≥ 1.25:1;
+- **nunca recusa**: fundo de claridade média ou destaque igual ao fundo são ajustados e geram um aviso
+  ("Ajustamos …"). Uma varredura de 288 combinações de fundo, destaque e nível confere os mesmos pares de
+  contraste dos presets.
+
+Os temas prontos (`nebula`, `eclipse`, `dawn`, `vacuum`) e os fundos (`noite`, `vazio`, `aurora`, `eclipse`)
+são sementes; os valores de `eclipse`, `dawn`, `vacuum` e dos fundos são um primeiro palpite, ajustáveis.
+O `nebula` derivado mantém fundo e destaque idênticos aos de hoje, mas os tons intermediários (texto de
+apoio, bordas) não são os escritos à mão em `semanticos.ts`: só passam a valer quando a web usar o motor (PR F).
+
 ## Armadilhas de CSS que já custaram caro
 
 Os testes de componente não enxergam CSS, e foi por isso que estes dois passaram por dezenas de
