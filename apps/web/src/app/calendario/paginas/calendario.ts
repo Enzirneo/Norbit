@@ -38,6 +38,7 @@ import { PainelDeConvites } from '../../convites/painel-de-convites';
 import { MembrosDaAgenda } from '../../membros/membros-da-agenda';
 import { MembrosService } from '../../membros/membros.service';
 import { PreferenciasService } from '../../preferencias/preferencias.service';
+import { iniciaisDe } from '../../perfil/iniciais';
 import { CalendarioService } from '../calendario.service';
 import {
   FormularioDeEvento,
@@ -80,6 +81,10 @@ export class Calendario {
   private readonly router = inject(Router);
 
   protected readonly usuario = this.auth.usuario;
+
+  protected readonly iniciais = computed(() =>
+    iniciaisDe(this.usuario()?.displayName ?? ''),
+  );
 
   /**
    * O fuso de quem está vendo.

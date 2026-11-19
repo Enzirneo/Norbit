@@ -306,3 +306,13 @@ PRs com tudo verde. Cada um tem agora um teste e2e que mede o estilo **calculado
 - **Dois campos em colunas apertadas passam um por cima do outro.** Data e hora lado a lado em
   ~226px não cabem; o formulário de evento empilha Início e Fim e deixa a data crescer
   (`minmax(0, 1fr)`) com a hora em largura fixa.
+- **`margin-top: auto` em vários irmãos divide o espaço livre entre eles.** Os links Perfil e
+  Preferências tinham um `margin-top: auto` cada: um flutuava no meio da barra lateral e o outro
+  ficava no rodapé. Quem empurra para baixo é o **grupo** (`.lateral-rodape`), uma vez.
+- **Texto ao lado de um botão de texto disputa a largura da linha.** "Compartilhar" ao lado do nome da
+  agenda reduzia o nome a "M…". Ações repetidas em lista são **ícones** com `aria-label` e `title`, e a
+  largura fica com o conteúdo. O teste exige largura para "Minha agenda" (o nome padrão), e não só que
+  cada nome caiba em si mesmo: os nomes curtos do seed passavam com a linha apertada.
+- **Cabeçalho com vários grupos precisa saber quebrar.** Em tela estreita o topo passa para duas
+  linhas (marca e conta em cima, navegação e visões embaixo); numa linha só a página rolava na
+  horizontal.
