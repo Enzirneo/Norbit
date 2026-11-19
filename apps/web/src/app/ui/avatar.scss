@@ -1,0 +1,26 @@
+:host {
+  --lado: calc(var(--space-unit) * 8);
+
+  display: inline-grid;
+  flex-shrink: 0;
+  place-items: center;
+  inline-size: var(--lado);
+  block-size: var(--lado);
+  border-radius: var(--raio-pilula);
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+:host(.avatar--p) {
+  --lado: calc(var(--space-unit) * 6);
+
+  font-size: 0.6875rem;
+}
+
+:host(.avatar--g) {
+  --lado: calc(var(--space-unit) * 14);
+
+  font-size: 1.25rem;
+}

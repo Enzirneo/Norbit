@@ -31,18 +31,6 @@
   border-radius: calc(var(--space-unit) * 3);
 }
 
-.avatar {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: calc(var(--space-unit) * 8);
-  height: calc(var(--space-unit) * 8);
-  border-radius: var(--raio-pilula);
-  background: var(--surface-raised);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
 .texto {
   display: flex;
   flex: 1;
@@ -73,11 +61,6 @@
 
 .seletor {
   width: auto;
-}
-
-.papel-fixo {
-  color: var(--text-muted);
-  font-size: 0.8125rem;
 }
 
 @media (max-width: 30rem) {

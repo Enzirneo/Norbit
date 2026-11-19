@@ -1,0 +1,22 @@
+:host {
+  display: block;
+}
+
+.secao {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 4);
+  padding: calc(var(--space-unit) * 5);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--raio-m);
+  background: var(--surface-raised);
+}
+
+.secao-titulo {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

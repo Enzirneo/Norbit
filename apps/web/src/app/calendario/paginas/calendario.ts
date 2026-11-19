@@ -39,7 +39,6 @@ import { PainelDeConvites } from '../../convites/painel-de-convites';
 import { MembrosDaAgenda } from '../../membros/membros-da-agenda';
 import { MembrosService } from '../../membros/membros.service';
 import { PreferenciasService } from '../../preferencias/preferencias.service';
-import { iniciaisDe } from '../../perfil/iniciais';
 import { CalendarioService } from '../calendario.service';
 import {
   FormularioDeEvento,
@@ -49,6 +48,8 @@ import { CartaoDaLua } from '../cartao-da-lua';
 import { VisaoDeHoras, type Reagendamento } from '../visao-de-horas';
 import { VisaoDeMes } from '../visao-de-mes';
 import { Aviso } from '../../ui/aviso';
+import { Avatar } from '../../ui/avatar';
+import { EstadoVazio } from '../../ui/estado-vazio';
 
 /**
  * As visões que o produto tem hoje.
@@ -62,6 +63,8 @@ export type Visao = Periodo;
 @Component({
   selector: 'nb-calendario',
   imports: [
+    EstadoVazio,
+    Avatar,
     Aviso,
     Alternador,
     Botao,
@@ -87,10 +90,6 @@ export class Calendario {
   private readonly router = inject(Router);
 
   protected readonly usuario = this.auth.usuario;
-
-  protected readonly iniciais = computed(() =>
-    iniciaisDe(this.usuario()?.displayName ?? ''),
-  );
 
   /**
    * O fuso de quem está vendo.

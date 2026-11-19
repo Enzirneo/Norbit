@@ -1,0 +1,17 @@
+:host {
+  display: block;
+}
+
+.vazio {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 0.5);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+.vazio-titulo {
+  color: var(--text-secondary);
+  font-weight: 500;
+}

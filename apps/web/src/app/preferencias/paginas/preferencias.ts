@@ -24,6 +24,8 @@ import { Marca } from '../../ui/marca';
 import { ToastService } from '../../ui/toast.service';
 import { PreferenciasService } from '../preferencias.service';
 import { Aviso } from '../../ui/aviso';
+import { CabecalhoDePagina } from '../../ui/cabecalho-de-pagina';
+import { CartaoDeSecao } from '../../ui/cartao-de-secao';
 
 type OpcaoDeAcento = { readonly nome: NomeDeAcento; readonly cor: string };
 
@@ -37,7 +39,7 @@ const ROTULOS_DE_ACENTO: Record<NomeDeAcento, string> = {
 
 @Component({
   selector: 'nb-preferencias',
-  imports: [Aviso, Botao, Campo, Marca],
+  imports: [CartaoDeSecao, CabecalhoDePagina, Aviso, Botao, Campo, Marca],
   templateUrl: './preferencias.html',
   styleUrl: './preferencias.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -353,6 +353,15 @@ CommandPalette
 - **Toast** (`ToastService` + `nb-toasts` na raiz): confirmações curtas que somem sozinhas (4s; perigo 8s),
   repetido reinicia o tempo, no máximo 3. Substitui as linhas "Salvando…/Perfil salvo." das telas.
 
+### Identidade e estrutura
+
+- **Avatar** (`nb-avatar`, tamanhos `p`/`m`/`g` = 24/32/56px): iniciais num círculo na cor do destaque;
+  decorativo (`aria-hidden`), o nome vem ao lado.
+- **Etiqueta** (`nb-etiqueta`, tom `neutro`/`destaque`): rótulo curto em mono e caixa-alta ("Dono").
+- **Estado vazio** (`nb-estado-vazio titulo="…"`): título e explicação centralizados.
+- **Cabeçalho de página** (`nb-cabecalho-de-pagina`): o `h1` das telas de ajuste.
+- **Cartão de seção** (`nb-cartao-de-secao`): `section` nomeada pelo título (`aria-labelledby`), no raio de tela.
+
 ## Armadilhas de CSS que já custaram caro
 
 Os testes de componente não enxergam CSS, e foi por isso que estes dois passaram por dezenas de

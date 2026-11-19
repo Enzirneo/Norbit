@@ -17,10 +17,11 @@ import {
 import type { MembroVisivel } from '@norbit/contracts';
 import { errosDaApi } from '../auth/erros-de-formulario';
 import { PAPEIS_CONVIDAVEIS, type PapelConvidavel } from '../convites/papel';
-import { iniciaisDe } from '../perfil/iniciais';
 import { Botao } from '../ui/botao';
 import { MembrosService } from './membros.service';
 import { Aviso } from '../ui/aviso';
+import { Avatar } from '../ui/avatar';
+import { Etiqueta } from '../ui/etiqueta';
 
 /** A ação que espera confirmação, e para quem. */
 type Pendente = {
@@ -30,7 +31,7 @@ type Pendente = {
 
 @Component({
   selector: 'nb-membros-da-agenda',
-  imports: [Aviso, Botao],
+  imports: [Etiqueta, Avatar, Aviso, Botao],
   templateUrl: './membros-da-agenda.html',
   styleUrl: './membros-da-agenda.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -45,7 +46,6 @@ export class MembrosDaAgenda implements OnInit {
   readonly posseTransferida = output<void>();
 
   protected readonly papeis = PAPEIS_CONVIDAVEIS;
-  protected readonly iniciaisDe = iniciaisDe;
 
   protected readonly membros = signal<readonly MembroVisivel[]>([]);
   protected readonly carregando = signal(true);

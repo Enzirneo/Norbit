@@ -9,17 +9,13 @@
   </header>
 
   <main class="conteudo">
-    <div class="cabecalho">
-      <h1 class="titulo">Perfil</h1>
-    </div>
+    <nb-cabecalho-de-pagina titulo="Perfil" />
 
-    <section class="secao">
-      <h2 class="secao-titulo">Você</h2>
-
+    <nb-cartao-de-secao titulo="Você">
       <!--
         Iniciais no lugar de uma imagem: ainda não há onde guardar arquivos.
       -->
-      <span class="avatar" aria-hidden="true">{{ iniciais() }}</span>
+      <nb-avatar tamanho="g" [nome]="usuario()?.displayName ?? ''" />
 
       <form
         [formGroup]="formulario"
@@ -75,26 +71,22 @@
 
         <button nb-botao type="submit" [ocupado]="salvando()">Salvar</button>
       </form>
-    </section>
+    </nb-cartao-de-secao>
 
-    <section class="secao">
-      <h2 class="secao-titulo">E-mail</h2>
+    <nb-cartao-de-secao titulo="E-mail">
       <nb-troca-de-email />
-    </section>
+    </nb-cartao-de-secao>
 
-    <section class="secao">
-      <h2 class="secao-titulo">Senha</h2>
+    <nb-cartao-de-secao titulo="Senha">
       <nb-troca-de-senha />
-    </section>
+    </nb-cartao-de-secao>
 
-    <section class="secao">
-      <h2 class="secao-titulo">Aparelhos conectados</h2>
+    <nb-cartao-de-secao titulo="Aparelhos conectados">
       <nb-sessoes-ativas />
-    </section>
+    </nb-cartao-de-secao>
 
-    <section class="secao">
-      <h2 class="secao-titulo">Apagar conta</h2>
+    <nb-cartao-de-secao titulo="Apagar conta">
       <nb-apagar-conta />
-    </section>
+    </nb-cartao-de-secao>
   </main>
 </div>

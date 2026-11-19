@@ -24,17 +24,22 @@ import { Botao } from '../../ui/botao';
 import { Campo } from '../../ui/campo';
 import { Marca } from '../../ui/marca';
 import { ToastService } from '../../ui/toast.service';
-import { iniciaisDe } from '../iniciais';
 import { ApagarConta } from '../apagar-conta';
 import { PerfilService } from '../perfil.service';
 import { SessoesAtivas } from '../sessoes-ativas';
 import { TrocaDeEmail } from '../troca-de-email';
 import { TrocaDeSenha } from '../troca-de-senha';
 import { Aviso } from '../../ui/aviso';
+import { Avatar } from '../../ui/avatar';
+import { CabecalhoDePagina } from '../../ui/cabecalho-de-pagina';
+import { CartaoDeSecao } from '../../ui/cartao-de-secao';
 
 @Component({
   selector: 'nb-perfil',
   imports: [
+    CartaoDeSecao,
+    CabecalhoDePagina,
+    Avatar,
     Aviso,
     ReactiveFormsModule,
     ApagarConta,
@@ -84,10 +89,6 @@ export class Perfil {
 
   protected readonly erros = signal<ErrosPorCampo>({});
   protected readonly salvando = signal(false);
-
-  protected iniciais(): string {
-    return iniciaisDe(this.usuario()?.displayName ?? '');
-  }
 
   protected voltar(): void {
     void this.router.navigateByUrl('/');
