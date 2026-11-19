@@ -16,6 +16,12 @@ export const appRoutes: Route[] = [
       import('./preferencias/paginas/preferencias').then((m) => m.Preferencias),
   },
   {
+    path: 'aparencia',
+    canActivate: [exigeSessao],
+    loadComponent: () =>
+      import('./preferencias/paginas/aparencia').then((m) => m.Aparencia),
+  },
+  {
     path: 'perfil',
     canActivate: [exigeSessao],
     loadComponent: () =>

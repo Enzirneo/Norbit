@@ -85,6 +85,7 @@ export type Visao = Periodo;
 export class Calendario {
   private readonly api = inject(CalendarioService);
   private readonly prefs = inject(PreferenciasService);
+  protected readonly forma = this.prefs.forma;
   private readonly membrosApi = inject(MembrosService);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);

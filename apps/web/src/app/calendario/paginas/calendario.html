@@ -59,7 +59,9 @@
 
   <div class="corpo">
     <aside class="lateral">
+      @if (forma().lua) {
       <nb-cartao-da-lua [dia]="hoje()" />
+      }
 
       <h2 class="lateral-titulo">Órbitas</h2>
 
@@ -135,6 +137,7 @@
       </ul>
 
       <nav class="lateral-rodape" aria-label="Conta">
+        <a class="lateral-link" routerLink="/aparencia">Aparência</a>
         <a class="lateral-link" routerLink="/perfil">Perfil</a>
         <a class="lateral-link" routerLink="/preferencias">Preferências</a>
       </nav>

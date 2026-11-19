@@ -11,6 +11,7 @@ import {
   TEMA_PADRAO,
   type AtualizarPreferencias,
   type PreferenciasVisiveis,
+  type Tema,
 } from '@norbit/contracts';
 import { tap, type Observable } from 'rxjs';
 import { ACENTOS } from '@norbit/design-tokens';
@@ -40,11 +41,32 @@ export class PreferenciasService {
 
   readonly preferencias = this.atuais.asReadonly();
 
+  /** O tema em edição (ainda não salvo), ou `null`. Ver `definirPrevia`. */
+  private readonly previa = signal<Tema | null>(null);
+
+  /** O que vale agora na tela: a prévia, se há, senão o tema da conta. */
+  readonly temaVigente = computed(() => this.previa() ?? this.atuais().tema);
+
+  /** A forma vigente: lua, hemisfério, cantos e estrelas. */
+  readonly forma = computed(() => this.temaVigente().forma);
+
   /** A visão com que o calendário abre. `AGENDA` ainda não existe na tela. */
   readonly visaoInicial = computed(() => {
     const escolhida = this.atuais().defaultView;
     return escolhida === 'AGENDA' ? 'MONTH' : escolhida;
   });
+
+  /**
+   * Mostra um tema **sem salvar**: o editor chama a cada alteração, e `null`
+   * desfaz. Vai para a página e para quem lê `temaVigente`, mas não para a conta
+   * nem para o cache, então sair sem salvar não deixa rastro.
+   */
+  definirPrevia(tema: Tema | null): void {
+    this.previa.set(tema);
+    aplicarAparencia(
+      aparenciaDe({ ...this.atuais(), tema: tema ?? this.atuais().tema }),
+    );
+  }
 
   carregar(): Observable<PreferenciasVisiveis> {
     return this.http

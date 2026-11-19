@@ -1,55 +1,3 @@
-/* A tela de preferências. Só camada semântica, como o resto. */
-
-.tela {
-  display: flex;
-  flex-direction: column;
-  min-height: 100dvh;
-}
-
-.topo {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(var(--space-unit) * 4);
-  padding: calc(var(--space-unit) * 3) calc(var(--space-unit) * 4);
-  border-block-end: 1px solid var(--border-subtle);
-}
-
-.conteudo {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--space-unit) * 6);
-  width: 100%;
-  max-width: 34rem;
-  margin: 0 auto;
-  padding: calc(var(--space-unit) * 8) calc(var(--space-unit) * 4);
-}
-
-.acentos {
-  display: flex;
-  gap: calc(var(--space-unit) * 2);
-}
-
-.acento {
-  width: calc(var(--space-unit) * 8);
-  height: calc(var(--space-unit) * 8);
-  border: 2px solid transparent;
-  border-radius: var(--raio-pilula);
-  cursor: pointer;
-
-  /* O selecionado ganha um anel **externo**, com um vão: um anel na própria
-     borda mudaria o tamanho aparente do círculo e a cor pareceria outra. */
-  &:focus-visible {
-    outline: 2px solid var(--border-focus);
-    outline-offset: 3px;
-  }
-}
-
-.acento--ativo {
-  border-color: var(--surface-raised);
-  box-shadow: 0 0 0 2px var(--text-primary);
-}
-
 .marcacao {
   display: flex;
   align-items: start;
@@ -60,12 +8,4 @@
   input {
     margin-block-start: 2px;
   }
-}
-
-.nota {
-  display: block;
-  margin-block-start: calc(var(--space-unit) * 1);
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  line-height: 1.5;
 }

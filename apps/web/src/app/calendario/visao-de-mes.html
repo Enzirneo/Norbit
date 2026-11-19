@@ -30,7 +30,13 @@
     ></button>
 
     <div class="numero-area" [style.grid-column]="$index + 1">
-      <nb-lua [fase]="celula.fase" [tamanho]="12" />
+      @if (forma().lua) {
+      <nb-lua
+        [fase]="celula.fase"
+        [tamanho]="12"
+        [hemisferio]="forma().hemisferio"
+      />
+      }
       <span
         class="numero"
         [class.numero--hoje]="ehHoje(celula)"

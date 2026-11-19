@@ -1,0 +1,151 @@
+:host {
+  display: block;
+}
+
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 5);
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 3);
+}
+
+.grupo-titulo {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.galeria {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: calc(var(--space-unit) * 3);
+}
+
+/*
+ * A miniatura: um quadro desenhado com os tokens do próprio tema (as variáveis
+ * `--m-*` vêm de `derivar`), para a galeria mostrar o tema como ele fica.
+ */
+.miniatura {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 2);
+  padding: calc(var(--space-unit) * 2);
+  border: 2px solid var(--border-subtle);
+  border-radius: var(--raio-m);
+  background: var(--surface-raised);
+  color: var(--text-primary);
+  font: inherit;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+}
+
+.miniatura--ativa {
+  border-color: var(--accent);
+}
+
+.desenho {
+  position: relative;
+  display: block;
+  block-size: 3.5rem;
+  border-radius: var(--raio-p);
+  background: var(--m-fundo);
+}
+
+.desenho-cartao {
+  position: absolute;
+  inset: 0.5rem 0.5rem 1.25rem;
+  border-radius: calc(var(--raio-p) * 0.6);
+  background: var(--m-cartao);
+}
+
+.desenho-linha {
+  position: absolute;
+  inset-inline: 0.5rem 40%;
+  inset-block-end: 0.5rem;
+  block-size: 0.25rem;
+  border-radius: var(--raio-pilula);
+  background: var(--m-texto);
+}
+
+.desenho-ponto {
+  position: absolute;
+  inset-inline-end: 0.5rem;
+  inset-block-end: 0.375rem;
+  inline-size: 0.5rem;
+  block-size: 0.5rem;
+  border-radius: var(--raio-pilula);
+  background: var(--m-destaque);
+}
+
+.nome {
+  font-size: 0.8125rem;
+  text-transform: capitalize;
+}
+
+.cores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space-unit) * 4);
+  align-items: flex-end;
+}
+
+.controle {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 1);
+  font-size: 0.875rem;
+}
+
+.marcacao {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--space-unit) * 2);
+  font-size: 0.9375rem;
+  cursor: pointer;
+}
+
+input[type='range'],
+input[type='color'] {
+  accent-color: var(--accent);
+}
+
+.acentos {
+  display: flex;
+  gap: calc(var(--space-unit) * 2);
+}
+
+.acento {
+  inline-size: calc(var(--space-unit) * 8);
+  block-size: calc(var(--space-unit) * 8);
+  border: 2px solid transparent;
+  border-radius: var(--raio-pilula);
+  cursor: pointer;
+
+  /* O selecionado ganha um anel **externo**, com um vão: um anel na própria
+     borda mudaria o tamanho aparente do círculo e a cor pareceria outra. */
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 3px;
+  }
+}
+
+.acento--ativo {
+  border-color: var(--surface-raised);
+  box-shadow: 0 0 0 2px var(--text-primary);
+}
+
+.acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space-unit) * 3);
+}

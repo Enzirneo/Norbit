@@ -51,6 +51,7 @@ import {
 } from './apoio-da-grade';
 import { Lua } from '../ui/lua';
 import { GestoDeArrasto, type ModoDeArrasto } from './gesto-de-arrasto';
+import { PreferenciasService } from '../preferencias/preferencias.service';
 
 /**
  * A hora em que a grade abre quando a tela não mostra hoje.
@@ -125,6 +126,8 @@ type FaixaDeDiaInteiro = {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class VisaoDeHoras {
+  protected readonly forma = inject(PreferenciasService).forma;
+
   readonly dias = input.required<readonly DataCivil[]>();
   readonly ocorrencias = input.required<readonly OcorrenciaVisivel[]>();
   readonly agendas = input.required<readonly AgendaVisivel[]>();

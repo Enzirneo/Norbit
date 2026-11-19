@@ -1,0 +1,174 @@
+<div class="editor">
+  <div class="grupo">
+    <h3 class="grupo-titulo">Temas prontos</h3>
+    <div class="galeria" role="radiogroup" aria-label="Temas prontos">
+      @for (item of galeria; track item.nome) {
+      <button
+        class="miniatura"
+        type="button"
+        role="radio"
+        [attr.data-tema]="item.nome"
+        [attr.aria-checked]="rascunho().base === item.nome"
+        [class.miniatura--ativa]="rascunho().base === item.nome"
+        [style.--m-fundo]="item.tokens.surfaceBase"
+        [style.--m-cartao]="item.tokens.surfaceRaised"
+        [style.--m-texto]="item.tokens.textPrimary"
+        [style.--m-destaque]="item.tokens.accent"
+        (click)="escolherPronto(item.nome)"
+      >
+        <span class="desenho" aria-hidden="true">
+          <span class="desenho-cartao"></span>
+          <span class="desenho-linha"></span>
+          <span class="desenho-ponto"></span>
+        </span>
+        <span class="nome">{{ item.nome }}</span>
+      </button>
+      }
+    </div>
+  </div>
+
+  <div class="grupo">
+    <h3 class="grupo-titulo">Cores</h3>
+    <div class="cores">
+      <label class="controle" for="fundo">
+        <span>Fundo</span>
+        <input
+          id="fundo"
+          type="color"
+          [value]="rascunho().sementes.fundo"
+          (input)="mudarSemente('fundo', $any($event.target).value)"
+        />
+      </label>
+
+      <label class="controle" for="destaque">
+        <span>Destaque</span>
+        <input
+          id="destaque"
+          type="color"
+          [value]="rascunho().sementes.destaque"
+          (input)="mudarSemente('destaque', $any($event.target).value)"
+        />
+      </label>
+
+      <nb-campo rotulo="Atalhos de destaque">
+        <div class="acentos" role="radiogroup" aria-label="Cor de destaque">
+          @for (atalho of atalhos; track atalho.nome) {
+          <button
+            class="acento"
+            type="button"
+            role="radio"
+            [class.acento--ativo]="rascunho().sementes.destaque === atalho.cor"
+            [attr.aria-checked]="rascunho().sementes.destaque === atalho.cor"
+            [attr.aria-label]="atalho.rotulo"
+            [style.background-color]="atalho.cor"
+            (click)="mudarSemente('destaque', atalho.cor)"
+          ></button>
+          }
+        </div>
+      </nb-campo>
+
+      <label class="marcacao" for="contraste-alto">
+        <input
+          id="contraste-alto"
+          class="nb-caixa"
+          type="checkbox"
+          [checked]="rascunho().sementes.contraste === 'alto'"
+          (change)="alternarContrasteAlto($any($event.target).checked)"
+        />
+        <span>Contraste alto</span>
+      </label>
+    </div>
+
+    @for (aviso of avisosDoMotor(); track aviso) {
+    <nb-aviso class="avisos-do-motor" tipo="info">{{ aviso }}</nb-aviso>
+    }
+  </div>
+
+  <div class="grupo">
+    <h3 class="grupo-titulo">Forma</h3>
+    <div class="cores">
+      <label class="controle" for="cantos">
+        <span>Cantos: {{ rascunho().forma.cantos }}px</span>
+        <input
+          id="cantos"
+          type="range"
+          min="0"
+          max="16"
+          [value]="rascunho().forma.cantos"
+          (input)="mudarCantos($any($event.target).value)"
+        />
+      </label>
+
+      <label class="marcacao" for="estrelas">
+        <input
+          id="estrelas"
+          class="nb-caixa"
+          type="checkbox"
+          [checked]="rascunho().forma.estrelas"
+          (change)="alternarEstrelas($any($event.target).checked)"
+        />
+        <span>Estrelas</span>
+      </label>
+
+      <label class="marcacao" for="lua">
+        <input
+          id="lua"
+          class="nb-caixa"
+          type="checkbox"
+          [checked]="rascunho().forma.lua"
+          (change)="alternarLua($any($event.target).checked)"
+        />
+        <span>Mostrar a lua</span>
+      </label>
+
+      <label class="controle" for="hemisferio">
+        <span>Hemisfério da lua</span>
+        <select
+          id="hemisferio"
+          class="nb-entrada"
+          [value]="rascunho().forma.hemisferio"
+          (change)="mudarHemisferio($any($event.target).value)"
+        >
+          <option value="sul">Sul</option>
+          <option value="norte">Norte</option>
+        </select>
+      </label>
+    </div>
+  </div>
+
+  @if (erro(); as mensagem) {
+  <nb-aviso tipo="perigo">{{ mensagem }}</nb-aviso>
+  }
+
+  <div class="acoes">
+    <button
+      nb-botao
+      type="button"
+      data-acao="salvar"
+      [ocupado]="salvando()"
+      [desabilitado]="!sujo()"
+      (click)="salvar()"
+    >
+      Salvar tema
+    </button>
+    <button
+      nb-botao
+      aparencia="contorno"
+      type="button"
+      data-acao="desfazer"
+      [desabilitado]="!sujo()"
+      (click)="desfazer()"
+    >
+      Desfazer
+    </button>
+    <button
+      nb-botao
+      aparencia="texto"
+      type="button"
+      data-acao="restaurar"
+      (click)="restaurar()"
+    >
+      Restaurar o tema padrão
+    </button>
+  </div>
+</div>

@@ -15,7 +15,9 @@
           <span class="dia-numero" [class.dia-numero--hoje]="coluna.ehHoje">
             {{ coluna.numero }}
           </span>
-          <nb-lua [fase]="coluna.fase" />
+          @if (forma().lua) {
+          <nb-lua [fase]="coluna.fase" [hemisferio]="forma().hemisferio" />
+          }
         </span>
       </div>
       }

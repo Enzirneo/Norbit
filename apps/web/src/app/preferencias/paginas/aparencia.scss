@@ -1,0 +1,19 @@
+.marcacao {
+  display: flex;
+  align-items: start;
+  gap: calc(var(--space-unit) * 2);
+  font-size: 0.9375rem;
+  cursor: pointer;
+
+  input {
+    margin-block-start: 2px;
+  }
+}
+
+.nota {
+  display: block;
+  margin-block-start: calc(var(--space-unit) * 1);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
