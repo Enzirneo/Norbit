@@ -59,7 +59,7 @@
   display: flex;
   flex-direction: column;
   gap: calc(var(--space-unit) * 3);
-  width: 15rem;
+  width: 16rem;
   flex-shrink: 0;
   padding: calc(var(--space-unit) * 4);
   border-inline-end: 1px solid var(--border-subtle);
@@ -125,13 +125,6 @@
   cursor: pointer;
 }
 
-.agenda-cor {
-  width: calc(var(--space-unit) * 2.5);
-  height: calc(var(--space-unit) * 2.5);
-  flex-shrink: 0;
-  border-radius: 999px;
-}
-
 .agenda-nome {
   flex: 1;
   overflow: hidden;
@@ -140,8 +133,7 @@
 }
 
 /* Agenda escondida continua legível: ela não saiu da lista, só da grade. */
-.agenda-caixa:not(:checked) ~ .agenda-nome,
-.agenda-caixa:not(:checked) ~ .agenda-cor {
+.agenda-caixa:not(:checked) ~ .agenda-nome {
   opacity: 0.45;
 }
 
@@ -238,8 +230,19 @@
 }
 
 /* O atalho para as preferências, no pé da barra lateral. */
-.lateral-link {
+/*
+ * Os dois links do pé da barra moram juntos, e é o grupo que empurra para baixo.
+ * Com `margin-top: auto` em cada link, o espaço livre se dividia entre os dois e
+ * um flutuava no meio da barra.
+ */
+.lateral-rodape {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space-unit) * 0.5);
   margin-block-start: auto;
+}
+
+.lateral-link {
   padding: calc(var(--space-unit) * 1.5) calc(var(--space-unit) * 2);
   border-radius: calc(var(--space-unit) * 2);
   color: var(--text-muted);
@@ -254,5 +257,87 @@
   &:focus-visible {
     outline: 2px solid var(--border-focus);
     outline-offset: 1px;
+  }
+}
+
+/*
+ * Ações de uma agenda (compartilhar, sair): só o ícone, para a linha deixar a
+ * largura ao nome. O rótulo vai no `aria-label` e no `title`.
+ */
+.agenda-acao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: calc(var(--space-unit) * 8);
+  height: calc(var(--space-unit) * 8);
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--space-unit) * 2);
+  background: none;
+  color: var(--text-muted);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--surface-raised);
+    color: var(--text-primary);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 1px;
+  }
+}
+
+.avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(var(--space-unit) * 8);
+  height: calc(var(--space-unit) * 8);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--accent) 22%, transparent);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/*
+ * Em tela estreita o cabeçalho quebra em duas linhas: marca e conta em cima,
+ * navegação e visões embaixo. Numa linha só ele passava da largura da tela.
+ */
+@media (max-width: 48rem) {
+  .topo {
+    flex-wrap: wrap;
+    gap: calc(var(--space-unit) * 2);
+  }
+
+  .conta {
+    order: 2;
+    margin-inline-start: auto;
+  }
+
+  .navegacao {
+    order: 3;
+    flex: 1 1 auto;
+    justify-content: space-between;
+  }
+
+  .titulo {
+    min-width: 0;
+    font-size: 1rem;
+  }
+
+  .visoes {
+    order: 4;
+    flex: 1 1 100%;
+  }
+
+  .visao {
+    flex: 1;
+  }
+
+  .handle {
+    display: none;
   }
 }
