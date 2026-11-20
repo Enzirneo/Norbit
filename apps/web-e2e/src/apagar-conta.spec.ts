@@ -13,7 +13,7 @@ const ENZO = { email: 'enzo@norbit.dev', senha: 'norbit123' };
 const MARIA = { email: 'maria@norbit.dev', senha: 'norbit123' };
 
 async function pedirParaApagar(page: Page, senha: string): Promise<void> {
-  await page.goto('/perfil');
+  await page.goto('/seguranca');
   await page.getByRole('button', { name: 'Apagar minha conta' }).click();
   await page.getByLabel('Senha para confirmar').fill(senha);
   await page
@@ -30,14 +30,14 @@ test.describe('apagar a conta', () => {
     page,
   }) => {
     await entrar(page, MARIA);
-    await page.goto('/perfil');
+    await page.goto('/seguranca');
 
     await page.getByRole('button', { name: 'Apagar minha conta' }).click();
     await expect(page.getByLabel('Senha para confirmar')).toBeVisible();
 
     await page.getByRole('button', { name: 'Cancelar' }).click();
     await expect(page.getByLabel('Senha para confirmar')).toHaveCount(0);
-    await expect(page).toHaveURL(/\/perfil/);
+    await expect(page).toHaveURL(/\/seguranca/);
   });
 
   test('senha errada é recusada, e a conta continua', async ({ page }) => {
@@ -47,7 +47,7 @@ test.describe('apagar a conta', () => {
     await expect(page.getByRole('alert')).toContainText(
       'A senha está incorreta.',
     );
-    await expect(page).toHaveURL(/\/perfil/);
+    await expect(page).toHaveURL(/\/seguranca/);
   });
 
   test('quem é dono de agenda compartilhada é barrado, com o nome dela', async ({
@@ -57,7 +57,7 @@ test.describe('apagar a conta', () => {
     await pedirParaApagar(page, ENZO.senha);
 
     await expect(page.getByRole('alert')).toContainText('Nós dois');
-    await expect(page).toHaveURL(/\/perfil/);
+    await expect(page).toHaveURL(/\/seguranca/);
   });
 
   test('apagada a conta, a pessoa vai para o login e não entra mais', async ({

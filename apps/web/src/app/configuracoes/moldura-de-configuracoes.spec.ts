@@ -26,7 +26,7 @@ describe('MolduraDeConfiguracoes', () => {
     expect(raiz.querySelector('main .conteudo-de-teste')).not.toBeNull();
   });
 
-  it('tem um menu nomeado com as três áreas, e os destinos certos', () => {
+  it('tem um menu nomeado com as quatro áreas, e os destinos certos', () => {
     const raiz = montar();
     const menu = raiz.querySelector('nav');
     const links = Array.from(menu?.querySelectorAll('a') ?? []);
@@ -36,11 +36,13 @@ describe('MolduraDeConfiguracoes', () => {
       'Aparência',
       'Preferências',
       'Perfil',
+      'Segurança',
     ]);
     expect(links.map((l) => l.getAttribute('href'))).toEqual([
       '/aparencia',
       '/preferencias',
       '/perfil',
+      '/seguranca',
     ]);
   });
 

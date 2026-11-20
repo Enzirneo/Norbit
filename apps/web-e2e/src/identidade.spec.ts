@@ -64,7 +64,7 @@ test.describe('identidade e estrutura', () => {
 
   test('as seções são regiões nomeadas pelo título', async ({ page }) => {
     await entrar(page);
-    await page.goto('/perfil');
+    await page.goto('/seguranca');
 
     await expect(page.getByRole('region', { name: 'Senha' })).toBeVisible();
     await expect(

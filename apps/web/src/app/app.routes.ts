@@ -28,6 +28,12 @@ export const appRoutes: Route[] = [
       import('./perfil/paginas/perfil').then((m) => m.Perfil),
   },
   {
+    path: 'seguranca',
+    canActivate: [exigeSessao],
+    loadComponent: () =>
+      import('./perfil/paginas/seguranca').then((m) => m.Seguranca),
+  },
+  {
     path: 'entrar',
     canActivate: [exigeVisitante],
     loadComponent: () => import('./auth/paginas/entrar').then((m) => m.Entrar),

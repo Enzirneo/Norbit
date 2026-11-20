@@ -410,9 +410,11 @@ alto, e roda **axe** (WCAG A/AA, `color-contrast` incluído); num build de produ
 ## O editor de tema e as configurações
 
 As telas de ajuste moram sob uma moldura com menu lateral (`nb-moldura-de-configuracoes`): **Aparência**
-(`/aparencia`), **Preferências** (`/preferencias`, do calendário) e **Perfil** (`/perfil`). A estrutura foi
-escolhida entre quatro (a atual, menu lateral, perfil em primeiro lugar, gaveta); "Segurança" como área própria
-fica para quando o Perfil for dividido.
+(`/aparencia`), **Preferências** (`/preferencias`, do calendário), **Perfil** (`/perfil`, quem a pessoa é: nome,
+handle, fuso e cor) e **Segurança** (`/seguranca`: e-mail, senha, aparelhos conectados e apagar a conta). A
+estrutura foi escolhida entre quatro (a atual, menu lateral, perfil em primeiro lugar, gaveta). Segurança saiu do
+Perfil para cada tela ter um assunto: quem quer trocar a senha ou apagar a conta procura "Segurança", e quem quer
+mudar o nome procura "Perfil".
 
 `nb-editor-de-tema` edita um **rascunho**: cada alteração vira prévia no app inteiro
 (`PreferenciasService.definirPrevia`: tokens no `<html>` e `temaVigente` para a lua), mas só "Salvar tema" grava na
