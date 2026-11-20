@@ -297,10 +297,10 @@ test.describe('perfil e preferências', () => {
     await entrar(page);
   });
 
-  test('o conteúdo de cada seção do perfil respira entre os blocos', async ({
+  test('o conteúdo de cada seção da segurança respira entre os blocos', async ({
     page,
   }) => {
-    await page.goto('/perfil');
+    await page.goto('/seguranca');
     await expect(page.locator('nb-sessoes-ativas ul')).toBeVisible();
 
     // Nas seções cujo conteúdo é um componente filho, o texto de apoio ficava
@@ -326,7 +326,7 @@ test.describe('perfil e preferências', () => {
   test('apagar a conta tem a cor de perigo, e não a de um botão qualquer', async ({
     page,
   }) => {
-    await page.goto('/perfil');
+    await page.goto('/seguranca');
 
     const cor = await page
       .getByRole('button', { name: 'Apagar minha conta' })
@@ -339,7 +339,7 @@ test.describe('perfil e preferências', () => {
     expect(b).toBeLessThan(180);
   });
 
-  for (const rota of ['/perfil', '/preferencias']) {
+  for (const rota of ['/perfil', '/seguranca', '/preferencias']) {
     test(`${rota}: não sobra um vão morto entre o título e o conteúdo`, async ({
       page,
     }) => {

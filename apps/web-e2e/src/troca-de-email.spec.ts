@@ -23,7 +23,7 @@ async function pedirTroca(
   novoEmail: string,
   senha: string,
 ): Promise<void> {
-  await page.goto('/perfil');
+  await page.goto('/seguranca');
   await page.getByLabel('E-mail novo').fill(novoEmail);
   await page.getByLabel('Senha para trocar o e-mail').fill(senha);
   await page.getByRole('button', { name: 'Trocar o e-mail' }).click();

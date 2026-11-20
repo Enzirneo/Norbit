@@ -1,5 +1,6 @@
 /**
- * A tela de perfil: nome, handle, fuso e senha.
+ * A tela de perfil: nome, handle, fuso e cor. E-mail, senha, aparelhos e
+ * apagar conta ficam em Segurança (`seguranca.ts`).
  *
  * Ao contrário das preferências, aqui há um botão "Salvar": trocar o handle
  * muda o endereço público da pessoa, e uma alteração com esse peso não deve
@@ -24,11 +25,7 @@ import { Botao } from '../../ui/botao';
 import { MolduraDeConfiguracoes } from '../../configuracoes/moldura-de-configuracoes';
 import { Campo } from '../../ui/campo';
 import { ToastService } from '../../ui/toast.service';
-import { ApagarConta } from '../apagar-conta';
 import { PerfilService } from '../perfil.service';
-import { SessoesAtivas } from '../sessoes-ativas';
-import { TrocaDeEmail } from '../troca-de-email';
-import { TrocaDeSenha } from '../troca-de-senha';
 import { Aviso } from '../../ui/aviso';
 import { Avatar } from '../../ui/avatar';
 import { CartaoDeSecao } from '../../ui/cartao-de-secao';
@@ -40,13 +37,9 @@ import { CartaoDeSecao } from '../../ui/cartao-de-secao';
     Avatar,
     Aviso,
     ReactiveFormsModule,
-    ApagarConta,
     Botao,
     Campo,
     MolduraDeConfiguracoes,
-    SessoesAtivas,
-    TrocaDeEmail,
-    TrocaDeSenha,
   ],
   templateUrl: './perfil.html',
   styleUrl: './perfil.scss',

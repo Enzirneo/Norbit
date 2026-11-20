@@ -23,7 +23,7 @@ async function novaPagina(
 }
 
 async function trocar(page: Page, atual: string, nova: string): Promise<void> {
-  await page.goto('/perfil');
+  await page.goto('/seguranca');
   await page.getByLabel('Senha atual').fill(atual);
   await page.getByLabel('Senha nova').fill(nova);
   await page.getByRole('button', { name: 'Trocar a senha' }).click();
@@ -90,7 +90,7 @@ test.describe('trocar a senha', () => {
 
     // Este aparelho segue na conta mesmo depois de recarregar...
     await page.reload();
-    await expect(page).toHaveURL(/\/perfil/);
+    await expect(page).toHaveURL(/\/seguranca/);
 
     // ...e o outro perde a sessão quando tenta renová-la.
     await outroAparelho.reload();

@@ -32,7 +32,7 @@ test.describe('aparelhos conectados', () => {
     const celular = await outroAparelho(browser, baseURL);
 
     await entrar(page);
-    await page.goto('/perfil');
+    await page.goto('/seguranca');
 
     const aparelhos = page.getByRole('list', { name: 'Aparelhos conectados' });
     await expect(aparelhos.getByRole('listitem')).toHaveCount(2);
@@ -61,7 +61,7 @@ test.describe('aparelhos conectados', () => {
     const celular = await outroAparelho(browser, baseURL);
 
     await entrar(page);
-    await page.goto('/perfil');
+    await page.goto('/seguranca');
     await page.getByRole('button', { name: /Desconectar/ }).click();
 
     const aparelhos = page.getByRole('list', { name: 'Aparelhos conectados' });
@@ -73,7 +73,7 @@ test.describe('aparelhos conectados', () => {
 
     // ...e este segue na conta.
     await page.reload();
-    await expect(page).toHaveURL(/\/perfil/);
+    await expect(page).toHaveURL(/\/seguranca/);
 
     await celular.context().close();
   });
