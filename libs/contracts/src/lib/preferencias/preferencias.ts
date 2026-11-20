@@ -5,27 +5,9 @@
  * a tela abria sempre no mês, a semana começava sempre no domingo, e esconder
  * uma agenda era esquecido ao recarregar. Isto é a ponte.
  */
-import { VALORES_DE_ACENTO } from '@norbit/design-tokens';
 import { z } from 'zod';
 import { corHex } from '../agendas/comum';
 import { temaSchema, type Tema } from './tema';
-
-/**
- * A cor de destaque, restrita à paleta que o produto oferece.
- *
- * Não é um seletor livre, e a razão é de acessibilidade: `accentHover`,
- * `accentMuted` e a cor do texto em cima são **derivadas** do acento, e derivar
- * com garantia de contraste para o espectro inteiro exige trabalhar em claridade
- * perceptual (OKLCH). Até lá, cada acento oferecido passa pelo teste de
- * contraste em `libs/design-tokens` — que reprova a build.
- *
- * A lista vem de lá, e não escrita à mão aqui: acrescentar um acento na paleta
- * passaria a ser recusado por este contrato.
- */
-const acento = corHex.refine(
-  (cor) => VALORES_DE_ACENTO.includes(cor),
-  'Essa cor de destaque não está entre as oferecidas.',
-);
 
 /**
  * A densidade: 0 compacta, 1 confortável, 2 espaçosa.
@@ -41,7 +23,6 @@ const inicioDaSemana = z.number().int().min(0).max(6);
 
 export const atualizarPreferenciasSchema = z
   .object({
-    accentColor: acento,
     tema: temaSchema,
     density: densidade,
     reducedMotion: z.boolean(),
@@ -61,13 +42,12 @@ export type AtualizarPreferencias = z.infer<typeof atualizarPreferenciasSchema>;
 /**
  * O que a API devolve.
  *
- * Só o que a interface usa hoje. `theme`, `themePreset` e os campos de
- * notificação ficam de fora de propósito: devolver um campo que nada lê convida
- * a construir contra ele antes de a funcionalidade existir.
+ * Só o que a interface usa hoje. `theme` e os campos de notificação ficam de
+ * fora de propósito: devolver um campo que nada lê convida a construir contra
+ * ele antes de a funcionalidade existir.
  */
 export type PreferenciasVisiveis = {
-  readonly accentColor: string;
-  /** O tema completo. `accentColor` continua até a web deixar de lê-lo. */
+  /** O tema completo: sementes de cor e forma. */
   readonly tema: Tema;
   readonly density: number;
   readonly reducedMotion: boolean;

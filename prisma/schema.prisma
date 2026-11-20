@@ -169,13 +169,10 @@ model UserSettings {
 
   // Aparência
   theme         ThemeMode    @default(SYSTEM)
-  // Nome do preset orbital (ver docs/04-design-system.md), ex.: "nebula".
-  themePreset   String       @default("nebula")
-  accentColor   String       @default("#6d7cff") // hex, validado na aplicação
-  // O tema como JSON versionado (sementes de cor e forma). Nulo = ainda não
-  // migrado: a API deriva do par themePreset/accentColor. Os dois antigos saem
-  // numa migração própria, depois que a web deixar de lê-los (expandir/contrair).
-  appearance    Json?
+  // O tema como JSON versionado (sementes de cor e forma), validado na aplicação
+  // por `temaSchema`. O padrão é o `TEMA_PADRAO` (nebula); um teste da API
+  // confere que os dois não discordam.
+  appearance    Json         @default("{\"v\":1,\"base\":\"nebula\",\"sementes\":{\"fundo\":\"#0b0d17\",\"destaque\":\"#6d7cff\",\"contraste\":\"normal\"},\"forma\":{\"cantos\":6,\"estrelas\":true,\"lua\":true,\"hemisferio\":\"sul\"}}")
   // 0 = compacta, 1 = confortável, 2 = espaçosa
   density       Int          @default(1)
   reducedMotion Boolean      @default(false)

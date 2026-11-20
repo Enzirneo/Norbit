@@ -7,8 +7,8 @@
  */
 import { ConfigModule } from '@nestjs/config';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { TEMA_PADRAO, temaLegado } from '@norbit/contracts';
-import { Prisma, PrismaModule, PrismaService } from '@norbit/db';
+import { TEMA_PADRAO } from '@norbit/contracts';
+import { PrismaModule, PrismaService } from '@norbit/db';
 import { uuidv7 } from 'uuidv7';
 import { AcessoService } from '../agendas/acesso.service';
 import { AgendasService } from '../agendas/agendas.service';
@@ -16,13 +16,7 @@ import { PreferenciasService } from './preferencias.service';
 
 const PREFIXO = 'teste-prefs';
 
-/**
- * O acento padrão, escrito à mão de propósito.
- *
- * A API não depende de `@norbit/design-tokens` — a fronteira não permite, e com
- * razão: o servidor não tem nada a ver com cor. Aqui o valor literal é a
- * **asserção**: se o `@default` do banco mudar, este teste é quem avisa.
- */
+/** A cor padrão de uma agenda nova, escrita à mão: o literal é a asserção. */
 const ACENTO_PADRAO = '#6d7cff';
 
 describe('PreferenciasService', () => {
@@ -59,7 +53,6 @@ describe('PreferenciasService', () => {
     const minhas = await preferencias.minhas(enzo);
 
     expect(minhas).toEqual({
-      accentColor: ACENTO_PADRAO,
       tema: TEMA_PADRAO,
       density: 1,
       reducedMotion: false,
@@ -83,36 +76,12 @@ describe('PreferenciasService', () => {
       expect((await preferencias.minhas(enzo)).tema).toEqual(MEU_TEMA);
     });
 
-    it('mantém o par antigo em dia: o destaque do tema vira o accentColor', async () => {
-      await preferencias.atualizar(enzo, { tema: MEU_TEMA });
-
-      expect((await preferencias.minhas(enzo)).accentColor).toBe('#ff6b8a');
-    });
-
-    it('trocar só o accentColor atualiza o destaque do tema guardado', async () => {
-      await preferencias.atualizar(enzo, { tema: MEU_TEMA });
-
-      await preferencias.atualizar(enzo, { accentColor: '#4adebb' });
-      const { tema } = await preferencias.minhas(enzo);
-
-      expect(tema.sementes.destaque).toBe('#4adebb');
-      expect(tema.sementes.fundo).toBe('#140a1f');
-      expect(tema.forma.cantos).toBe(12);
-    });
-
-    it('uma conta sem tema guardado recebe o derivado do par antigo', async () => {
-      await prisma.userSettings.update({
+    it('a conta nasce com o tema padrão já guardado, não derivado na leitura', async () => {
+      const linha = await prisma.userSettings.findUniqueOrThrow({
         where: { userId: enzo },
-        data: {
-          themePreset: 'dawn',
-          accentColor: '#4adebb',
-          appearance: Prisma.DbNull,
-        },
       });
 
-      expect((await preferencias.minhas(enzo)).tema).toEqual(
-        temaLegado('dawn', '#4adebb'),
-      );
+      expect(linha.appearance).toEqual(TEMA_PADRAO);
     });
 
     it('um tema guardado que ficou inválido não derruba a leitura', async () => {
@@ -133,20 +102,11 @@ describe('PreferenciasService', () => {
     });
   });
 
-  it('a cor de destaque padrão é minúscula', async () => {
-    // O `@default` do banco e a paleta precisam casar: foi assim que a
-    // validação do contrato passou a recusar uma cor que ela mesma oferecia.
-    const { accentColor } = await preferencias.minhas(enzo);
-
-    expect(accentColor).toBe(accentColor.toLowerCase());
-  });
-
   it('um PATCH parcial não zera o resto', async () => {
     await preferencias.atualizar(enzo, { density: 0 });
     const minhas = await preferencias.minhas(enzo);
 
     expect(minhas.density).toBe(0);
-    expect(minhas.accentColor).toBe(ACENTO_PADRAO);
     expect(minhas.defaultView).toBe('WEEK');
   });
 

@@ -14,7 +14,6 @@ import {
   type Tema,
 } from '@norbit/contracts';
 import { tap, type Observable } from 'rxjs';
-import { ACENTOS } from '@norbit/design-tokens';
 import { aparenciaDe, aplicarAparencia, guardarAparencia } from './aparencia';
 
 /**
@@ -24,7 +23,6 @@ import { aparenciaDe, aplicarAparencia, guardarAparencia } from './aparencia';
  * estado para o outro no carregamento.
  */
 const PADRAO: PreferenciasVisiveis = {
-  accentColor: ACENTOS.nebula,
   tema: TEMA_PADRAO,
   density: 1,
   reducedMotion: false,

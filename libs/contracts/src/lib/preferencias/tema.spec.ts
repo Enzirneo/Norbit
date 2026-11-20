@@ -1,4 +1,4 @@
-import { TEMA_PADRAO, temaLegado, temaSchema } from './tema';
+import { TEMA_PADRAO, temaSchema } from './tema';
 
 const VALIDO = {
   v: 1,
@@ -76,29 +76,5 @@ describe('temaSchema', () => {
 describe('TEMA_PADRAO', () => {
   it('é o nebula com a forma padrão', () => {
     expect(TEMA_PADRAO).toEqual(VALIDO);
-  });
-});
-
-describe('temaLegado', () => {
-  it('o nebula com o destaque padrão dá exatamente o tema padrão', () => {
-    expect(temaLegado('nebula', '#6d7cff')).toEqual(TEMA_PADRAO);
-  });
-
-  it('o destaque antigo vira a semente de destaque', () => {
-    expect(temaLegado('nebula', '#4adebb').sementes.destaque).toBe('#4adebb');
-  });
-
-  it('o preset antigo escolhe o fundo e a base', () => {
-    const dawn = temaLegado('dawn', '#4adebb');
-
-    expect(dawn.base).toBe('dawn');
-    expect(dawn.sementes.fundo).toBe('#f6f1ea');
-  });
-
-  it('um preset desconhecido cai no nebula, e não quebra', () => {
-    const tema = temaLegado('inexistente', '#6d7cff');
-
-    expect(tema.base).toBe('nebula');
-    expect(tema.sementes.fundo).toBe('#0b0d17');
   });
 });

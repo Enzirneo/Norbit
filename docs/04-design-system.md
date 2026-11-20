@@ -98,7 +98,8 @@ semânticos; nenhum componente é tocado.
 
 ### Presets de tema
 
-Cada preset redefine os semânticos. Quatro no MVP, escolhidos em `UserSettings.themePreset`:
+Cada preset redefine os semânticos. Quatro no MVP; hoje são os **temas prontos** do editor, e a conta guarda
+apenas o resultado em `UserSettings.appearance` (ver "O tema na conta e na web"):
 
 | Preset    | Caráter                              |
 | --------- | ------------------------------------ |
@@ -107,7 +108,7 @@ Cada preset redefine os semânticos. Quatro no MVP, escolhidos em `UserSettings.
 | `dawn`    | Claro, quente, fundo creme           |
 | `vacuum`  | Claro, neutro frio, mínimo           |
 
-Além do preset, o usuário escolhe livremente a **cor de acento** (`accentColor`). Ela
+Além do preset, o usuário escolhe livremente a **cor de destaque** (`sementes.destaque`). Ela
 entra como custom property no `<html>`, e as variações (`hover`, `muted`, `glow`) são
 derivadas em OKLCH — espaço perceptualmente uniforme, o que mantém o contraste correto
 para qualquer cor que o usuário escolher, inclusive amarelo. Com HSL, um acento amarelo
@@ -384,15 +385,16 @@ apoio, bordas) não são os escritos à mão em `semanticos.ts`: só passam a va
 
 ### O tema na conta e na web
 
-- `UserSettings.appearance` (JSON, `temaSchema` em `libs/contracts`): `{ v, base, sementes, forma }`. Nulo numa
-  conta ainda não migrada: a API deriva do par antigo (`temaLegado`); inválido: tema padrão. Escrever `tema`
-  mantém `accentColor` em dia, e escrever só `accentColor` atualiza o destaque do tema (expandir/contrair: o par
-  antigo sai numa migração própria, quando a web deixar de lê-lo).
+- `UserSettings.appearance` (JSON, `temaSchema` em `libs/contracts`): `{ v, base, sementes, forma }`. É a **única**
+  fonte do tema: obrigatório, com o nebula como padrão do banco (um teste da API confere que o padrão do banco e o
+  `TEMA_PADRAO` não discordam). Se o JSON guardado ficar inválido (versão futura, dado corrompido), a leitura
+  devolve o tema padrão em vez de falhar. A API não aceita mais `accentColor`: o destaque é parte do `tema`.
 - A web chama `derivar(sementes)` e escreve **todos** os tokens, mais `--r`, `--estrelas` e `color-scheme`, no
   `<html>`; o cache guarda esses valores. O CSS padrão (`tokens.generated.css`) é o nebula **derivado**, então
   não há troca visível no primeiro quadro. Ao sair, o tema da pessoa é tirado da página.
-- A migração preenche `appearance` do par antigo: a conta com `themePreset: dawn` (Maria, no seed) passa a ter
-  de fato o tema claro, que antes era ignorado.
+- A migração de expandir preencheu `appearance` do par antigo (a conta com `themePreset: dawn`, a Maria no
+  seed, passou a ter de fato o tema claro). A de contrair (`tema_contrair`) preencheu quem ainda estava sem o JSON
+  com a mesma regra, tornou `appearance` obrigatório e removeu `themePreset` e `accentColor`.
 
 ## O catálogo vivo (`/design`)
 
@@ -417,9 +419,6 @@ fica para quando o Perfil for dividido.
 conta; sair sem salvar desfaz. Tem galeria de temas prontos (miniaturas desenhadas com os tokens derivados),
 fundo, destaque (com os cinco atalhos), contraste alto, cantos, estrelas, lua e hemisfério, os avisos do motor e
 "Restaurar o tema padrão". Densidade e movimento continuam salvando a cada alteração.
-
-A migração para **contrair** (remover `themePreset` e `accentColor`) fica para um PR próprio, agora que a web
-não lê mais o `accentColor`.
 
 ## Cor de perfil
 
